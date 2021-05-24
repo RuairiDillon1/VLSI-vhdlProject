@@ -1,0 +1,27 @@
+---
+title: Test Signal Generator
+subtitle: VLSI-Design Module - Report
+author: L Hillinger, D Cunnigham, R Dillon
+date: SS2021
+lang: en-UK
+geometry: a4paper, left=25mm, right=20mm, top=20mm, bottom=25mm
+fontsize: 12pt
+code-block-font-size: \scriptsize
+titlepage: true
+logo: images/uasa-logo.pdf
+toc: true
+lof: true
+lot: true
+toc-own-page: true
+colorlinks: true
+secnumdepth: 4
+header-includes: 
+# 4th level header rendering
+# see https://stackoverflow.com/questions/21198025/pandoc-generation-of-pdf-from-markdown-4th-header-is-rendered-differently/21204829#21204829
+ - |
+   ``` {=latex}
+   \let\originAlParaGraph\paragraph
+   \renewcommand{\paragraph}[1]{\originAlParaGraph{#1} \hfill}
+   ```
+---
+

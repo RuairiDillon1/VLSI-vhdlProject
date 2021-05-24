@@ -1,0 +1,15 @@
+# Ignore files for git
+
+# Emacs backup files
+*~
+*.bak
+.emacs-vhdl-cache*
+
+# ModelSim working library
+work
+
+# Quartus internal database
+db
+incremental_db
+
+

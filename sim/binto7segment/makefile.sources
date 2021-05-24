@@ -1,0 +1,17 @@
+## ----------------------------------------------------------------------------
+## Script     : makefile.sources
+## ----------------------------------------------------------------------------
+## Author     : Johann Faerber
+## Company    : University of Applied Sciences Augsburg
+## ----------------------------------------------------------------------------
+## Description: provide all the VHDL source files in the variable SYN_SOURCE_FILES
+##              Attention !!!
+##              -------------
+##              Do not forget a new line after the final source file !
+## ----------------------------------------------------------------------------
+
+SYN_SOURCE_FILES = \
+../../src/binto7segment_truthtable.vhd \
+
+# do not delete this line
+# -----------------------------------------------------------------------------
