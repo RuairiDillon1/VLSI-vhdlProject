@@ -20,7 +20,7 @@ entity pwm_generator is
 
 end pwm_generator;
 
-	signal next_state, current_state : unsigned(7 downto 0); 
+	signal next_state, current_state : unsigned(7 downto 0); -- states
 
 
 architecture rtl of pwm_generator is
