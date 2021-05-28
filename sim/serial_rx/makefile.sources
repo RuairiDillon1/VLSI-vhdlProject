@@ -1,0 +1,24 @@
+## ----------------------------------------------------------------------------
+## Script     : makefile.sources
+## ----------------------------------------------------------------------------
+## Author     : Johann Faerber
+## Company    : University of Applied Sciences Augsburg
+## ----------------------------------------------------------------------------
+## Description: provide all the VHDL source files in the variable SYN_SOURCE_FILES
+##              Attention !!!
+##              -------------
+##              Do not forget a new line after the final source file !
+## ----------------------------------------------------------------------------
+
+SYN_SOURCE_FILES = \
+../../src/e_falling_edge_detector.vhd \
+../../src/a_falling_edge_detector_rtl.vhd \
+../../src/cntdnmodm_rtl.vhd \
+../../src/uart_clk_div.vhd \
+../../src/uart_parity.vhd \
+../../src/serial_tx.vhd \
+../../src/serial_rx.vhd \
+
+
+# do not delete this line
+# -----------------------------------------------------------------------------
