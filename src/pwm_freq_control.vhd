@@ -1,39 +1,39 @@
 -- THIS IS A DIRECT COPY OF PWM_GENERATOR NEEDS EDITIED 
 -- Leo Hillinger and Ruairí Dillon 28/05/2021
 
-library ieee;
-use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all;
+LIBRARY ieee;
+USE IEEE.std_logic_1164.ALL;
+USE IEEE.numeric_std.ALL;
 
 
 
 
-entity pwm_generator is
+ENTITY pwm_freq_control IS
 
-	port(
+  PORT(
 
-	en_pi : in std_ulogic; -- enable pin
-	rst_ni : in std_ulogic; -- reset
-	pwm_period : in std_ulogic_vector(7 downto 0); -- size of the pwm total signal 
-	clk_i : in std_ulogic;	-- clock in
-	pwm_freq_o : out std_ulogic; -- output signal from module
-	);
+    en_pi        : IN  std_ulogic;      -- enable pin
+    rst_ni       : IN  std_ulogic;      -- reset
+    pwm_period_i : IN  std_ulogic_vector(7 DOWNTO 0);  -- size of the pwm total signal 
+    clk_i        : IN  std_ulogic;      -- clock in
+    pwm_freq_o   : OUT std_ulogic);      -- output signal from module
 
-end pwm_generator;
+END pwm_freq_control;
 
-	signal next_state, current_state : unsigned(7 downto 0); -- states
+SIGNAL next_state, current_state : unsigned(7 DOWNTO 0);  -- states
 
+CONSTANT max_value               : unsigned(7 DOWNTO 0) := to_unsigned(255, max_value'length);
 
-architecture rtl of pwm_generator is
+ARCHITECTURE rtl OF pwm_freq_control IS
 
-next_state_logic : next_state <= to_unsigned(255, 8) WHEN current_state = 0 ELSE
+  next_state_logic : next_state <= max_value WHEN current_state = 0 ELSE
                                    current_state - 1;
 
   state_register : current_state <= zero WHEN rst_ni = '0' ELSE
-    next_state WHEN rising_edge(clk_i) AND (en_pi = '1');
+                                    next_state WHEN rising_edge(clk_i) AND (en_pi = '1');
 
 
-  counter_output : pwm_freq_o <= '1' when current_state < to_unsigned(255, 8) - unsigned(pwm_period) else
-				'0';
+  counter_output : pwm_freq_o <= '1' WHEN current_state < unsigned(pwm_period_i) ELSE
+                                 '0';
 
-end rtl;
+END rtl;
