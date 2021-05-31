@@ -17,7 +17,7 @@
 
 - [ ] LFSR bit sizes - feedback (11 bit?) - noise prbsg length
 - [ ] PWM generator - issues with period/frequency when they equal one another.
-- [ ] 
+- [ ] serial_rx how to integrate synchronous high active reset
 - [ ] 
 - [ ] 
 

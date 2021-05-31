@@ -4,9 +4,6 @@ LIBRARY ieee;
 USE IEEE.std_logic_1164.ALL;
 USE IEEE.numeric_std.ALL;
 
-
-
-
 ENTITY pwm_generator IS
 
   PORT(
@@ -19,11 +16,11 @@ ENTITY pwm_generator IS
 
 END pwm_generator;
 
-ENTITY pwm_generator IS
+ARCHITECTURE rtl OF pwm_generator IS
 
 SIGNAL next_state, current_state : unsigned(7 DOWNTO 0);  -- states
 
-ARCHITECTURE rtl OF pwm_generator IS
+BEGIN 
 
   next_state_logic : next_state <= unsigned(pwm_period_i) WHEN current_state = 0 ELSE
                                    current_state - 1;
