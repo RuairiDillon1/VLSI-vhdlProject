@@ -5,7 +5,8 @@ USE ieee.numeric_std.all;
 entity cntup_addr is
     port (
         clk_i : in std_ulogic;
-        clr_i : in std_ulogic;
+        clr_i : in std_ulogic; -- synchronous clear
+        rst_ni : in std_ulogic; -- asynchronous reset
         en_pi : in std_ulogic;
         len_i : in std_ulogic_vector(7 downto 0);
         q_o : out std_ulogic_vector(7 downto 0);
@@ -19,12 +20,12 @@ architecture rtl of cntup_addr is
 
 begin
     
-    cntup: process(clk_i, clr_i)
+    cntup: process(clk_i, rst_ni, clr_i)
     begin
-        if clr_i = '1' then
+        if rst_ni = '0' then
             current_state <= (others => '0');
         elsif rising_edge(clk_i) and en_pi = '1' then
-            if current_state = unsigned(len_i) - 1 then
+            if current_state = unsigned(len_i) - 1 or clr_i = '1' then
                 current_state <= (others => '0');
             else
                 current_state <= current_state + 1;
