@@ -12,7 +12,7 @@ LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 USE IEEE.numeric_std.ALL;
 
-ENTITY noise_freq_control IS
+ENTITY freq_control IS
 
 
     PORT (clk_i : IN std_ulogic;
@@ -22,9 +22,9 @@ ENTITY noise_freq_control IS
         freq_o           : OUT std_ulogic;
         period_i : IN std_ulogic_vector(7 DOWNTO 0);
         );
-END noise_freq_control;
+END freq_control;
 
-ARCHITECTURE rtl OF noise_freq_control IS
+ARCHITECTURE rtl OF freq_control IS
 
   SIGNAL next_state, current_state : unsigned(7 DOWNTO 0);
 
