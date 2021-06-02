@@ -19,8 +19,8 @@ ENTITY noise_freq_control IS
         rst_ni         : IN  std_ulogic;
         en_pi          : IN  std_ulogic;
         count_o        : OUT std_ulogic_vector(7 DOWNTO 0);
-        tc_o           : OUT std_ulogic;
-        noise_period_i : IN std_ulogic_vector(7 DOWNTO 0);
+        freq_o           : OUT std_ulogic;
+        period_i : IN std_ulogic_vector(7 DOWNTO 0);
         );
 END noise_freq_control;
 
@@ -33,7 +33,7 @@ ARCHITECTURE rtl OF noise_freq_control IS
 BEGIN
 
   -- includes decrementer and modulo logic
-  next_state_logic : next_state <= unsigned(noise_period_i) WHEN current_state = 0 ELSE
+  next_state_logic : next_state <= unsigned(period_i) WHEN current_state = 0 ELSE
                                    current_state - 1;
 
   state_register : current_state <= zero WHEN rst_ni = '0' ELSE
@@ -41,7 +41,7 @@ BEGIN
 
   counter_output : count_o <= std_ulogic_vector(current_state);
 
-  terminal_count : tc_o <= '1' WHEN current_state = 0 ELSE '0';
+  terminal_count : freq_o <= '1' WHEN current_state = 0 ELSE '0';
 
 END rtl;
 
