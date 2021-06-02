@@ -1,0 +1,9 @@
+<?xml version='1.0'?>
+<!DOCTYPE qfsmproject SYSTEM 'qfsm.dtd'>
+<qfsmproject version="0.55" author="Qfsm">
+  <machine transfontitalic="0" nummooreout="4" draw_it="1" statefontsize="8" transfont="Helvetica" statefontitalic="0" author="" description="serial receiver state machine, includes communication with pattern_generator state machine" version="" name="serial_receiver_fsm" arrowtype="1" numbits="1" statefontweight="50" statefont="Helvetica" numin="6" transfontsize="8" transfontweight="50" type="0" numout="0">
+    <outputnames_moore>en_addr_reg,en_data_reg,en_regfile_wr,pm_control_changed</outputnames_moore>
+    <inputnames>rxd_rec,addr[3..0],pm_checked</inputnames>
+    <outputnames></outputnames>
+  </machine>
+</qfsmproject>

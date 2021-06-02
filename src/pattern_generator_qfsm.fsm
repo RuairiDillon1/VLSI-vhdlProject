@@ -1,0 +1,9 @@
+<?xml version='1.0'?>
+<!DOCTYPE qfsmproject SYSTEM 'qfsm.dtd'>
+<qfsmproject version="0.55" author="Qfsm">
+  <machine transfontitalic="0" nummooreout="4" draw_it="1" statefontsize="8" transfont="Helvetica" statefontitalic="0" author="" description="pattern generator state machine, includes communication with serial_receiver state machine" version="" name="pattern_generator_fsm" arrowtype="1" numbits="1" statefontweight="50" statefont="Helvetica" numin="5" transfontsize="8" transfontweight="50" type="0" numout="0">
+    <outputnames_moore>en_pm,en_pm_cnt,clr_pm_cnt,pm_checked</outputnames_moore>
+    <inputnames>rxd_rec,tc_pm,pm_control_changed,pm_control[1..0]</inputnames>
+    <outputnames></outputnames>
+  </machine>
+</qfsmproject>
