@@ -1,9 +1,12 @@
 <?xml version='1.0'?>
 <!DOCTYPE qfsmproject SYSTEM 'qfsm.dtd'>
 <qfsmproject version="0.55" author="Qfsm">
-  <machine transfontitalic="0" nummooreout="4" draw_it="1" statefontsize="8" transfont="Helvetica" statefontitalic="0" author="" description="pattern generator state machine, includes communication with serial_receiver state machine" version="" name="pattern_generator_fsm" arrowtype="1" numbits="1" statefontweight="50" statefont="Helvetica" numin="5" transfontsize="8" transfontweight="50" type="0" numout="0">
+  <machine nummooreout="4" transfontitalic="0" draw_it="1" statefontsize="8" transfont="Helvetica" statefontitalic="0" author="" description="pattern generator state machine, includes communication with serial_receiver state machine" version="" name="pattern_generator_fsm" arrowtype="1" numbits="1" statefontweight="50" statefont="Helvetica" numin="5" transfontsize="8" transfontweight="50" type="0" numout="0" initialstate="0">
     <outputnames_moore>en_pm,en_pm_cnt,clr_pm_cnt,pm_checked</outputnames_moore>
     <inputnames>rxd_rec,tc_pm,pm_control_changed,pm_control[1..0]</inputnames>
     <outputnames></outputnames>
+    <itransition ypos="85" endx="102" xpos="42" endy="85"/>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0000" ypos="85" code="0" xpos="142" linewidth="1">wait_for_pm_change_s</state>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0000" ypos="173" code="1" xpos="219" linewidth="1">clr_addr_cmt</state>
   </machine>
 </qfsmproject>
