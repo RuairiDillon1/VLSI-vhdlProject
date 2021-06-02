@@ -19,7 +19,7 @@ ENTITY noise_freq_control IS
         rst_ni         : IN  std_ulogic;
         en_pi          : IN  std_ulogic;
         count_o        : OUT std_ulogic_vector(7 DOWNTO 0);
-        tc_o           : OUT std_ulogic;
+        freq_o           : OUT std_ulogic;
         period_i : IN std_ulogic_vector(7 DOWNTO 0);
         );
 END noise_freq_control;
@@ -41,7 +41,7 @@ BEGIN
 
   counter_output : count_o <= std_ulogic_vector(current_state);
 
-  terminal_count : tc_o <= '1' WHEN current_state = 0 ELSE '0';
+  terminal_count : freq_o <= '1' WHEN current_state = 0 ELSE '0';
 
 END rtl;
 
