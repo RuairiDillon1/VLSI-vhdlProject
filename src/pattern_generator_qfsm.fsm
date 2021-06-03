@@ -1,12 +1,121 @@
 <?xml version='1.0'?>
 <!DOCTYPE qfsmproject SYSTEM 'qfsm.dtd'>
 <qfsmproject version="0.55" author="Qfsm">
-  <machine nummooreout="4" transfontitalic="0" draw_it="1" statefontsize="8" transfont="Helvetica" statefontitalic="0" author="" description="pattern generator state machine, includes communication with serial_receiver state machine" version="" name="pattern_generator_fsm" arrowtype="1" numbits="1" statefontweight="50" statefont="Helvetica" numin="5" transfontsize="8" transfontweight="50" type="0" numout="0" initialstate="0">
+  <machine nummooreout="4" transfontitalic="0" draw_it="1" statefontsize="8" transfont="Helvetica" statefontitalic="0" author="" description="pattern generator state machine, includes communication with serial_receiver state machine" version="" name="pattern_generator_fsm" arrowtype="1" numbits="4" statefontweight="50" statefont="Helvetica" numin="5" transfontsize="8" transfontweight="50" type="0" numout="0" initialstate="0">
     <outputnames_moore>en_pm,en_pm_cnt,clr_pm_cnt,pm_checked</outputnames_moore>
     <inputnames>rxd_rec,tc_pm,pm_control_changed,pm_control[1..0]</inputnames>
     <outputnames></outputnames>
-    <itransition ypos="85" endx="102" xpos="42" endy="85"/>
-    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0000" ypos="85" code="0" xpos="142" linewidth="1">wait_for_pm_change_s</state>
-    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0000" ypos="173" code="1" xpos="219" linewidth="1">clr_addr_cmt</state>
+    <itransition ypos="65" endx="392" xpos="332" endy="65"/>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0000" ypos="65" code="0" xpos="432" linewidth="1">wait_for_pm_change_s</state>
+    <state pencolor="0" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 0 &#xa;clr pm cnt = 1&#xa;pm checked =  0" finalstate="0" entry_actions="" moore_outputs="0010" ypos="174" code="1" xpos="534" linewidth="1">clr_addr_cmt</state>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0000" ypos="340" code="2" xpos="384" linewidth="1">wait_for_pm_data_s</state>
+    <state pencolor="0" exit_actions="" radius="40" description="en pm = 1&#xa;en pm cnt =0 &#xa;clr pm cnt = 0&#xa;pm checked =0 " finalstate="0" entry_actions="" moore_outputs="1000" ypos="500" code="3" xpos="385" linewidth="1">fetch_pm_data_s</state>
+    <state pencolor="0" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 1&#xa;clr pm cnt = 0 &#xa;pm checked =0 " finalstate="0" entry_actions="" moore_outputs="0100" ypos="603" code="4" xpos="514" linewidth="1">cnt_addr_up_s</state>
+    <state pencolor="0" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 0&#xa;clr pm cnt = 0&#xa;pm checked = 0" finalstate="0" entry_actions="" moore_outputs="0000" ypos="604" code="5" xpos="678" linewidth="1">check_addr_end_s</state>
+    <state pencolor="0" exit_actions="" radius="40" description="en pm = 0&#xa;en pm cnt = 0 &#xa;clr pm cnt = 0&#xa;pm checked = 1" finalstate="0" entry_actions="" moore_outputs="0001" ypos="608" code="6" xpos="869" linewidth="1">pm_checked_s</state>
+    <state pencolor="0" exit_actions="" radius="40" description="en pm = 0&#xa;en pm cnt = 1&#xa;clr pm cnt = 0&#xa;pm checked = 0" finalstate="0" entry_actions="" moore_outputs="0100" ypos="402" code="7" xpos="1021" linewidth="1">cnt_one_up</state>
+    <state pencolor="0" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 1&#xa;clr pm cnt = 0&#xa;pm checked = 0" finalstate="0" entry_actions="" moore_outputs="0100" ypos="268" code="8" xpos="1044" linewidth="1">cnt_addr_IDONTKNOW</state>
+    <transition c1x="480.1652429970816" c2y="127.3183223335007" c1y="102.3217194598851" description="" straight="1" type="0" ypos="77.3251165862695" endx="500.3881340710302" xpos="470.0537974601072" endy="152.3149252071163" c2x="490.2766885340558">
+      <from>0</from>
+      <to>1</to>
+      <inputs default="0" any="0" invert="0">xx1xx</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="469.2079947673272" c2y="269.8746614339939" c1y="233.0313346415015" description="rxd_rec = x&#xa;tx pm = x&#xa;pm control changed = x&#xa;pm control = 1&#xa;" straight="1" type="0" ypos="196.1880078490092" endx="406.1880078490092" xpos="500.7179882264862" endy="306.7179882264862" c2x="437.6980013081682">
+      <from>1</from>
+      <to>2</to>
+      <inputs default="0" any="0" invert="0">xxx11</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="609.9918861058661" c2y="492.1563420296473" c1y="355.9102869951323" description="rxd_rec = x&#xa;tx pm = x&#xa;pm control changed = x&#xa;pm control = 01 &amp; 10&#xa;xxx01 or xxx10&#xa;" straight="0" type="0" ypos="205.6642319606173" endx="842.0930882401475" xpos="558.4412850387254" endy="578.4023970641623" c2x="706.5424871730067">
+      <from>1</from>
+      <to>6</to>
+      <inputs default="0" any="0" invert="0">xxx01</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="673.7270483586658" c2y="436.0176106496636" c1y="313.8409213051405" description="" straight="0" type="0" ypos="205.6642319606173" endx="859.2985749985467" xpos="558.4412850387254" endy="569.1942999941867" c2x="783.0128116786062">
+      <from>1</from>
+      <to>6</to>
+      <inputs default="0" any="0" invert="0">xxx10</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="761.8532627967323" c2y="410.856422381967" c1y="269.7603271712922" description="rxd_rec = x&#xa;tx pm = x&#xa;pm control changed = x&#xa;pm control = 00&#xa;" straight="0" type="0" ypos="205.6642319606173" endx="877.6772183127463" xpos="558.4412850387254" endy="568.9525175926419" c2x="823.2652405547393">
+      <from>1</from>
+      <to>6</to>
+      <inputs default="0" any="0" invert="0">xxx00</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="384.6645712965339" c2y="433.3323046854894" c1y="406.6646093709788" description="rxd_rec = 1&#xa;tx pm = x&#xa;pm control changed = x&#xa;pm control = xx&#xa;" straight="1" type="0" ypos="379.9969140564682" endx="385.0000017391304" xpos="384.4968560752357" endy="460.0000000000001" c2x="384.8322865178322">
+      <from>2</from>
+      <to>3</to>
+      <inputs default="0" any="0" invert="0">1xxxx</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="437.1150262416922" c2y="564.2851961562445" c1y="544.6217182541191" description="rxd_rec = 0&#xa;tx pm = x&#xa;pm control changed = x&#xa;pm control = xx&#xa;" straight="1" type="0" ypos="524.9582403519937" endx="478.828321338529" xpos="416.2583786932738" endy="583.9486740583699" c2x="457.9716737901106">
+      <from>3</from>
+      <to>4</to>
+      <inputs default="0" any="0" invert="0">0xxxx</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="449.7275444850465" c2y="526.2641424217784" c1y="398.9537482885371" description="rxd_rec = 1&#xa;tx pm = x&#xa;pm control changed = x&#xa;pm control = xx&#xa;" straight="1" type="0" ypos="473.0498456925727" endx="424.9661459855624" xpos="414.5582337565332" endy="498.3546504746049" c2x="502.0905411331271">
+      <from>3</from>
+      <to>3</to>
+      <inputs default="0" any="0" invert="0">1xxxx</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="582.006009929331" c2y="602.9150392382521" c1y="603.079468571613" description="rxd_rec = x&#xa;tx pm = 1&#xa;pm control changed = x&#xa;pm control = xx&#xa;" straight="1" type="0" ypos="603.243897904974" endx="638.0195169565169" xpos="553.9992564157379" endy="602.7506099048911" c2x="610.0127634429239">
+      <from>4</from>
+      <to>5</to>
+      <inputs default="0" any="1" invert="0">xxxxx</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="754.9941541299455" c2y="606.9458375650605" c1y="605.891675130121" description="rxd_rec = x&#xa;tx pm = 1&#xa;pm control changed = x&#xa;pm control = xx&#xa;" straight="1" type="0" ypos="604.8375126951815" endx="829" xpos="717.9912311949183" endy="608" c2x="791.9970770649728">
+      <from>5</from>
+      <to>6</to>
+      <inputs default="0" any="0" invert="0">x1xxx</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="550.1796686114727" c2y="516.7564290991278" c1y="816.4601901202761" description="rxd_rec = x&#xa;tx pm = 0&#xa;pm control changed = x&#xa;pm control = xx&#xa;" straight="0" type="0" ypos="641.9473319220206" endx="344" xpos="665.3508893593265" endy="340" c2x="118.4143896260731">
+      <from>5</from>
+      <to>2</to>
+      <inputs default="0" any="0" invert="0">x0xxx</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="895.162648204626" c2y="448.9739504696288" c1y="519.8937163546058" description="" straight="0" type="0" ypos="575.8134822395828" endx="986.9893941324856" xpos="892.7492752406962" endy="423.0541845846518" c2x="918.5760211685558">
+      <from>6</from>
+      <to>7</to>
+      <inputs default="0" any="0" invert="0">xxx01</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="952.215194228995" c2y="506.4804944413356" c1y="557.1469883404592" description="" straight="0" type="0" ypos="575.8134822395828" endx="1017.147032205592" xpos="892.7492752406962" endy="441.814000542212" c2x="999.6811132172936">
+      <from>6</from>
+      <to>7</to>
+      <inputs default="0" any="0" invert="0">xxx10</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="1035.705903389063" c2y="326.4842393137499" c1y="345.433610721475" description="" straight="1" type="0" ypos="364.3829821292002" endx="1037.917712629842" xpos="1034.599998768674" endy="307.5348679060247" c2x="1036.811808009453">
+      <from>7</from>
+      <to>8</to>
+      <inputs default="0" any="1" invert="0">xxxxx</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="880.9145178327179" c2y="85.19095951099229" c1y="211.3560655837417" description="rxd_rec = x&#xa;tx pm = 1&#xa;pm control changed = x&#xa;pm control = 01&#xa;" straight="0" type="0" ypos="276.4533117011015" endx="471.8821794200633" xpos="1004.903433382405" endy="61.93214004461052" c2x="626.8077817030937">
+      <from>8</from>
+      <to>0</to>
+      <inputs default="0" any="0" invert="0">x1x01</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="898.3217348861526" c2y="37.83876911342691" c1y="160.7429281447807" description="rxd_rec = x&#xa;tx pm = x&#xa;pm control changed =1&#xa;pm control = xx&#xa;" straight="0" type="0" ypos="242.5247421201483" endx="458.9069117598525" xpos="1013.161529934916" endy="35.40239706416225" c2x="610.2273216623249">
+      <from>8</from>
+      <to>0</to>
+      <inputs default="0" any="0" invert="0">xx1xx</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="1096.954251117522" c2y="280.9306164497797" c1y="160.3159840617818" description="" straight="1" type="0" ypos="237.8969322117249" endx="1083.527630812908" xpos="1070.340184314741" endy="261.8708563144227" c2x="1163.301295710603">
+      <from>8</from>
+      <to>8</to>
+      <inputs default="0" any="1" invert="0">xxxxx</inputs>
+      <outputs></outputs>
+    </transition>
   </machine>
 </qfsmproject>
