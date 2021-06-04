@@ -29,18 +29,18 @@ ARCHITECTURE structure OF noise_generator IS
       noise_o : OUT std_ulogic;
       eoc_o   : OUT std_ulogic);
   END COMPONENT config_noise_generator;
+  
+  CONSTANT idx_4bit  : natural := 0;
+  CONSTANT idx_7bit  : natural := 1;
+  CONSTANT idx_15bit : natural := 2;
+  CONSTANT idx_17bit : natural := 3;
+  CONSTANT idx_20bit : natural := 4;
+  CONSTANT idx_23bit : natural := 5;
 
-  SIGNAL en_pi  : std_ulogic;
+  SIGNAL en  : std_ulogic;
   SIGNAL ens    : std_ulogic_vector(5 DOWNTO 0);
-  SIGNAL clk_i  : std_ulogic;
-  SIGNAL rst_ni : std_ulogic;
-
-  SIGNAL idx_4bit  : natural := 0;
-  SIGNAL idx_7bit  : natural := 1;
-  SIGNAL idx_15bit : natural := 2;
-  SIGNAL idx_17bit : natural := 3;
-  SIGNAL idx_20bit : natural := 4;
-  SIGNAL idx_23bit : natural := 5;
+  SIGNAL clk  : std_ulogic;
+  SIGNAL rst : std_ulogic;
 
   SIGNAL prbs4_o  : std_ulogic_vector(3 DOWNTO 0);
   SIGNAL prbs7_o  : std_ulogic_vector(6 DOWNTO 0);
@@ -48,13 +48,14 @@ ARCHITECTURE structure OF noise_generator IS
   SIGNAL prbs17_o : std_ulogic_vector(16 DOWNTO 0);
   SIGNAL prbs20_o : std_ulogic_vector(19 DOWNTO 0);
   SIGNAL prbs23_o : std_ulogic_vector(22 DOWNTO 0);
-  SIGNAL prbs_o   : std_ulogic_vector(22 DOWNTO 0);
+  SIGNAL prbs_us : unsigned(22 DOWNTO 0); -- for resize to work temporary signal
+  SIGNAL prbs   : std_ulogic_vector(22 DOWNTO 0);
 
   SIGNAL noises  : std_ulogic_vector (5 DOWNTO 0);
-  SIGNAL noise_o : std_ulogic;
+  SIGNAL noise : std_ulogic;
 
   SIGNAL eocs  : std_ulogic_vector(5 DOWNTO 0);
-  SIGNAL eoc_o : std_ulogic;
+  SIGNAL eoc : std_ulogic;
 
 BEGIN
 
@@ -65,8 +66,8 @@ BEGIN
       tap_low     => 3)
     PORT MAP (
       en_pi   => ens(idx_4bit),
-      clk_i   => clk_i,
-      rst_ni  => rst_ni,
+      clk_i   => clk,
+      rst_ni  => rst,
       prbs_o  => prbs4_o,
       noise_o => noises(idx_4bit),
       eoc_o   => eocs(idx_4bit));
@@ -78,8 +79,8 @@ BEGIN
       tap_low     => 6)
     PORT MAP (
       en_pi   => ens(idx_7bit),
-      clk_i   => clk_i,
-      rst_ni  => rst_ni,
+      clk_i   => clk,
+      rst_ni  => rst,
       prbs_o  => prbs7_o,
       noise_o => noises(idx_7bit),
       eoc_o   => eocs(idx_7bit));
@@ -91,8 +92,8 @@ BEGIN
       tap_low     => 14)
     PORT MAP (
       en_pi   => ens(idx_15bit),
-      clk_i   => clk_i,
-      rst_ni  => rst_ni,
+      clk_i   => clk,
+      rst_ni  => rst,
       prbs_o  => prbs15_o,
       noise_o => noises(idx_15bit),
       eoc_o   => eocs(idx_15bit));
@@ -104,8 +105,8 @@ BEGIN
       tap_low     => 14)
     PORT MAP (
       en_pi   => ens(idx_17bit),
-      clk_i   => clk_i,
-      rst_ni  => rst_ni,
+      clk_i   => clk,
+      rst_ni  => rst,
       prbs_o  => prbs17_o,
       noise_o => noises(idx_17bit),
       eoc_o   => eocs(idx_17bit));
@@ -117,8 +118,8 @@ BEGIN
       tap_low     => 17)                -- also available with 3
     PORT MAP (
       en_pi   => ens(idx_20bit),
-      clk_i   => clk_i,
-      rst_ni  => rst_ni,
+      clk_i   => clk,
+      rst_ni  => rst,
       prbs_o  => prbs20_o,
       noise_o => noises(idx_20bit),
       eoc_o   => eocs(idx_20bit));
@@ -130,8 +131,8 @@ BEGIN
       tap_low     => 18)
     PORT MAP (
       en_pi   => ens(idx_23bit),
-      clk_i   => clk_i,
-      rst_ni  => rst_ni,
+      clk_i   => clk,
+      rst_ni  => rst,
       prbs_o  => prbs23_o,
       noise_o => noises(idx_23bit),
       eoc_o   => eocs(idx_23bit));
@@ -140,51 +141,51 @@ BEGIN
   BEGIN
     CASE noise_prbsg_length_i IS
       WHEN "00000000" =>
-        prbs_o  <= resize(prbs4_o, prbs_o'length);
-        noise_o <= noises(idx_4bit);
-        eoc_o   <= eocs(idx_4bit);
-        en_pi   <= ens(idx_4bit);
+      prbs_us  <= resize(unsigned(prbs4_o), prbs_o'length);
+        noise <= noises(idx_4bit);
+        eoc   <= eocs(idx_4bit);
+        ens <= (idx_4bit => en, OTHERS => '0');
       WHEN "00000001" =>
-        prbs_o  <= resize(prbs7_o, prbs_o'length);
-        noise_o <= noises(idx_7bit);
-        eoc_o   <= eocs(idx_7bit);
-        en_pi   <= ens(idx_7bit);
+      prbs_us  <= resize(unsigned(prbs7_o), prbs_o'length);
+        noise <= noises(idx_7bit);
+        eoc   <= eocs(idx_7bit);
+        ens <= (idx_7bit => en, OTHERS => '0');
       WHEN "00000010" =>
-        prbs_o  <= resize(prbs15_o, prbs_o'length);
-        noise_o <= noises(idx_15bit);
-        eoc_o   <= eocs(idx_15bit);
-        en_pi   <= ens(idx_15bit);
+      prbs_us  <= resize(unsigned(prbs15_o), prbs_o'length);
+        noise <= noises(idx_15bit);
+        eoc   <= eocs(idx_15bit);
+        ens <= (idx_15bit => en, OTHERS => '0');
       WHEN "00000011" =>
-        prbs_o  <= resize(prbs17_o, prbs_o'length);
-        noise_o <= noises(idx_17bit);
-        eoc_o   <= eocs(idx_17bit);
-        en_pi   <= ens(idx_17bit);
+      prbs_us  <= resize(unsigned(prbs17_o), prbs_o'length);
+        noise <= noises(idx_17bit);
+        eoc   <= eocs(idx_17bit);
+        ens <= (idx_17bit => en, OTHERS => '0');
       WHEN "00000100" =>
-        prbs_o  <= resize(prbs20_o, prbs_o'length);
-        noise_o <= noises(4idx_20bit);
-        eoc_o   <= eocs(idx_20bit);
-        en_pi   <= ens(idx_20bit);
+      prbs_us  <= resize(unsigned(prbs20_o), prbs_o'length);
+        noise <= noises(idx_20bit);
+        eoc   <= eocs(idx_20bit);
+        ens <= (idx_20bit => en, OTHERS => '0');
       WHEN "00000101" =>
-        prbs_o  <= resize(prbs23_o, prbs_o'length);
-        noise_o <= noises(idx_23bit);
-        eoc_o   <= eocs(idx_23bit);
-        en_pi   <= ens(idx_23bit);
+        prbs_us  <= resize(unsigned(prbs23_o), prbs_o'length);
+        noise <= noises(idx_23bit);
+        eoc   <= eocs(idx_23bit);
+        ens <= (idx_23bit => en, OTHERS => '0');
       WHEN OTHERS =>
-        prbs_o  <= (OTHERS => 0);
-        noise_o <= '0';
-        eoc_o   <= '0';
-        en_pi   <= '0';
+        prbs_us  <= (OTHERS => '0');
+        noise <= '0';
+        eoc   <= '0';
+        ens   <= (OTHERS => '0');
     END CASE;
   END PROCESS switch;
 
 
 
-  clk_i   <= clk_i;
-  rst_ni  <= rst_ni;
-  prbs_o  <= prbs_o;
-  noise_o <= noise_o;
-  eoc_o   <= eoc_o;
-  en_pi   <= en_pi;
+  clk   <= clk_i;
+  rst  <= rst_ni;
+  en  <= en_pi;
+  prbs_o  <= std_ulogic_vector(prbs_us);
+  noise_o <= noise;
+  eoc_o   <= eoc;
 
 
 END ARCHITECTURE structure;
