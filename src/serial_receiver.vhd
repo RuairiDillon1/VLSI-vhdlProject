@@ -23,6 +23,13 @@ end entity serial_receiver;
 architecture structure of serial_receiver is
     
 begin
-    
+
+  addr_register : regfile_addr_o <= zero WHEN rst_ni = '0' ELSE
+    rxd_data_i WHEN rising_edge(clk_i) AND (en_pi = '1');
+
+
+ data__register : regfile_data_o <= zero WHEN rst_ni = '0' ELSE
+    rxd_data_i WHEN rising_edge(clk_i) AND (en_pi = '1');
+
     
 end architecture structure;
