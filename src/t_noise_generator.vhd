@@ -81,18 +81,30 @@ stimuli_p : PROCESS
   
 BEGIN
   
+  noise_prbsg_length_i <= (OTHERS => '0'); 
+  en_pi <= '1';
   WAIT UNTIL rst_ni = '1';            -- wait until asynchronous reset ...
                                        -- ... is deactivated
-  en_pi <= '1';
-  noise_prbsg_length_i <= (OTHERS => '0');
+
+  WAIT FOR 20*period; -- 4 bit
+
+  noise_prbsg_length_i <= "00000001"; -- 7 bit
+  WAIT FOR 20*period;
+
+  noise_prbsg_length_i <= "00000010"; -- 15 bit
+  WAIT FOR 20*period;
+  
+  noise_prbsg_length_i <= "00000011"; -- 17 bit
+  WAIT FOR 20*period;
+
+  noise_prbsg_length_i <= "00000100"; -- 20 bit
   WAIT FOR 30*period;
 
+  noise_prbsg_length_i <= "00000101"; -- 23 bit
+  WAIT FOR 30*period;
 
-
-  -- add your stimuli here ...
-  
-  
-  
+  noise_prbsg_length_i <= "10000000"; -- invalid
+  WAIT FOR 20*period;
   
   clken_p <= false;                   -- switch clock generator off
   

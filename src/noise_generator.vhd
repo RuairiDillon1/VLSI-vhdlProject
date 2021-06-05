@@ -29,7 +29,7 @@ ARCHITECTURE structure OF noise_generator IS
       noise_o : OUT std_ulogic;
       eoc_o   : OUT std_ulogic);
   END COMPONENT config_noise_generator;
-  
+
   CONSTANT idx_4bit  : natural := 0;
   CONSTANT idx_7bit  : natural := 1;
   CONSTANT idx_15bit : natural := 2;
@@ -38,8 +38,8 @@ ARCHITECTURE structure OF noise_generator IS
   CONSTANT idx_23bit : natural := 5;
 
   SIGNAL en  : std_ulogic;
-  SIGNAL ens    : std_ulogic_vector(5 DOWNTO 0);
-  SIGNAL clk  : std_ulogic;
+  SIGNAL ens : std_ulogic_vector(5 DOWNTO 0);
+  SIGNAL clk : std_ulogic;
   SIGNAL rst : std_ulogic;
 
   SIGNAL prbs4_o  : std_ulogic_vector(3 DOWNTO 0);
@@ -48,14 +48,13 @@ ARCHITECTURE structure OF noise_generator IS
   SIGNAL prbs17_o : std_ulogic_vector(16 DOWNTO 0);
   SIGNAL prbs20_o : std_ulogic_vector(19 DOWNTO 0);
   SIGNAL prbs23_o : std_ulogic_vector(22 DOWNTO 0);
-  SIGNAL prbs_us : unsigned(22 DOWNTO 0); -- for resize to work temporary signal
-  SIGNAL prbs   : std_ulogic_vector(22 DOWNTO 0);
+  SIGNAL prbs_us  : unsigned(22 DOWNTO 0);  -- for resize to work temporary signal
 
-  SIGNAL noises  : std_ulogic_vector (5 DOWNTO 0);
-  SIGNAL noise : std_ulogic;
+  SIGNAL noises : std_ulogic_vector (5 DOWNTO 0);
+  SIGNAL noise  : std_ulogic;
 
-  SIGNAL eocs  : std_ulogic_vector(5 DOWNTO 0);
-  SIGNAL eoc : std_ulogic;
+  SIGNAL eocs : std_ulogic_vector(5 DOWNTO 0);
+  SIGNAL eoc  : std_ulogic;
 
 BEGIN
 
@@ -137,55 +136,55 @@ BEGIN
       noise_o => noises(idx_23bit),
       eoc_o   => eocs(idx_23bit));
 
-  switch : PROCESS(noise_prbsg_length_i)
+  -- every time there is a change in signals in the process sensitivity list, all
+  -- of the sequential statements in the process are re-evaluated
+  switch : PROCESS(noise_prbsg_length_i, en, 
+                   prbs4_o, prbs7_o, prbs15_o, prbs17_o, prbs20_o, prbs23_o)
   BEGIN
     CASE noise_prbsg_length_i IS
       WHEN "00000000" =>
-      prbs_us  <= resize(unsigned(prbs4_o), prbs_o'length);
-        noise <= noises(idx_4bit);
-        eoc   <= eocs(idx_4bit);
-        ens <= (idx_4bit => en, OTHERS => '0');
+        prbs_us <= resize(unsigned(prbs4_o), prbs_o'length);
+        noise   <= noises(idx_4bit);
+        eoc     <= eocs(idx_4bit);
+        ens     <= (idx_4bit => en, OTHERS => '0');
       WHEN "00000001" =>
-      prbs_us  <= resize(unsigned(prbs7_o), prbs_o'length);
-        noise <= noises(idx_7bit);
-        eoc   <= eocs(idx_7bit);
-        ens <= (idx_7bit => en, OTHERS => '0');
+        prbs_us <= resize(unsigned(prbs7_o), prbs_o'length);
+        noise   <= noises(idx_7bit);
+        eoc     <= eocs(idx_7bit);
+        ens     <= (idx_7bit => en, OTHERS => '0');
       WHEN "00000010" =>
-      prbs_us  <= resize(unsigned(prbs15_o), prbs_o'length);
-        noise <= noises(idx_15bit);
-        eoc   <= eocs(idx_15bit);
-        ens <= (idx_15bit => en, OTHERS => '0');
+        prbs_us <= resize(unsigned(prbs15_o), prbs_o'length);
+        noise   <= noises(idx_15bit);
+        eoc     <= eocs(idx_15bit);
+        ens     <= (idx_15bit => en, OTHERS => '0');
       WHEN "00000011" =>
-      prbs_us  <= resize(unsigned(prbs17_o), prbs_o'length);
-        noise <= noises(idx_17bit);
-        eoc   <= eocs(idx_17bit);
-        ens <= (idx_17bit => en, OTHERS => '0');
+        prbs_us <= resize(unsigned(prbs17_o), prbs_o'length);
+        noise   <= noises(idx_17bit);
+        eoc     <= eocs(idx_17bit);
+        ens     <= (idx_17bit => en, OTHERS => '0');
       WHEN "00000100" =>
-      prbs_us  <= resize(unsigned(prbs20_o), prbs_o'length);
-        noise <= noises(idx_20bit);
-        eoc   <= eocs(idx_20bit);
-        ens <= (idx_20bit => en, OTHERS => '0');
+        prbs_us <= resize(unsigned(prbs20_o), prbs_o'length);
+        noise   <= noises(idx_20bit);
+        eoc     <= eocs(idx_20bit);
+        ens     <= (idx_20bit => en, OTHERS => '0');
       WHEN "00000101" =>
-        prbs_us  <= resize(unsigned(prbs23_o), prbs_o'length);
-        noise <= noises(idx_23bit);
-        eoc   <= eocs(idx_23bit);
-        ens <= (idx_23bit => en, OTHERS => '0');
+        prbs_us <= resize(unsigned(prbs23_o), prbs_o'length);
+        noise   <= noises(idx_23bit);
+        eoc     <= eocs(idx_23bit);
+        ens     <= (idx_23bit => en, OTHERS => '0');
       WHEN OTHERS =>
-        prbs_us  <= (OTHERS => '0');
-        noise <= '0';
-        eoc   <= '0';
-        ens   <= (OTHERS => '0');
+        prbs_us <= (OTHERS => '0');
+        noise   <= '0';
+        eoc     <= '0';
+        ens     <= (OTHERS => '0');
     END CASE;
   END PROCESS switch;
 
-
-
-  clk   <= clk_i;
-  rst  <= rst_ni;
-  en  <= en_pi;
+  clk     <= clk_i;
+  rst     <= rst_ni;
+  en      <= en_pi;
   prbs_o  <= std_ulogic_vector(prbs_us);
   noise_o <= noise;
   eoc_o   <= eoc;
-
 
 END ARCHITECTURE structure;
