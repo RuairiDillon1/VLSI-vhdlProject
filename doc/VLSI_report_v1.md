@@ -28,7 +28,7 @@
 - [x] serial_rx how to integrate synchronous high active reset
 - [x] synchroniser for the 'sync_serial' mod - two flipflops ?
 - [ ] QFSM gives out crazy code for state machine, can it be neatened?
-- [ ] 
+- [ ] noise control behaviour of external trigger is this another mode?
 
 
 
