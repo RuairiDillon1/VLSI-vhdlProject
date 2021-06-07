@@ -15,12 +15,12 @@ USE IEEE.numeric_std.ALL;
 ENTITY freq_control IS
 
 
-    PORT (clk_i : IN std_ulogic;
-        rst_ni         : IN  std_ulogic;
-        en_pi          : IN  std_ulogic;
-        count_o        : OUT std_ulogic_vector(7 DOWNTO 0);
-        freq_o           : OUT std_ulogic;
-        period_i : IN std_ulogic_vector(7 DOWNTO 0);
+  PORT (clk_i    : IN  std_ulogic;
+        rst_ni   : IN  std_ulogic;
+        en_pi    : IN  std_ulogic;
+        count_o  : OUT std_ulogic_vector(7 DOWNTO 0);
+        freq_o   : OUT std_ulogic;
+        period_i : IN  std_ulogic_vector(7 DOWNTO 0)
         );
 END freq_control;
 
@@ -37,7 +37,7 @@ BEGIN
                                    current_state - 1;
 
   state_register : current_state <= zero WHEN rst_ni = '0' ELSE
-    next_state WHEN rising_edge(clk_i) AND (en_pi = '1');
+                                    next_state WHEN rising_edge(clk_i) AND (en_pi = '1');
 
   counter_output : count_o <= std_ulogic_vector(current_state);
 
