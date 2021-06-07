@@ -9,6 +9,7 @@ ENTITY pattern_generator IS
     clk_i  : IN std_ulogic;
 
     tc_addr_cnt_i : IN std_ulogic;
+    addr_cnt_i : IN std_ulogic_vector(7 downto 0);
 
     pattern_length_i  : IN std_ulogic_vector(7 DOWNTO 0);  -- amount of numbers in pattern memory
     pattern_control_i : IN std_ulogic_vector(1 DOWNTO 0);  -- from register
@@ -71,8 +72,6 @@ ARCHITECTURE structure OF pattern_generator IS
   SIGNAL pm_control_changed : std_ulogic;
   SIGNAL en_pm              : std_ulogic;
 
-  SIGNAL addr     : std_ulogic_vector(addr_width - 1 DOWNTO 0);
-
 BEGIN
 
   state_machine : pattern_generator_fsm
@@ -96,7 +95,7 @@ BEGIN
     PORT MAP (
       clk_i  => clk,
       we_i   => en_pm,   
-      addr_i => addr,
+      addr_i => addr_cnt_i,
       d_i    => rxd_data_i,
       q_o    => pm_out);
 
