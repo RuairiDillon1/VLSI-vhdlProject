@@ -8,7 +8,7 @@ ENTITY pattern_generator IS
     rst_ni : IN std_ulogic;
     clk_i  : IN std_ulogic;
 
-    tc_addr_cnt_i : IN std_ulogic;
+    tc_addr_cnt_i : IN std_ulogic; -- addr counter
     addr_cnt_i : IN std_ulogic_vector(7 downto 0);
 
     pattern_length_i  : IN std_ulogic_vector(7 DOWNTO 0);  -- amount of numbers in pattern memory
@@ -23,11 +23,13 @@ ENTITY pattern_generator IS
     rxd_data_i  : IN std_ulogic_vector(7 DOWNTO 0);  -- uart data
 
     pm_control_changed_i : IN  std_ulogic;  -- communication between state machines
-    pm_checked_o         : OUT std_ulogic;  -- communication between state machines
+    pm_checked_o         : OUT std_ulogic;  
 
-    pattern_o : OUT std_ulogic_vector(7 DOWNTO 0);
-    en_pm_count_o : OUT std_ulogic;
-    clr_pm_cnt_o : OUT std_ulogic;
+    
+    en_addr_cnt_o : OUT std_ulogic; -- addr counter
+    clr_addr_cnt_o : OUT std_ulogic;
+
+    pattern_o : OUT std_ulogic_vector(7 DOWNTO 0)
     );
 END ENTITY pattern_generator;
 
@@ -84,8 +86,8 @@ BEGIN
       pm_control_changed => pm_control_changed_i,
       pm_control         => pm_control,
       en_pm              => en_pm,
-      en_pm_cnt          => en_pm_count_o,
-      clr_pm_cnt         => clr_pm_cnt_o,
+      en_pm_cnt          => en_addr_cnt_o,
+      clr_pm_cnt         => clr_addr_cnt_o,
       pm_checked         => pm_checked_o);
 
   pattern_memory : sp_ssram

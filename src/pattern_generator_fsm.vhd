@@ -21,6 +21,7 @@ USE IEEE.std_logic_1164.ALL;
 
 ENTITY pattern_generator_fsm IS
   PORT (clk: IN std_ulogic;
+        sen_p: IN std_ulogic;
         rst_n: IN std_ulogic;
         rxd_rec: IN std_ulogic;
         tc_pm: IN std_ulogic;
@@ -38,12 +39,14 @@ TYPE state_type IS (wait_for_pm_change_s, clr_addr_cmt, wait_for_pm_data_s, fetc
 SIGNAL next_state, current_state : state_type;
 
 BEGIN
-  state_register: PROCESS (rst_n, clk)
+  state_register: PROCESS (rst_n, sen_p, clk)
   BEGIN
     IF rst_n='0' THEN
       current_state <= wait_for_pm_change_s;
     ELSIF rising_edge(clk) THEN
-      current_state <= next_state;
+      IF sen_p='1' THEN
+        current_state <= next_state;
+      END IF;
     END IF;
   END PROCESS;
 
