@@ -8,6 +8,8 @@ ENTITY pattern_generator IS
     rst_ni : IN std_ulogic;
     clk_i  : IN std_ulogic;
 
+    tc_addr_cnt_i : IN std_ulogic;
+
     pattern_length_i  : IN std_ulogic_vector(7 DOWNTO 0);  -- amount of numbers in pattern memory
     pattern_control_i : IN std_ulogic_vector(1 DOWNTO 0);  -- from register
                                                            -- file; bit 2 is
@@ -22,7 +24,9 @@ ENTITY pattern_generator IS
     pm_control_changed_i : IN  std_ulogic;  -- communication between state machines
     pm_checked_o         : OUT std_ulogic;  -- communication between state machines
 
-    pattern_o : OUT std_ulogic_vector(7 DOWNTO 0)
+    pattern_o : OUT std_ulogic_vector(7 DOWNTO 0);
+    en_pm_count_o : OUT std_ulogic;
+    clr_pm_cnt_o : OUT std_ulogic;
     );
 END ENTITY pattern_generator;
 
@@ -32,6 +36,7 @@ ARCHITECTURE structure OF pattern_generator IS
     PORT (
       clk                : IN  std_ulogic;
       rst_n              : IN  std_ulogic;
+      sen_p              : IN  std_ulogic;
       rxd_rec            : IN  std_ulogic;
       tc_pm              : IN  std_ulogic;
       pm_control_changed : IN  std_ulogic;
@@ -41,17 +46,6 @@ ARCHITECTURE structure OF pattern_generator IS
       clr_pm_cnt         : OUT std_ulogic;
       pm_checked         : OUT std_ulogic);
   END COMPONENT pattern_generator_fsm;
-
-  COMPONENT cntup_addr IS
-    PORT (
-      clk_i  : IN  std_ulogic;
-      clr_i  : IN  std_ulogic;
-      rst_ni : IN  std_ulogic;
-      en_pi  : IN  std_ulogic;
-      len_i  : IN  std_ulogic_vector(7 DOWNTO 0);
-      q_o    : OUT std_ulogic_vector(7 DOWNTO 0);
-      tc_o   : OUT std_ulogic);
-  END COMPONENT cntup_addr;
 
   COMPONENT sp_ssram IS
     GENERIC (
@@ -76,10 +70,7 @@ ARCHITECTURE structure OF pattern_generator IS
   SIGNAL pm_out             : std_ulogic_vector(data_width - 1 DOWNTO 0);
   SIGNAL pm_control_changed : std_ulogic;
   SIGNAL en_pm              : std_ulogic;
-  SIGNAL en_pm_cnt          : std_ulogic;
-  SIGNAL clr_pm_cnt         : std_ulogic;
 
-  SIGNAL tc_cntup : std_ulogic;
   SIGNAL addr     : std_ulogic_vector(addr_width - 1 DOWNTO 0);
 
 BEGIN
@@ -88,24 +79,15 @@ BEGIN
     PORT MAP (
       clk                => clk,
       rst_n              => rst,
+      sen_p              => en_pi,
       rxd_rec            => rxd_valid_i,
-      tc_pm              => tc_cntup,
+      tc_pm              => tc_addr_cnt_i,
       pm_control_changed => pm_control_changed_i,
       pm_control         => pm_control,
       en_pm              => en_pm,
-      en_pm_cnt          => en_pm_cnt,
-      clr_pm_cnt         => clr_pm_cnt,
+      en_pm_cnt          => en_pm_count_o,
+      clr_pm_cnt         => clr_pm_cnt_o,
       pm_checked         => pm_checked_o);
-
-  address_upcounter : cntup_addr
-    PORT MAP (
-      clk_i  => clk,
-      clr_i  => clr_pm_cnt,
-      rst_ni => rst,
-      en_pi  => en_pm_cnt,              -- external trigger ?
-      len_i  => pattern_length_i,
-      q_o    => addr,
-      tc_o   => tc_cntup);
 
   pattern_memory : sp_ssram
     GENERIC MAP (
@@ -113,7 +95,7 @@ BEGIN
       data_width => data_width)
     PORT MAP (
       clk_i  => clk,
-      we_i   => en_pm,                  -- external trigger ?
+      we_i   => en_pm,   
       addr_i => addr,
       d_i    => rxd_data_i,
       q_o    => pm_out);
