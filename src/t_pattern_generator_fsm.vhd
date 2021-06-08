@@ -98,7 +98,8 @@ BEGIN
 
   -- add your stimuli here ...
   
-  
+  -- test when new data arrives - need signal that data is valid etc (difficult)
+  -- two things arrive sequentially, addr and data - which is which
   
   
   clken_p <= false;                   -- switch clock generator off
