@@ -27,8 +27,9 @@
 - [x] PWM generator - issues with period/frequency when they equal one another.
 - [x] serial_rx how to integrate synchronous high active reset
 - [x] synchroniser for the 'sync_serial' mod - two flipflops ?
-- [ ] QFSM gives out crazy code for state machine, can it be neatened?
+- [x] QFSM gives out crazy code for state machine, can it be neatened?
 - [ ] noise control behaviour of external trigger is this another mode?
+- [ ] PWM - concept of split up freq control and generator
 
 
 
