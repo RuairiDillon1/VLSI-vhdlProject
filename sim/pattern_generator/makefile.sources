@@ -13,6 +13,8 @@
 SYN_SOURCE_FILES = \
 ../../src/pattern_generator.vhd \
 ../../src/cntup_addr.vhd \
+../../src/pattern_generator_fsm.vhd \
+../../src/sp_ssram_rtl.vhd \
 
 # do not delete this line
 # -----------------------------------------------------------------------------

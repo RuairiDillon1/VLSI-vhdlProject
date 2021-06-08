@@ -6,14 +6,14 @@
 -- Inputs:   rxd_rec   tc_pm   pm_control_changed   pm_control[1]   pm_control[0]
 -- State/Output         en_pm en_pm_cnt clr_pm_cnt pm_checked
 -- wait_for_pm_change_s 0     0         0          0          
--- clr_addr_cmt         0     0         1          0          
+-- clr_wait_addr_cnt    0     0         1          0          
 -- wait_for_pm_data_s   0     0         0          0          
 -- fetch_pm_data_s      1     0         0          0          
 -- cnt_addr_up_s        0     1         0          0          
 -- check_addr_end_s     0     0         0          0          
 -- pm_checked_s         0     0         0          1          
 -- cnt_one_up           0     1         0          0          
--- cnt_addr_s           0     1         0          0          
+-- cnt_addr_free_s      0     1         0          0          
 
 LIBRARY IEEE;
 
@@ -34,7 +34,7 @@ END pattern_generator_fsm;
 
 ARCHITECTURE behave OF pattern_generator_fsm IS
 
-TYPE state_type IS (wait_for_pm_change_s, clr_addr_cmt, wait_for_pm_data_s, fetch_pm_data_s, cnt_addr_up_s, check_addr_end_s, pm_checked_s, cnt_one_up, cnt_addr_s);
+TYPE state_type IS (wait_for_pm_change_s, clr_wait_addr_cnt, wait_for_pm_data_s, fetch_pm_data_s, cnt_addr_up_s, check_addr_end_s, pm_checked_s, cnt_one_up, cnt_addr_free_s);
 SIGNAL next_state, current_state : state_type;
 
 BEGIN
@@ -54,23 +54,14 @@ BEGIN
     temp_input := rxd_rec & tc_pm & pm_control_changed & pm_control(1) & pm_control(0);
     CASE current_state IS
       WHEN wait_for_pm_change_s => temp_output := "0000";
-        IF temp_input="00100" or temp_input="10100" or temp_input="01100" or temp_input="00110" or temp_input="00101" or temp_input="11100" or temp_input="10110" or temp_input="10101" or temp_input="01110" or temp_input="01101" or temp_input="00111" or temp_input="11110" or temp_input="11101" or temp_input="10111" or temp_input="01111" or temp_input="11111" THEN
-          next_state <= clr_addr_cmt;
-        ELSIF temp_input="00000" or temp_input="10000" or temp_input="01000" or temp_input="00010" or temp_input="00001" or temp_input="11000" or temp_input="10010" or temp_input="10001" or temp_input="01010" or temp_input="01001" or temp_input="00011" or temp_input="11010" or temp_input="11001" or temp_input="10011" or temp_input="01011" or temp_input="11011" THEN
-          next_state <= wait_for_pm_change_s;
-        ELSE
-          next_state <= current_state;
-        END IF;
-      WHEN clr_addr_cmt => temp_output := "0010";
-        IF temp_input="00011" or temp_input="10011" or temp_input="01011" or temp_input="00111" or temp_input="11011" or temp_input="10111" or temp_input="01111" or temp_input="11111" THEN
+        IF temp_input="00111" or temp_input="10111" or temp_input="01111" or temp_input="11111" THEN
           next_state <= wait_for_pm_data_s;
-        ELSIF temp_input="00001" or temp_input="10001" or temp_input="01001" or temp_input="00101" or temp_input="11001" or temp_input="10101" or temp_input="01101" or temp_input="11101" or temp_input="00010" or temp_input="10010" or temp_input="01010" or temp_input="00110" or temp_input="11010" or temp_input="10110" or temp_input="01110" or temp_input="11110" THEN
+        ELSIF temp_input="00101" or temp_input="10101" or temp_input="01101" or temp_input="11101" or temp_input="00110" or temp_input="10110" or temp_input="01110" or temp_input="11110" or temp_input="00100" or temp_input="10100" or temp_input="01100" or temp_input="11100" THEN
           next_state <= pm_checked_s;
-        ELSIF temp_input="00000" or temp_input="10000" or temp_input="01000" or temp_input="00100" or temp_input="11000" or temp_input="10100" or temp_input="01100" or temp_input="11100" THEN
-          next_state <= pm_checked_s;
-        ELSE
-          next_state <= current_state;
+        ELSE           next_state <= wait_for_pm_change_s;
         END IF;
+      WHEN clr_wait_addr_cnt => temp_output := "0010";
+          next_state <= wait_for_pm_change_s;
       WHEN wait_for_pm_data_s => temp_output := "0000";
         IF temp_input="10000" or temp_input="11000" or temp_input="10100" or temp_input="10010" or temp_input="10001" or temp_input="11100" or temp_input="11010" or temp_input="11001" or temp_input="10110" or temp_input="10101" or temp_input="10011" or temp_input="11110" or temp_input="11101" or temp_input="11011" or temp_input="10111" or temp_input="11111" THEN
           next_state <= fetch_pm_data_s;
@@ -99,18 +90,18 @@ BEGIN
         END IF;
       WHEN pm_checked_s => temp_output := "0001";
         IF temp_input="00011" or temp_input="10011" or temp_input="01011" or temp_input="00111" or temp_input="11011" or temp_input="10111" or temp_input="01111" or temp_input="11111" or temp_input="00000" or temp_input="10000" or temp_input="01000" or temp_input="00100" or temp_input="11000" or temp_input="10100" or temp_input="01100" or temp_input="11100" THEN
-          next_state <= wait_for_pm_change_s;
+          next_state <= clr_wait_addr_cnt;
         ELSIF temp_input="00010" or temp_input="10010" or temp_input="01010" or temp_input="00110" or temp_input="11010" or temp_input="10110" or temp_input="01110" or temp_input="11110" or temp_input="00001" or temp_input="10001" or temp_input="01001" or temp_input="00101" or temp_input="11001" or temp_input="10101" or temp_input="01101" or temp_input="11101" THEN
           next_state <= cnt_one_up;
         ELSE
           next_state <= current_state;
         END IF;
       WHEN cnt_one_up => temp_output := "0100";
-          next_state <= cnt_addr_s;
-      WHEN cnt_addr_s => temp_output := "0100";
+          next_state <= cnt_addr_free_s;
+      WHEN cnt_addr_free_s => temp_output := "0100";
         IF temp_input="00100" or temp_input="10100" or temp_input="01100" or temp_input="00110" or temp_input="00101" or temp_input="11100" or temp_input="10110" or temp_input="10101" or temp_input="01110" or temp_input="01101" or temp_input="00111" or temp_input="11110" or temp_input="11101" or temp_input="10111" or temp_input="01111" or temp_input="11111" or temp_input="01001" or temp_input="11001" THEN
-          next_state <= wait_for_pm_change_s;
-        ELSE           next_state <= cnt_addr_s;
+          next_state <= clr_wait_addr_cnt;
+        ELSE           next_state <= cnt_addr_free_s;
         END IF;
       WHEN OTHERS => temp_output := (OTHERS =>'X');
       next_state <= wait_for_pm_change_s;
