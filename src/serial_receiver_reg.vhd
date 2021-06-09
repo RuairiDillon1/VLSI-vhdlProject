@@ -10,7 +10,7 @@ entity serial_receiver_reg is
         en_data_reg_i : in std_ulogic;
         rxd_data_i : in std_ulogic_vector(7 downto 0); -- uart data
         regfile_addr_o : out std_ulogic_vector(3 downto 0);
-        regfile_data_o : out std_ulogic_vector(7 downto 0);
+        regfile_data_o : out std_ulogic_vector(7 downto 0)
     );
 end entity serial_receiver_reg;
 
