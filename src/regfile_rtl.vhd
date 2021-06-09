@@ -34,7 +34,7 @@ ENTITY regfile IS
     noise_length_o      : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
     noise_period_o      : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
     noise_control_o     : OUT std_ulogic_vector(1 DOWNTO 0);
-    pattern_mem_depth_o : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
+    pattern_mem_depth_o : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0); -- pattern_length
     -- pattern_data_o      : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
     pattern_period_o    : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
     pattern_control_o   : OUT std_ulogic_vector(2 DOWNTO 0);

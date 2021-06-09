@@ -21,7 +21,7 @@ ENTITY serial_rx IS
   GENERIC (
     CLK_DIV_VAL : integer := 16;
     PARITY_BIT  : string  := "none"  -- type of parity: "none", "even", "odd", "mark", "space"
-    );
+    ); 
   PORT (
     CLK          : IN  std_ulogic;      -- system clock
     RST          : IN  std_ulogic;      -- high active synchronous reset
