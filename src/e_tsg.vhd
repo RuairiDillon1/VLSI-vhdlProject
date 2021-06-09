@@ -23,7 +23,7 @@ ENTITY tsg IS
     ext_trig_i      : IN  std_ulogic;
     pwm_o           : OUT std_ulogic;
     noise_o         : OUT std_ulogic;
-    prbs_o          : OUT std_ulogic_vector(23 DOWNTO 0);  -- parallel random word
+    prbs_o          : OUT std_ulogic_vector(22 DOWNTO 0);  -- parallel random word
     eoc_o           : OUT std_ulogic;
     pattern_o       : OUT std_ulogic_vector(7 DOWNTO 0);
     pattern_valid_o : OUT std_ulogic;
