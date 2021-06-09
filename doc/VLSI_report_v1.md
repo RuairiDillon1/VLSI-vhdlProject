@@ -7,14 +7,17 @@
 - [x] Noise frequency make one module
 - [x] Noise generator make one module
 - [x] pattern freq control
-- [ ] pattern counter
-- [ ] pattern generator
+- [x] pattern counter
+- [x] pattern generator
+- [x] pattern generator tb
+- [x] pwm generator tb
+- [x] noise generator tb
 - [ ] serial receiver tb 
-- [ ] pattern generator tb
-- [ ] pwm generator tb
-- [ ] noise generator tb
-- [ ] 
-- [ ] 
+- [ ] wiring of tsg 
+- [ ] wiring of de1_tsg (including makefile)
+- [ ] python script with variables for serial communication
+- [ ] test component sequence detector
+- [ ] test component alu
 
 
 
@@ -28,8 +31,8 @@
 - [x] serial_rx how to integrate synchronous high active reset
 - [x] synchroniser for the 'sync_serial' mod - two flipflops ?
 - [x] QFSM gives out crazy code for state machine, can it be neatened?
-- [ ] noise control behaviour of external trigger is this another mode?
-- [ ] PWM - concept of split up freq control and generator
+- [x] noise control behaviour of external trigger is this another mode?
+- [x] PWM - concept of split up freq control and generator
 
 
 
