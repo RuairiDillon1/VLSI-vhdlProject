@@ -12,12 +12,12 @@
 - [x] pattern generator tb
 - [x] pwm generator tb
 - [x] noise generator tb
-- [ ] serial receiver tb 
-- [ ] wiring of tsg 
-- [ ] wiring of de1_tsg (including makefile)
-- [ ] python script with variables for serial communication
-- [ ] test component sequence detector
-- [ ] test component alu
+- [ ] serial receiver tb - RD
+- [ ] wiring of tsg - LH
+- [ ] wiring of de1_tsg (including makefile) - LH
+- [ ] python script with variables for serial communication - LH
+- [ ] test component sequence detector - RD
+- [ ] test component alu - RD
 
 
 
