@@ -31,6 +31,7 @@ ARCHITECTURE tbench OF t_pattern_generator IS
       tc_pm              : IN  std_ulogic;
       pm_control_changed : IN  std_ulogic;
       pm_control         : IN  std_ulogic_vector(1 DOWNTO 0);
+      addr_cnt_enabled: IN std_ulogic;
       en_pm              : OUT std_ulogic;
       en_pm_cnt          : OUT std_ulogic;
       clr_pm_cnt         : OUT std_ulogic;
@@ -58,6 +59,18 @@ ARCHITECTURE tbench OF t_pattern_generator IS
       tc_o   : OUT std_ulogic);
   END COMPONENT cntup_addr;
 
+  COMPONENT cntdnmodm IS
+    GENERIC (
+      n : natural;
+      m : natural);
+    PORT (
+      clk_i   : IN  std_ulogic;
+      rst_ni  : IN  std_ulogic;
+      en_pi   : IN  std_ulogic;
+      count_o : OUT std_ulogic_vector(n-1 DOWNTO 0);
+      tc_o    : OUT std_ulogic);
+  END COMPONENT cntdnmodm;
+
   -- component ports
   SIGNAL en_pi                : std_ulogic;
   SIGNAL rst_ni               : std_ulogic;
@@ -73,6 +86,7 @@ ARCHITECTURE tbench OF t_pattern_generator IS
   SIGNAL en_pm_i              : std_ulogic;
   SIGNAL clr_addr_cnt_o       : std_ulogic;
   SIGNAL pattern_o            : std_ulogic_vector(7 DOWNTO 0);
+  SIGNAL freq_div_10mhz : std_ulogic;
 
 
   -- definition of a clock period
@@ -97,7 +111,7 @@ BEGIN  -- ARCHITECTURE tbench
       clk_i  => clk_i,
       clr_i  => clr_addr_cnt_o,
       rst_ni => rst_ni,
-      en_pi  => en_addr_cnt_o,
+      en_pi  => en_addr_cnt_o AND freq_div_10mhz,
       len_i  => "00000010",             -- sequence of 2 numbers
       q_o    => addr_cnt_i,
       tc_o   => tc_addr_cnt_i);
@@ -110,10 +124,22 @@ BEGIN  -- ARCHITECTURE tbench
       tc_pm              => tc_addr_cnt_i,
       pm_control_changed => pm_control_changed_i,
       pm_control         => pattern_control_i,
+      addr_cnt_enabled => en_addr_cnt_o AND freq_div_10mhz,
       en_pm              => en_pm_i,
       en_pm_cnt          => en_addr_cnt_o,
       clr_pm_cnt         => clr_addr_cnt_o,
       pm_checked         => pm_checked_o);
+
+  freq_10mhz: cntdnmodm
+    GENERIC MAP (
+      n => 4,
+      m => 5)
+    PORT MAP (
+      clk_i   => clk_i,
+      rst_ni  => rst_ni,
+      en_pi   => en_pi,
+      count_o => open,
+      tc_o    => freq_div_10mhz);
 
 -- clock generation
   clock_p : PROCESS
@@ -173,7 +199,9 @@ BEGIN  -- ARCHITECTURE tbench
     pm_control_changed_i <= '0';
     WAIT FOR 20*period;
     pm_control_changed_i <= '1';
-    WAIT FOR 2*period;
+    WAIT FOR 1*period;
+    pm_control_changed_i <= '0';
+    WAIT FOR 20*period;
 
 
 

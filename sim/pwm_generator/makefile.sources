@@ -13,6 +13,9 @@
 SYN_SOURCE_FILES = \
 ../../src/pwm_generator.vhd \
 ../../src/freq_control.vhd \
+../../src/cntdnmodm_rtl.vhd \
+../../src/e_falling_edge_detector.vhd \
+../../src/a_falling_edge_detector_rtl.vhd \
 
 # do not delete this line
 # -----------------------------------------------------------------------------
