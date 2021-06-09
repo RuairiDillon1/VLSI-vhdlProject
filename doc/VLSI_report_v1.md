@@ -15,9 +15,9 @@
 - [ ] serial receiver tb - RD
 - [ ] wiring of tsg - LH
 - [ ] wiring of de1_tsg (including makefile) - LH
-- [ ] python script with variables for serial communication - LH
-- [ ] test component sequence detector - RD
-- [ ] test component alu - RD
+- [ ] python script with variables for serial communication - LH/RD/DC
+- [ ] test component sequence detector - RD/DC
+- [ ] test component alu - RD/DC
 
 
 

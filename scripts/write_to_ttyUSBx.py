@@ -19,6 +19,8 @@ import sys
 import time
 import serial
 
+import test_variables as tvars
+
 
 # check which ttyUSBx port is available
 # tbd ...
