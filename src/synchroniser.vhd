@@ -1,3 +1,6 @@
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+
 entity synchroniser is
     port (
         clk_i : in std_ulogic;

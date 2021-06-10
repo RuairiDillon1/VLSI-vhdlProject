@@ -20,7 +20,7 @@ architecture rtl of cntup_addr is
 
 begin
     
-    cntup: process(clk_i, rst_ni, clr_i)
+    cntup: process(clk_i, rst_ni, clr_i, en_pi)
     begin
         if rst_ni = '0' then
             current_state <= (others => '0');

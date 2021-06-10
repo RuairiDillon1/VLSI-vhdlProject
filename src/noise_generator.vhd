@@ -138,7 +138,7 @@ BEGIN
 
   -- every time there is a change in signals in the process sensitivity list, all
   -- of the sequential statements in the process are re-evaluated
-  switch : PROCESS(noise_prbsg_length_i, en, 
+  switch : PROCESS(noise_prbsg_length_i, en, eocs, noises,
                    prbs4_o, prbs7_o, prbs15_o, prbs17_o, prbs20_o, prbs23_o)
   BEGIN
     CASE noise_prbsg_length_i IS

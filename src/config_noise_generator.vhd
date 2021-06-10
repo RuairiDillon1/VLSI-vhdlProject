@@ -23,7 +23,7 @@ ARCHITECTURE rtl OF config_noise_generator IS
 
   SIGNAL q    : std_ulogic_vector(num_of_bits - 1 DOWNTO 0);  -- current state
   SIGNAL d    : std_ulogic_vector(num_of_bits - 1 DOWNTO 0);  -- next state
-  SIGNAL init : std_ulogic_vector(num_of_bits - 1 DOWNTO 0) := (0 => '1', OTHERS => '0');
+  CONSTANT init : std_ulogic_vector(num_of_bits - 1 DOWNTO 0) := (0 => '1', OTHERS => '0');
 
 BEGIN
   -- lfsr with xor feedback; 0 lines are on the right of the shift register, highest on the left

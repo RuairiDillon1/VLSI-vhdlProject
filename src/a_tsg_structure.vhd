@@ -33,13 +33,13 @@ ARCHITECTURE structure OF tsg IS
 
   COMPONENT serial_receiver_reg IS
     PORT (
-      rst_ni         : in  std_ulogic;
-      clk_i          : in  std_ulogic;
-      en_addr_reg_i  : in  std_ulogic;
-      en_data_reg_i  : in  std_ulogic;
-      rxd_data_i     : in  std_ulogic_vector(7 downto 0);
-      regfile_addr_o : out std_ulogic_vector(3 downto 0);
-      regfile_data_o : out std_ulogic_vector(7 downto 0));
+      rst_ni         : IN  std_ulogic;
+      clk_i          : IN  std_ulogic;
+      en_addr_reg_i  : IN  std_ulogic;
+      en_data_reg_i  : IN  std_ulogic;
+      rxd_data_i     : IN  std_ulogic_vector(7 DOWNTO 0);
+      regfile_addr_o : OUT std_ulogic_vector(3 DOWNTO 0);
+      regfile_data_o : OUT std_ulogic_vector(7 DOWNTO 0));
   END COMPONENT serial_receiver_reg;
 
   COMPONENT serial_receiver_fsm IS
@@ -114,10 +114,10 @@ ARCHITECTURE structure OF tsg IS
   -- for pattern
   COMPONENT pattern_generator IS
     PORT (
-      en_write_pm        : IN  std_ulogic;
+      en_write_pm  : IN  std_ulogic;
       clk_i        : IN  std_ulogic;
-      pm_control_i : IN  std_ulogic_vector(1 downto 0);
-      addr_cnt_i   : IN  std_ulogic_vector(7 downto 0);
+      pm_control_i : IN  std_ulogic_vector(1 DOWNTO 0);
+      addr_cnt_i   : IN  std_ulogic_vector(7 DOWNTO 0);
       rxd_data_i   : IN  std_ulogic_vector(7 DOWNTO 0);
       pattern_o    : OUT std_ulogic_vector(7 DOWNTO 0));
   END COMPONENT pattern_generator;
@@ -139,104 +139,104 @@ ARCHITECTURE structure OF tsg IS
 
   COMPONENT cntup_addr IS
     PORT (
-      clk_i  : in  std_ulogic;
-      clr_i  : in  std_ulogic;
-      rst_ni : in  std_ulogic;
-      en_pi  : in  std_ulogic;
-      len_i  : in  std_ulogic_vector(7 downto 0);
-      q_o    : out std_ulogic_vector(7 downto 0);
-      tc_o   : out std_ulogic);
+      clk_i  : IN  std_ulogic;
+      clr_i  : IN  std_ulogic;
+      rst_ni : IN  std_ulogic;
+      en_pi  : IN  std_ulogic;
+      len_i  : IN  std_ulogic_vector(7 DOWNTO 0);
+      q_o    : OUT std_ulogic_vector(7 DOWNTO 0);
+      tc_o   : OUT std_ulogic);
   END COMPONENT cntup_addr;
   
-BEGIN
+    -- serial components instantiation
+  CONSTANT CLK_DIV_VAL        : integer := 16;
+  CONSTANT PARITY_BIT         : string  := "none";
+  CONSTANT regfile_addr_width : integer := 4;
+  CONSTANT regfile_data_width : integer := 8;
 
   -- basic signals
-  SIGNAL clk_i : std_ulogic;
-  SIGNAL rst_ni :std_ulogic;
-  SIGNAL en_main : std_ulogic; -- en_tsg and en_system
-  SIGNAL ext_trig_i : std_ulogic;
+  SIGNAL clock      : std_ulogic;
+  SIGNAL reset     : std_ulogic;
+  SIGNAL en_main    : std_ulogic;       -- en_tsg and en_system
+  SIGNAL ext_trigger : std_ulogic;
 
   -- serial signals
-  SIGNAL en_serial_i : std_ulogic;
-  SIGNAL serial_data_i : std_ulogic;
-  SIGNAL serial_data_o : std_ulogic_vector(7 DOWNTO 0);
+  SIGNAL en_serial         : std_ulogic;
+  SIGNAL serial_data       : std_ulogic;
+  SIGNAL serial_data_o       : std_ulogic_vector(7 DOWNTO 0);
   SIGNAL serial_data_valid_o : std_ulogic;
 
   SIGNAL regfile_addr_o : std_ulogic_vector(regfile_addr_width - 1 DOWNTO 0);
   SIGNAL regfile_data_o : std_ulogic_vector(regfile_data_width - 1 DOWNTO 0);
 
-  SIGNAL en_addr_reg : std_ulogic;
-  SIGNAL en_data_reg : std_ulogic;
+  SIGNAL en_addr_reg   : std_ulogic;
+  SIGNAL en_data_reg   : std_ulogic;
   SIGNAL en_regfile_wr : std_ulogic;
 
   -- state machine communication
-  SIGNAL pm_checked : std_ulogic;
+  SIGNAL pm_checked         : std_ulogic;
   SIGNAL pm_control_changed : std_ulogic;
 
   -- regfile signals
-  SIGNAL system_control_o    : std_ulogic_vector(1 DOWNTO 0);
-  SIGNAL pwm_pulse_width_o   : std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
-  SIGNAL pwm_period_o        : std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
-  SIGNAL pwm_control_o       : std_ulogic_vector(1 DOWNTO 0);
-  SIGNAL noise_length_o      : std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
-  SIGNAL noise_period_o      : std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
-  SIGNAL noise_control_o     : std_ulogic_vector(1 DOWNTO 0);
-  SIGNAL pattern_length_o : std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
-  SIGNAL pattern_period_o    : std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
-  SIGNAL pattern_control_o   : std_ulogic_vector(2 DOWNTO 0);
+  SIGNAL system_control_o  : std_ulogic_vector(1 DOWNTO 0);
+  SIGNAL pwm_pulse_width_o : std_ulogic_vector(regfile_data_width-1 DOWNTO 0);
+  SIGNAL pwm_period_o      : std_ulogic_vector(regfile_data_width-1 DOWNTO 0);
+  SIGNAL pwm_control_o     : std_ulogic_vector(1 DOWNTO 0);
+  SIGNAL noise_length_o    : std_ulogic_vector(regfile_data_width-1 DOWNTO 0);
+  SIGNAL noise_period_o    : std_ulogic_vector(regfile_data_width-1 DOWNTO 0);
+  SIGNAL noise_control_o   : std_ulogic_vector(1 DOWNTO 0);
+  SIGNAL pattern_length_o  : std_ulogic_vector(regfile_data_width-1 DOWNTO 0);
+  SIGNAL pattern_period_o  : std_ulogic_vector(regfile_data_width-1 DOWNTO 0);
+  SIGNAL pattern_control_o : std_ulogic_vector(2 DOWNTO 0);
 
   -- noise signals
-  noise_freq_div : std_ulogic;
-  en_noise_gen : std_ulogic;
+  SIGNAL noise_freq_div : std_ulogic;
+  SIGNAL en_noise_gen   : std_ulogic;
 
   -- pwm signals
-  pwm_freq_div : std_ulogic;
-  en_pwm_gen : std_ulogic;
+  SIGNAL pwm_freq_div : std_ulogic;
+  SIGNAL en_pwm_gen   : std_ulogic;
 
   -- pattern signals
-  pattern_freq_div : std_ulogic;
-  en_write_pm : std_ulogic;
-  en_cntup_addr : std_ulogic;
-  en_continous_cntup_addr : std_ulogic;
-  en_cntup_addr_fsm : std_ulogic;
-  clr_cntup_addr : std_ulogic;
-  cntup_addr_o : std_ulogic_vector(7 DOWNTO 0);
-  cntup_addr_tc : std_ulogic;
-  
-  -- serial components instantiation
-  CONSTANT CLK_DIV_VAL : integer := 16;
-  constant PARITY_BIT: string := "none";
-  CONSTANT regfile_addr_width: integer := 4;
-  CONSTANT regfile_data_width: integer := 8;
-  
-  serial_rx_uart: serial_rx
+  SIGNAL pattern_freq_div        : std_ulogic;
+  SIGNAL en_write_pm             : std_ulogic;
+  SIGNAL en_cntup_addr           : std_ulogic;
+  SIGNAL en_continous_cntup_addr : std_ulogic;
+  SIGNAL en_cntup_addr_fsm       : std_ulogic;
+  SIGNAL clr_cntup_addr          : std_ulogic;
+  SIGNAL cntup_addr_o            : std_ulogic_vector(7 DOWNTO 0);
+  SIGNAL cntup_addr_tc           : std_ulogic;
+
+BEGIN
+
+  serial_rx_uart : serial_rx
     GENERIC MAP (
       CLK_DIV_VAL => CLK_DIV_VAL,
       PARITY_BIT  => PARITY_BIT)
     PORT MAP (
-      CLK          => clk_i,
-      RST          => NOT rst_ni, -- workaround is an synchronous high active reset!
-      UART_CLK_EN  => en_serial_i,
-      UART_RXD     => serial_data_i,
+      CLK          => clock,
+      RST          => NOT reset,  -- workaround is an synchronous high active reset!
+      UART_CLK_EN  => en_serial,
+      UART_RXD     => serial_data,
       DOUT         => serial_data_o,
       DOUT_VLD     => serial_data_valid_o,
-      FRAME_ERROR  => open,
-      PARITY_ERROR => open);
+      FRAME_ERROR  => OPEN,
+      PARITY_ERROR => OPEN);
 
-  serial_receiver_registers: serial_receiver_reg
+  serial_receiver_registers : serial_receiver_reg
     PORT MAP (
-      rst_ni         => rst_ni,
-      clk_i          => clk_i,
+      rst_ni         => reset,
+      clk_i          => clock,
       en_addr_reg_i  => en_addr_reg,
       en_data_reg_i  => en_data_reg,
       rxd_data_i     => serial_data_o,
       regfile_addr_o => regfile_addr_o,
       regfile_data_o => regfile_data_o);
 
-  serial_receiver_state_machine: serial_receiver_fsm
+  serial_receiver_state_machine : serial_receiver_fsm
     PORT MAP (
-      clk                => clk_i,
-      rst_n              => rst_ni,
+      clk                => clock,
+      rst_n              => reset,
       rxd_rec            => serial_data_valid_o,
       addr               => regfile_addr_o,
       pm_checked         => pm_checked,
@@ -245,15 +245,15 @@ BEGIN
       en_regfile_wr      => en_regfile_wr,
       pm_control_changed => pm_control_changed);
 
-  register_file: regfile
+  register_file : regfile
     GENERIC MAP (
       ADDR_WIDTH => regfile_addr_width,
       DATA_WIDTH => regfile_data_width)
     PORT MAP (
-      clk_i               => clk_i,
+      clk_i               => clock,
       wr_en_i             => en_regfile_wr,
       w_addr_i            => regfile_addr_o,
-      r_addr_i            => (OTHERS => '0'), -- not used
+      r_addr_i            => (OTHERS => '0'),  -- not used
       w_data_i            => regfile_data_o,
       system_control_o    => system_control_o,
       pwm_pulse_width_o   => pwm_pulse_width_o,
@@ -265,40 +265,40 @@ BEGIN
       pattern_mem_depth_o => pattern_length_o,
       pattern_period_o    => pattern_period_o,
       pattern_control_o   => pattern_control_o,
-      r_data_o            => open); -- not used
+      r_data_o            => OPEN);            -- not used
 
   -- pwm components
-  pwm_freq_control: freq_control
+  pwm_freq_control : freq_control
     PORT MAP (
-      clk_i    => clk_i,
-      rst_ni   => rst_ni,
+      clk_i    => clock,
+      rst_ni   => reset,
       en_pi    => en_main,
-      count_o  => open,
+      count_o  => OPEN,
       freq_o   => pwm_freq_div,
       period_i => pwm_period_o);
 
-  pwm_gen: pwm_generator
+  pwm_gen : pwm_generator
     PORT MAP (
       en_pi       => en_pwm_gen,
-      rst_ni      => rst_ni,
+      rst_ni      => reset,
       pwm_width_i => pwm_pulse_width_o,
-      clk_i       => clk_i,
+      clk_i       => clock,
       pwm_o       => pwm_o);
 
   -- noise components
-  noise_freq_control: freq_control
+  noise_freq_control : freq_control
     PORT MAP (
-      clk_i    => clk_i,
-      rst_ni   => rst_ni,
+      clk_i    => clock,
+      rst_ni   => reset,
       en_pi    => en_main,
-      count_o  => open,
+      count_o  => OPEN,
       freq_o   => noise_freq_div,
       period_i => noise_period_o);
 
-  noise_gen: noise_generator
+  noise_gen : noise_generator
     PORT MAP (
-      clk_i                => clk_i,
-      rst_ni               => rst_ni,
+      clk_i                => clock,
+      rst_ni               => reset,
       en_pi                => en_noise_gen,
       noise_prbsg_length_i => noise_length_o,
       prbs_o               => prbs_o,
@@ -306,28 +306,28 @@ BEGIN
       eoc_o                => eoc_o);
 
   -- pattern components
-  pattern_freq_control: freq_control
+  pattern_freq_control : freq_control
     PORT MAP (
-      clk_i    => clk_i,
-      rst_ni   => rst_ni,
+      clk_i    => clock,
+      rst_ni   => reset,
       en_pi    => en_main,
-      count_o  => open,
+      count_o  => OPEN,
       freq_o   => pattern_freq_div,
       period_i => pattern_period_o);
 
-  pattern_gen: pattern_generator
+  pattern_gen : pattern_generator
     PORT MAP (
-      en_write_pm        => en_write_pm,
-      clk_i        => clk_i,
+      en_write_pm  => en_write_pm,
+      clk_i        => clock,
       pm_control_i => pattern_control_o(1 DOWNTO 0),
       addr_cnt_i   => cntup_addr_o,
       rxd_data_i   => serial_data_o,
       pattern_o    => pattern_o);
 
-  pattern_generator_state_machine: pattern_generator_fsm
+  pattern_generator_state_machine : pattern_generator_fsm
     PORT MAP (
-      clk                => clk_i,
-      rst_n              => rst_ni,
+      clk                => clock,
+      rst_n              => reset,
       rxd_rec            => serial_data_valid_o,
       tc_pm              => cntup_addr_tc,
       pm_control_changed => pm_control_changed,
@@ -338,49 +338,49 @@ BEGIN
       clr_pm_cnt         => clr_cntup_addr,
       pm_checked         => pm_checked);
 
-  cntup_address: cntup_addr
+  cntup_address : cntup_addr
     PORT MAP (
-      clk_i  => clk_i,
+      clk_i  => clock,
       clr_i  => clr_cntup_addr,
-      rst_ni => rst_ni,
+      rst_ni => reset,
       en_pi  => en_cntup_addr_fsm,
       len_i  => pattern_length_o,
       q_o    => cntup_addr_o,
       tc_o   => cntup_addr_tc);
 
   -- basic signals connections
-  clk_i <= clk_i;
-  rst_ni <= rst_ni;
-  ext_trig_i <= ext_trig_i;
-  en_main <= en_tsg_pi AND system_control_o(0);
+  clock      <= clk_i;
+  reset     <= rst_ni;
+  ext_trigger <= ext_trig_i;
+  en_main    <= en_tsg_pi AND system_control_o(0);
 
   -- output signals
-  rxd_rdy_o <= serial_data_valid_o;
-  tc_pm_count_o <= cntup_addr_tc;
-  pattern_valid_o <= '0'; -- dont know meaning
-  regfile_o <= (OTHERS => '0'); -- only makes sense when read would be used
-  addr_reg_o <= regfile_addr_o;
-  data_reg_o <= regfile_data_o;
+  rxd_rdy_o       <= serial_data_valid_o;
+  tc_pm_count_o   <= cntup_addr_tc;
+  pattern_valid_o <= '0';               -- dont know meaning
+  regfile_o       <= regfile_data_o;    -- write data
+  addr_reg_o      <= std_ulogic_vector(resize(unsigned(regfile_addr_o), 8));
+  data_reg_o      <= regfile_data_o;
 
   -- serial data connections
-  en_serial_i <= en_serial_i;
-  serial_data_i <= serial_data_i;
+  en_serial   <= en_serial_i;
+  serial_data <= serial_data_i;
 
   -- pwm connections
-  en_pwm_gen <=(pwm_freq_div AND en_main) WHEN pwm_control_o(1) = '0' ELSE ext_trig_i;
+  en_pwm_gen <= (pwm_freq_div AND en_main) WHEN pwm_control_o(1) = '0' ELSE ext_trigger;
 
   -- noise connections
-  en_noise_gen <= (noise_freq_div AND en_main) WHEN noise_control_o(1) = '0' ELSE ext_trig_i;
+  en_noise_gen <= (noise_freq_div AND en_main) WHEN noise_control_o(1) = '0' ELSE ext_trigger;
 
   -- pattern connections
   en_continous_cntup_addr <= (en_main AND en_write_pm AND pattern_freq_div) WHEN pattern_control_o(2) = '0'
-                             ELSE ext_trig_i;
+                             ELSE ext_trigger;
   WITH pattern_control_o(1 DOWNTO 0) SELECT
-    en_cntup_addr <= en_write_pm WHEN "00" OR "11", -- stop or load, speed of clock 
-    en_continous_cntup_addr WHEN "01" OR "10", -- burst or continous burst;
-                                               -- speed of enable
-    '0' WHEN others;
-  
+    en_cntup_addr <= en_write_pm WHEN "00" | "11",  -- stop or load, speed of clock 
+    en_continous_cntup_addr      WHEN "01" | "10",  -- burst or continous burst;
+                                                     -- speed of enable
+    '0'                          WHEN OTHERS;
+
 END structure;
 
 -------------------------------------------------------------------------------

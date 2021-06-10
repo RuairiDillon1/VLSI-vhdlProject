@@ -10,6 +10,7 @@
 -------------------------------------------------------------------------------
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
+USE IEEE.numeric_std.ALL;
 
 ENTITY alu IS
   PORT (a_i   : IN  std_ulogic_vector(2 DOWNTO 0);       -- data input a
@@ -27,10 +28,10 @@ ARCHITECTURE rtl OF alu IS
 BEGIN
 
   WITH sel_i SELECT y_out <=
-    (unsigned(a_i)) + (unsigned(b_i)) WHEN "00",
-    (unsigned(a_i)) - (unsigned(b_i)) WHEN "01",
-    (unsigned(a_i)) and (unsigned(b_i)) WHEN "10", -- possible issues with data type
-    (unsigned(a_i)) OR (unsigned(b_i)) WHEN "11", -- possible issues with data type
+    (unsigned(a_i) + unsigned(b_i)) WHEN "00",
+    (unsigned(a_i) - unsigned(b_i)) WHEN "01",
+    (unsigned(a_i and b_i)) WHEN "10", -- possible issues with data type
+    (unsigned(a_i or b_i)) WHEN "11", -- possible issues with data type
     (OTHERS => '0') WHEN others;
 
   y_o <= std_ulogic_vector(y_out);

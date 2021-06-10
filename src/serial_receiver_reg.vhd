@@ -18,11 +18,11 @@ architecture rtl of serial_receiver_reg is
     
 begin
 
-  addr_register : regfile_addr_o <= zero WHEN rst_ni = '0' ELSE
-    rxd_data_i WHEN rising_edge(clk_i) AND (en_addr_reg_i = '1');
+  addr_register : regfile_addr_o <= (others => '0') WHEN rst_ni = '0' ELSE
+    std_ulogic_vector(resize(unsigned(rxd_data_i), 4)) WHEN rising_edge(clk_i) AND (en_addr_reg_i = '1');
 
 
- data__register : regfile_data_o <= zero WHEN rst_ni = '0' ELSE
+ data_register : regfile_data_o <= (others => '0') WHEN rst_ni = '0' ELSE
     rxd_data_i WHEN rising_edge(clk_i) AND (en_data_reg_i = '1');
 
     
