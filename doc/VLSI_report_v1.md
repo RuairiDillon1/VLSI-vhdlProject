@@ -17,7 +17,7 @@
 - [ ] wiring of de1_tsg (including makefile) - LH
 - [x] python script with variables for serial communication - LH/RD/DC
 - [x] test component sequence detector - RD/DC
-- [ ] test component alu - RD/DC
+- [x] test component alu - RD/DC
 
 
 
