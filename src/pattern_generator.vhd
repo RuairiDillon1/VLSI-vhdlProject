@@ -4,7 +4,7 @@ USE IEEE.std_logic_1164.ALL;
 
 ENTITY pattern_generator IS
   PORT (
-    en_pi  : IN std_ulogic;
+    en_write_pm : IN std_ulogic;
     clk_i  : IN std_ulogic;
     pm_control_i : IN std_ulogic_vector(1 downto 0); -- only the control bits are needed (not bit 2)
     addr_cnt_i : IN std_ulogic_vector(7 downto 0);
@@ -40,7 +40,7 @@ BEGIN
       data_width => data_width)
     PORT MAP (
       clk_i  => clk_i,
-      we_i   => en_pi,   
+      we_i   => en_write_pm,   
       addr_i => addr_cnt_i,
       d_i    => rxd_data_i,
       q_o    => pm_out);

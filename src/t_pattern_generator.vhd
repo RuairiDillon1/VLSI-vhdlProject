@@ -40,7 +40,7 @@ ARCHITECTURE tbench OF t_pattern_generator IS
 
   COMPONENT pattern_generator IS
     PORT (
-      en_pi      : IN  std_ulogic;
+      en_write_pm      : IN  std_ulogic;
       clk_i      : IN  std_ulogic;
       pm_control_i : IN std_ulogic_vector(1 downto 0);
       addr_cnt_i : IN  std_ulogic_vector(7 DOWNTO 0);
@@ -99,7 +99,7 @@ BEGIN  -- ARCHITECTURE tbench
   -- component instantiation
   DUT : pattern_generator
     PORT MAP (
-      en_pi      => en_pm_i,
+      en_write_pm      => en_pm_i,
       clk_i      => clk_i,
       pm_control_i => pattern_control_i,
       addr_cnt_i => addr_cnt_i,
