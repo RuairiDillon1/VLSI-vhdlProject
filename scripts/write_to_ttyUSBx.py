@@ -37,40 +37,30 @@ ser = serial.Serial(
     timeout=None)
 
 # print serial port configuration
-print('Serial Port initialised with the following paramters:')
+print('Serial Port initialised with the following parameters:')
 print('-----------------------------------------------------')
 print(ser)
 print('\r')
 
 # define time between serial transfer in seconds
-wait_between_transfer = 1
+wait_between_transfer = 0.5
 
-# write single byte
 print('Writing commands:')
-print('--------------------')
-print('\r')
+print()
+print("{:50s} | {}".format("command", "(data | address) or pattern sequence hex"))
+print(100*"-")
 
 #commands = ["system_control_enable"]
-#commands = ["pwm_pulse_width", "pwm_period", "pwm_control_on_intern_trig"]
-commands = ["noise_period","noise_prbsg_length_15bit", "noise_control_on_intern_trig"]
+#commands = ["system_control_disable", "noise_control_off", "pwm_control_off", "pattern_control_stop"]
+#commands = ["pwm_pulse_width_1", "pwm_period_max","pwm_control_on_intern_trig"]
+#commands = ["pwm_pulse_width_1", "pwm_period_min","pwm_control_on_intern_trig"]
+#commands = ["noise_period_max","noise_prbsg_length_7bit", "noise_control_on_intern_trig"]
+commands = ["pattern_length_4", "pattern_period_max", "pattern_control_load", "pattern_example_sequence_4", "pattern_intern_control_continous_run"]
 
 for command in commands:
-    print(command)    
+    print("{:50s} | {}".format(command, tvars.serial_vars[command].hex()))    
     ser.write(tvars.serial_vars[command])
     time.sleep(wait_between_transfer)
-
-# send all 256 bytes in a loop
-"""
-print('Writing 256 single characters...')
-print('--------------------------------')
-for i in range(256):
-    print('Sending byte: ' + hex(i) + ' '*50, end='')
-    ser.write([i])
-    time.sleep(wait_between_transfer)
-    print('\r', end='')
-print('')
-"""
-
 
 # end with exit code
 sys.exit(0)

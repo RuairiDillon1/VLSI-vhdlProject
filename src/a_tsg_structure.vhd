@@ -201,8 +201,9 @@ ARCHITECTURE structure OF tsg IS
   SIGNAL pattern_freq_div        : std_ulogic;
   SIGNAL en_write_pm             : std_ulogic;
   SIGNAL en_cntup_addr           : std_ulogic;
+  SIGNAL en_pattern_freq_div : std_ulogic;
+  signal en_pm_cnt : std_ulogic;
   SIGNAL en_continous_cntup_addr : std_ulogic;
-  SIGNAL en_cntup_addr_fsm       : std_ulogic;
   SIGNAL clr_cntup_addr          : std_ulogic;
   SIGNAL cntup_addr_o            : std_ulogic_vector(7 DOWNTO 0);
   SIGNAL cntup_addr_tc           : std_ulogic;
@@ -272,7 +273,7 @@ BEGIN
     PORT MAP (
       clk_i    => clock,
       rst_ni   => reset,
-      en_pi    => en_main,
+      en_pi    => en_main AND pwm_control_o(0),
       count_o  => OPEN,
       freq_o   => pwm_freq_div,
       period_i => pwm_period_o);
@@ -290,7 +291,7 @@ BEGIN
     PORT MAP (
       clk_i    => clock,
       rst_ni   => reset,
-      en_pi    => en_main,
+      en_pi    => en_main AND noise_control_o(0),
       count_o  => OPEN,
       freq_o   => noise_freq_div,
       period_i => noise_period_o);
@@ -310,7 +311,7 @@ BEGIN
     PORT MAP (
       clk_i    => clock,
       rst_ni   => reset,
-      en_pi    => en_main,
+      en_pi    => en_pattern_freq_div,
       count_o  => OPEN,
       freq_o   => pattern_freq_div,
       period_i => pattern_period_o);
@@ -334,7 +335,7 @@ BEGIN
       pm_control         => pattern_control_o(1 DOWNTO 0),
       addr_cnt_enabled   => en_cntup_addr,
       en_pm              => en_write_pm,
-      en_pm_cnt          => en_cntup_addr_fsm,
+      en_pm_cnt          => en_pm_cnt,
       clr_pm_cnt         => clr_cntup_addr,
       pm_checked         => pm_checked);
 
@@ -343,7 +344,7 @@ BEGIN
       clk_i  => clock,
       clr_i  => clr_cntup_addr,
       rst_ni => reset,
-      en_pi  => en_cntup_addr_fsm,
+      en_pi  => en_cntup_addr,
       len_i  => pattern_length_o,
       q_o    => cntup_addr_o,
       tc_o   => cntup_addr_tc);
@@ -367,16 +368,22 @@ BEGIN
   serial_data <= serial_data_i;
 
   -- pwm connections
-  en_pwm_gen <= (pwm_freq_div AND en_main) WHEN pwm_control_o(1) = '0' ELSE ext_trigger;
+  en_pwm_gen <= (pwm_freq_div AND en_main AND pwm_control_o(0)) WHEN pwm_control_o(1) = '0' ELSE ext_trigger;
 
   -- noise connections
-  en_noise_gen <= (noise_freq_div AND en_main) WHEN noise_control_o(1) = '0' ELSE ext_trigger;
+  en_noise_gen <= (noise_freq_div AND en_main AND noise_control_o(0)) WHEN noise_control_o(1) = '0' ELSE ext_trigger;
 
   -- pattern connections
-  en_continous_cntup_addr <= (en_main AND en_write_pm AND pattern_freq_div) WHEN pattern_control_o(2) = '0'
+  WITH pattern_control_o(1 DOWNTO 0) SELECT 
+    en_pattern_freq_div <= en_main WHEN "01" | "10", -- burst or continous burst
+    '0' WHEN "00" | "11", -- stop or load
+    '0' WHEN OTHERS;
+  
+  en_continous_cntup_addr <= (en_main AND en_pm_cnt AND pattern_freq_div) WHEN pattern_control_o(2) = '0'
                              ELSE ext_trigger;
+  
   WITH pattern_control_o(1 DOWNTO 0) SELECT
-    en_cntup_addr <= en_write_pm WHEN "00" | "11",  -- stop or load, speed of clock 
+    en_cntup_addr <= en_pm_cnt WHEN "00" | "11",  -- stop or load, speed of clock 
     en_continous_cntup_addr      WHEN "01" | "10",  -- burst or continous burst;
                                                      -- speed of enable
     '0'                          WHEN OTHERS;
