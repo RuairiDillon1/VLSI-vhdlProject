@@ -43,16 +43,21 @@ print(ser)
 print('\r')
 
 # define time between serial transfer in seconds
-wait_between_transfer = 0.1
+wait_between_transfer = 1
 
 # write single byte
-print('Writing single byte:')
+print('Writing commands:')
 print('--------------------')
 print('\r')
-ser.write([0])
-time.sleep(wait_between_transfer)
-ser.write([15])
 
+#commands = ["system_control_enable"]
+#commands = ["pwm_pulse_width", "pwm_period", "pwm_control_on_intern_trig"]
+commands = ["noise_period","noise_prbsg_length_15bit", "noise_control_on_intern_trig"]
+
+for command in commands:
+    print(command)    
+    ser.write(tvars.serial_vars[command])
+    time.sleep(wait_between_transfer)
 
 # send all 256 bytes in a loop
 """
