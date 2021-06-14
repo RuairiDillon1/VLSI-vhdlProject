@@ -1,109 +1,243 @@
----
-title: "Test Signal Generator Report"
-author: ["L Hillinger","R Dillon", "D Cunningham"]
-date: "2021-06-25"
-subject: "Markdown"
-keywords: [Test Signal Generator, Example, VLSI, VHDL, ]
-subtitle: "Implementation Report"
-lang: "en"
-titlepage: true
-titlepage-color: "483D8B"
-titlepage-text-color: "FFFAFA"
-titlepage-rule-color: "FFFAFA"
-titlepage-rule-height: 2
-book: true
-classoption: oneside
-code-block-font-size: \scriptsize
----
-# Intro
+[comment] : <> (this is a direct adoptation from lab 7 vlsi heartbeat gen) RD
 
-Digital test signal generators (tsg) are a common piece of apartatus found in industry
+Introduction
+============
 
-The Offensive Security OSCE exam documentation contains all efforts that were conducted in order to pass the Offensive Security Certified Expert exam. This report will be graded from a standpoint of correctness and fullness to all aspects of the exam. The purpose of this report is to ensure that the student has the technical knowledge required to pass the qualifications for the Offensive Security Certified Expert certification.
-The student will be required to fill out this exam documentation fully and to include the following sections:
+Digital test signal generators(TSG) is a type of  avalabe external mesurement equipment that is avalable from a number of diffrent venders. These pieces of equipment produce a range of stimulant elctrical signals that can be used to check the operation of other electrical devices. The goal of this  module is to produce an on-chip version of this system with the following essential features incuded in the archetecture and desgin:
+• Single pulse with variable duty cycle and frequency
+• Digital noise based on pseudo random binary sequences of diferent length
+• Arbitrary data bus sequences at selectable speed
+• Internal/External Trigger
+• External Time Base
+Each of these fetures is nessary for the TSG to produce a set of data that can be used to give an enginer a informated veiwpoint on their desgin so that they can modify it so that it lands within specification. 
 
-- Methodology walkthrough and detailed outline of steps taken
-- Each finding with included screenshots, walkthrough, sample code, and proof.txt if applicable.
-- Any additional items that were not included
 
-# 192.168.XX.200
+Features
+========
 
-## Proof.txt
+Normal rhythm produces four entities – a P wave, a QRS complex, a T wave, and a U wave – that each
+have a fairly unique pattern. [[1]](https://en.wikipedia.org/wiki/Electrocardiography)
 
-Provide the contents of proof.txt.
+For simplicity the existing heartbeat modules generates the QRS complex and T wave only. 
 
-## Vulnerable Command
+  * Models QRS-Complex and T-Wave
+  * Average time values based on 72 bpm
+  * Enable input for external prescaler
 
-Provide the command that was found to be exploitable.
 
-## Vulnerability Identification
+General Description
+===================
 
-Provide the method and code used to find the vulnerability.
+![Heartbeat Generator - Schematic Symbol](images/heartbeat_gen_symbol.pdf){width=40%}
 
-## PoC Code
+| **Name**       | **Type**          | **Direction** | **Polarity** | **Description**     |
+|----------------|-------------------|:-------------:|:------------:|---------------------|
+| clk_i          | std_ulogic        | IN            | HIGH         | clock               |
+| rx_i           | std_ulogic        | IN            | HIGH         | serial data recieve |
+| en_tsg_pi      | std_ulogic        | IN            | HIGH         | enable              |
+| test_signals_o | std_ulogic_vector | OUT           | HIGH         | test signal output  |
+|                |                   |               |              |                     |
 
-Provide the final proof of concept code used to gain access to the server.
 
-## Steps
+: Test Signal Generator - Description of I/O Signals
 
-Provide a detailed account of your methodology in creating the exploit. The steps taken should be able to be easily followed and reproducible if necessary.
 
-# 192.168.XX.220
+Functional Description
+======================
 
-## Proof.txt
+The shape of an [electrogardiogramm](https://en.wikipedia.org/wiki/Electrocardiography) as a voltage graph over time
 
-Provide the contents of proof.txt.
 
-## Vulnerable Command
 
-Provide the command that was found to be exploitable.
+![Electrocardiogram](images/ECG-SinusRhythmLabel.png){width=20%}
 
-## Privilege Escalation
+The important QRS complex and T wave are modelled as digital pulses.
 
-Provide the privilege escalation that was used to gain root on the server.
+![QRS Complex and T Wave Pulses](images/qrs-complex-t-wave-pulses.pdf){width=80%}
 
-## PoC Code
 
-Provide the final proof of concept code used to gain access to the server.
+Design Description
+==================
 
-## Screenshots
+A conceptional RTL diagram is shown below.
 
-Provide a screenshot of the id command and the contents of proof.txt.
+![Heartbeat Generator - Conceptional RTL](images/heartbeat_gen_conceptional_rtl.pdf){width=60%}
 
-![ImgPlaceholder](src/placeholder-image-300x225.png)
+The simulation result shows two full periods based on a clock period of 1 ms
 
-## Steps
+![Two Periods - Simulation Result](images/heartbeat_gen_two_periods_simwave.png){width=80%}
 
-Provide a detailed account of your methodology in creating the exploit. The steps taken should be able to be easily followed and reproducible if necessary.
+In more detail using cursors to display correct parameters of the QRS complex and T wave.
 
-# 192.168.XX.201
+![QRS-Complex and T-Wave - Simulation Result](images/qrs-complex-t-wave_simwave.png){width=80%}
 
-## Screenshot
 
-Screenshot requirements are detailed in the control panel.
 
-![ImgPlaceholder](src/placeholder-image-300x225.png)
+Device Utilization and Performance
+==================================
 
-## Steps
+The following table shows the utilisation of both modules heartbeat_gen and cntdnmodm.
 
-Provide a detailed account of your methodology. The steps taken should be able to be easily followed and reproducible if necessary.
+```pure
++--------------------------------------------------------------------------------------+
+; Fitter Summary                                                                       ;
++------------------------------------+-------------------------------------------------+
+; Fitter Status                      ; Successful - Wed Mar 31 11:50:15 2021           ;
+; Quartus II 32-bit Version          ; 13.0.1 Build 232 06/12/2013 SP 1 SJ Web Edition ;
+; Revision Name                      ; de1_heartbeat_gen                               ;
+; Top-level Entity Name              ; de1_heartbeat_gen                               ;
+; Family                             ; Cyclone II                                      ;
+; Device                             ; EP2C20F484C7                                    ;
+; Timing Models                      ; Final                                           ;
+; Total logic elements               ; 50 / 18,752 ( < 1 % )                           ;
+;     Total combinational functions  ; 50 / 18,752 ( < 1 % )                           ;
+;     Dedicated logic registers      ; 26 / 18,752 ( < 1 % )                           ;
+; Total registers                    ; 26                                              ;
+; Total pins                         ; 15 / 315 ( 5 % )                                ;
+; Total virtual pins                 ; 0                                               ;
+; Total memory bits                  ; 0 / 239,616 ( 0 % )                             ;
+; Embedded Multiplier 9-bit elements ; 0 / 52 ( 0 % )                                  ;
+; Total PLLs                         ; 0 / 4 ( 0 % )                                   ;
++------------------------------------+-------------------------------------------------+
+```
 
-# 192.168.XX.240
+```pure
 
-## PoC Code
++----------------------------------------------------------------------------------------+
+; TimeQuest Timing Analyzer Summary                                                      ;
++--------------------+-------------------------------------------------------------------+
+; Quartus II Version ; Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Web Edition ;
+; Revision Name      ; de1_heartbeat_gen                                                 ;
+; Device Family      ; Cyclone II                                                        ;
+; Device Name        ; EP2C20F484C7                                                      ;
+; Timing Models      ; Final                                                             ;
+; Delay Model        ; Combined                                                          ;
+; Rise/Fall Delays   ; Unavailable                                                       ;
++--------------------+-------------------------------------------------------------------+
 
-Provide the final proof of concept code used to gain access to the server.
+-----------------------------------------+
+; Clocks                                 ; 
++------------+------+--------+-----------+
+; Clock Name ; Type ; Period ; Frequency ;
++------------+------+--------+-----------+
+; CLOCK_50	 ; Base ; 20.000 ; 50.0 MHz	 ;
++------------+------+--------+-----------+
 
-## Screenshot
 
-Screenshot requirements are detailed in the control panel.
++-----------------------------------------------------------------------------+
+; Multicorner Timing Analysis Summary                                         ;
++------------------+-------+-------+----------+---------+---------------------+
+; Clock            ; Setup ; Hold  ; Recovery ; Removal ; Minimum Pulse Width ;
++------------------+-------+-------+----------+---------+---------------------+
+; Worst-case Slack ; 3.390 ; 0.241 ; 13.381   ; 3.796   ; 8.889               ;
+;  CLOCK_50        ; 3.390 ; 0.241 ; 13.381   ; 3.796   ; 8.889               ;
+; Design-wide TNS  ; 0.0   ; 0.0   ; 0.0      ; 0.0     ; 0.0                 ;
+;  CLOCK_50        ; 0.000 ; 0.000 ; 0.000    ; 0.000   ; 0.000               ;
++------------------+-------+-------+----------+---------+---------------------+
+```
 
-![ImgPlaceholder](src/placeholder-image-300x225.png)
+Application Note
+================
 
-## Steps
+The following test environment on a DE1 prototype board uses a system clock frequency of 50 MHz.
+A prescaler is parameterised to generate an output signal with a period of 1 ms.
 
-Provide a detailed account of your methodology in creating the exploit. The steps taken should be able to be easily followed and reproducible if necessary.
+![Test Environment on DE1 Prototype Board](images/de1_heartbeat_gen_schematic.pdf){width=70%}
 
-# Additional Items Not Mentioned in the Report
 
-This section is placed for any additional items that were not mentioned in the overall report.
+
+Appendix
+========
+
+References
+----------
+
+* [Wiki: Electrocardiography](https://en.wikipedia.org/wiki/Electrocardiography)
+
+Project Hierarchy
+-----------------
+
+### Module Hierarchy for Verification
+
+```pure
+t_heartbeat_gen(tbench)
+  heartbeat_gen(rtl)
+```
+
+### Prototype Environment
+
+```pure
+de1_heartbeat_gen(structure)
+  heartbeat_gen(rtl)
+  cntdnmodm(rtl)
+```
+
+VHDL Sources
+------------
+
+```vhdl
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+
+ENTITY heartbeat_gen IS
+  PORT (clk_i   : IN  std_ulogic;
+        rst_ni  : IN  std_ulogic;
+        en_pi   : IN  std_ulogic;
+        count_o : OUT std_ulogic_vector;
+        heartbeat_o : OUT std_ulogic
+        );
+END heartbeat_gen;
+```
+
+```vhdl
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+USE IEEE.numeric_std.ALL;
+
+ARCHITECTURE rtl OF heartbeat_gen IS
+
+  CONSTANT n    : natural                := 10;
+  CONSTANT zero : unsigned(n-1 DOWNTO 0) := (OTHERS => '0');
+
+  CONSTANT heartbeat_period : unsigned(n-1 DOWNTO 0) := to_unsigned(833, n);
+  CONSTANT qrs_width        : unsigned(n-1 DOWNTO 0) := to_unsigned(100, n);
+  CONSTANT st_width
+  CONSTANT t_width
+  CONSTANT qt_width
+
+  SIGNAL next_state, current_state : unsigned(n-1 DOWNTO 0);
+
+  SIGNAL tc_qrs                    : std_ulogic;  -- qrs interval
+  SIGNAL tc_t                      : std_ulogic;  -- T wave
+
+BEGIN
+
+  next_state_logic : 
+                     
+
+
+  state_register : 
+                   
+
+  -- output_logic
+  t_wave : tc_t <= 
+                   
+                   
+                   
+  qrs_complex : tc_qrs <= 
+                          
+
+  output_value : heartbeat_o <= 
+
+
+END rtl;
+```
+
+Revision History
+----------------
+
+| **Date**  | **Version**  | **Change Summary**  |
+|:----------|:-------------|:--------------------|
+| May 2020  | 0.1  | Initial Release  |
+| April 2021  | 0.2  | Added parameterisation  |
+
