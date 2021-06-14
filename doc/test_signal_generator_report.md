@@ -3,9 +3,13 @@
 Introduction
 ============
 
-A test signal generator is a form of apparatus used to form stimuli for external items in need of test.
-While a test signal generator can take an infinite number of forms, for the purposes of the project we will limit
-the outputs to PWM (Pulse Width Modulation), noise and a pattern
+Digital test signal generators(TSG) is a type of  avalabe external mesurement equipment that is avalable from a number of diffrent venders. These pieces of equipment produce a range of stimulant elctrical signals that can be used to check the operation of other electrical devices. The goal of this  module is to produce an on-chip version of this system with the following essential features incuded in the archetecture and desgin:
+• Single pulse with variable duty cycle and frequency
+• Digital noise based on pseudo random binary sequences of diferent length
+• Arbitrary data bus sequences at selectable speed
+• Internal/External Trigger
+• External Time Base
+Each of these fetures is nessary for the TSG to produce a set of data that can be used to give an enginer a informated veiwpoint on their desgin so that they can modify it so that it lands within specification. 
 
 
 Features
