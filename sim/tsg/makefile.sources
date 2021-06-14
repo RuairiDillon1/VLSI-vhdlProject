@@ -16,6 +16,7 @@ SYN_SOURCE_FILES = \
 ../../src/uart_clk_div.vhd \
 ../../src/uart_parity.vhd \
 ../../src/serial_rx.vhd \
+../../src/serial_tx.vhd \
 ../../src/serial_receiver_reg.vhd \
 ../../src/serial_receiver_fsm.vhd \
 ../../src/regfile_rtl.vhd \
@@ -27,6 +28,7 @@ SYN_SOURCE_FILES = \
 ../../src/pattern_generator_fsm.vhd \
 ../../src/cntup_addr.vhd \
 ../../src/sp_ssram_rtl.vhd \
+../../src/cntdnmodm_rtl.vhd  
 
 
 # do not delete this line
