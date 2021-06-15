@@ -55,3 +55,15 @@ set_location_assignment PIN_L8 -to HEX3[4]
 set_location_assignment PIN_F3 -to HEX3[5]
 set_location_assignment PIN_D4 -to HEX3[6]
 # ----------------------------------------------------------------------------
+# pins for debugging
+# ----------------------------------------------------------------------------
+set_location_assignment PIN_H12 -to GPO_1[0]
+set_location_assignment PIN_H13 -to GPO_1[1]
+set_location_assignment PIN_H14 -to GPO_1[2]
+set_location_assignment PIN_G15 -to GPO_1[3]
+set_location_assignment PIN_E14 -to GPO_1[4]
+set_location_assignment PIN_E15 -to GPO_1[5]
+set_location_assignment PIN_F15 -to GPO_1[6]
+set_location_assignment PIN_G16 -to GPO_1[7]
+set_location_assignment PIN_F12 -to GPO_1[8]
+# ----------------------------------------------------------------------------
