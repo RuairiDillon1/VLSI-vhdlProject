@@ -6,21 +6,31 @@ ENTITY de1_tsg IS
   PORT (
     CLOCK_50 : IN std_ulogic;           -- 50 MHz Clock
 
-    KEY0 : IN std_ulogic;  -- KEY[0] = rst_ni
-                                             
-    KEY2 : IN std_ulogic;  -- KEY[2] = ext_trig
-    SW0 : IN std_ulogic;                     -- SW0=0 pattern_o LEDR[7:0]
+    KEY0 : IN std_ulogic;               -- KEY[0] = rst_ni
+
+    KEY2 : IN std_ulogic;               -- KEY[2] = ext_trig
+    SW0  : IN std_ulogic;               -- SW0=0 pattern_o LEDR[7:0]
     -- SW0=1 prbs_o LEDR[7:0]
 
     UART_RXD : IN std_ulogic;           -- UART_RXD = rxd_i
 
-    LEDR : OUT std_ulogic_vector(9 DOWNTO 0);  -- LEDR[9] = pwm_o
-    LEDG : OUT std_ulogic_vector(7 DOWNTO 0);  -- LEDG[7] = noise_o, [5:3]
-                                               -- = ALU, [1:0] = KEY
-    HEX0 : OUT std_ulogic_vector(6 DOWNTO 0);  -- register data low
-    HEX1 : OUT std_ulogic_vector(6 DOWNTO 0);  -- register data high
-    HEX2 : OUT std_ulogic_vector(6 DOWNTO 0);  -- register address
-    HEX3 : OUT std_ulogic_vector(6 DOWNTO 0)  -- sequence count
+    LEDR  : OUT std_ulogic_vector(9 DOWNTO 0);  -- LEDR[9] = pwm_o
+    LEDG  : OUT std_ulogic_vector(7 DOWNTO 0);  -- LEDG[7] = noise_o, [5:3]
+                                                -- = ALU, [1:0] = KEY
+    HEX0  : OUT std_ulogic_vector(6 DOWNTO 0);  -- register data low
+    HEX1  : OUT std_ulogic_vector(6 DOWNTO 0);  -- register data high
+    HEX2  : OUT std_ulogic_vector(6 DOWNTO 0);  -- register address
+    HEX3  : OUT std_ulogic_vector(6 DOWNTO 0);  -- sequence count
+    GPO_1 : OUT std_ulogic_vector(8 DOWNTO 0)   -- Output Connector GPO_1
+                                                -- GPO_1[0] = clk_i
+                                                -- GPO_1[1] = en_serial_i
+                                                -- GPO_1[2] = serial_data_i
+                                                -- GPO_1[3] = rxd_rdy_o
+                                                -- GPO_1[4] = frame_err_o 
+                                                -- GPO_1[5] = parity_err_o
+                                                -- GPO_1[6] = pwm
+                                                -- GPO_1[7] = noise
+                                                -- GPO_1[8] = eoc
     );
 END ENTITY de1_tsg;
 
@@ -107,13 +117,22 @@ ARCHITECTURE structure OF de1_tsg IS
 
   SIGNAL en_seq_cnt  : std_ulogic;
   SIGNAL count_value : unsigned(3 DOWNTO 0);
-  
-  signal pwm : std_ulogic;
-  signal noise : std_ulogic;
-  signal prbs : std_ulogic_vector(22 downto 0);
-  signal pattern : std_ulogic_vector(7 downto 0);
-  signal addr_reg : std_ulogic_vector(7 downto 0);
-  signal data_reg : std_ulogic_vector(7 downto 0);
+
+  SIGNAL pwm      : std_ulogic;
+  SIGNAL noise    : std_ulogic;
+  SIGNAL prbs     : std_ulogic_vector(22 DOWNTO 0);
+  SIGNAL pattern  : std_ulogic_vector(7 DOWNTO 0);
+  SIGNAL addr_reg : std_ulogic_vector(7 DOWNTO 0);
+  SIGNAL data_reg : std_ulogic_vector(7 DOWNTO 0);
+
+  -----------------------------------------------------------------------------
+  -- signals for debugging at GPIO
+  -----------------------------------------------------------------------------
+  SIGNAL rxd_rdy    : std_ulogic;
+  SIGNAL parity_err : std_ulogic;
+  SIGNAL frame_err  : std_ulogic;
+  SIGNAL eoc        : std_ulogic;
+  -----------------------------------------------------------------------------
 
 BEGIN
 
@@ -223,5 +242,35 @@ BEGIN
   LEDR(8) <= '0';
   LEDG(6) <= '0';
   LEDG(2) <= '0';
+
+  -----------------------------------------------------------------------------
+  -- debugging
+  -----------------------------------------------------------------------------
+  -- clk_i routed to output port
+  GPO_1(0) <= clk_i;
+
+  -- baud rate oversampling
+  GPO_1(1) <= en_serial_i;
+
+  -- serial data input connected to GPIO
+  GPO_1(2) <= serial_data_i;
+
+  -- finished transfer cyle
+  GPO_1(3) <= rxd_rdy;
+
+  -- frame error
+  GPO_1(4) <= frame_err;
+
+  -- parity error
+  GPO_1(5) <= parity_err;
+
+  -- pwm
+  GPO_1(6) <= pwm;
+
+  -- noise
+  GPO_1(7) <= noise;
+
+  -- noise
+  GPO_1(8) <= eoc;
 
 END ARCHITECTURE structure;
