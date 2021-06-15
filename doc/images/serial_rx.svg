@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="14.24cm" height="7cm">
+<style type="text/css" >
+	<![CDATA[
+	/* Text styles */
+	.label {
+		font-family: Arial;
+		font-size: 10pt;
+		font-weight: normal;
+	}
+
+	.entity {
+		font-family: Arial;
+		font-size: 12pt;
+		font-weight: bold;
+	}
+
+	.port {
+		font-family: Arial;
+		font-size: 12pt;
+		font-weight: normal;
+	}
+
+	.vector {
+		font-family: Arial;
+		font-size: 10pt;
+		font-weight: normal;
+	}
+
+	.generics {
+		font-family: Arial;
+		font-size: 10pt;
+		font-weight: normal;
+	}
+
+	/* Text alignment */
+	.right {
+		dominant-baseline: central;
+		text-anchor: end;
+	}
+
+	.left {
+		dominant-baseline: central;
+		text-anchor: start;
+	}
+
+	.center {
+		dominant-baseline: central;
+		text-anchor: middle;
+	}
+
+	/* Shape styles */
+	.entityBox {
+		stroke-width: 0.05cm;
+		stroke: #000000;
+		fill: #FFFFFF;
+	}
+
+	.portBox {
+		stroke-width: 0.00cm;
+		stroke: #FFF;
+		fill: #FFFFFF;
+	}
+
+	.labelBox {
+		stroke-width: 0.00cm;
+		stroke: #000000;
+		fill: #FFFFFF;
+	}
+
+	.vectorLength {
+		stroke-width: 0.00cm;
+		fill: #FFFFFF;
+	}
+
+	.genericsBox {
+		stroke-width: 0.02cm;
+		stroke: #BFBFBF;
+		fill: #F2F2F2;
+	}
+
+	.connector {
+		stroke-width: 0.025cm;
+		stroke: #000000;
+		fill: #FFFFFF;
+	}
+
+	]]>
+</style>
+<g>
+<rect class="genericsBox" x="8.99284cm" y="0.5cm" width="4.74715cm" height="1cm" />
+<text class="generics" x="9.11784cm" y="0.875cm" >CLK_DIV_VAL = 16</text>
+<text class="generics" x="9.11784cm" y="1.375cm" >PARITY_BIT = "none"</text>
+</g>
+<g>
+<rect class="labelBox" x="1.5cm" y="0.5cm" width="7.49284cm" height="1cm" />
+<text class="label center" x="5.24642cm" y="1cm" ></text>
+<rect class="entityBox" x="1.475cm" y="1.475cm" width="7.54284cm" height="5.05cm" />
+<text class="entity center" x="5.24642cm" y="2cm" >serial_rx</text>
+<rect class="portBox" x="1.5cm" y="2.5cm" width="3.74642cm" height="1cm" />
+<text class="port left" x="1.75cm" y="3cm" >CLK</text>
+<line class="connector" x1="1.5cm" y1="3cm" x2="0.5cm" y2="3cm" />
+<rect class="portBox" x="1.5cm" y="3.5cm" width="3.74642cm" height="1cm" />
+<text class="port left" x="1.75cm" y="4cm" >RST</text>
+<line class="connector" x1="1.5cm" y1="4cm" x2="0.5cm" y2="4cm" />
+<rect class="portBox" x="1.5cm" y="4.5cm" width="3.74642cm" height="1cm" />
+<text class="port left" x="1.75cm" y="5cm" >UART_CLK_EN</text>
+<line class="connector" x1="1.5cm" y1="5cm" x2="0.5cm" y2="5cm" />
+<rect class="portBox" x="1.5cm" y="5.5cm" width="3.74642cm" height="1cm" />
+<text class="port left" x="1.75cm" y="6cm" >UART_RXD</text>
+<line class="connector" x1="1.5cm" y1="6cm" x2="0.5cm" y2="6cm" />
+<rect class="portBox" x="5.24642cm" y="2.5cm" width="3.74642cm" height="1cm" />
+<text class="port right" x="8.74284cm" y="3cm" >DOUT</text>
+<line class="connector" x1="8.99284cm" y1="3cm" x2="9.99284cm" y2="3cm" />
+<line class="connector" x1="9.24284cm" y1="3.25cm" x2="9.74284cm" y2="2.75cm" />
+<text class="vector left" x="9.39284cm" y="2.6cm" >8</text>
+<rect class="portBox" x="5.24642cm" y="3.5cm" width="3.74642cm" height="1cm" />
+<text class="port right" x="8.74284cm" y="4cm" >DOUT_VLD</text>
+<line class="connector" x1="8.99284cm" y1="4cm" x2="9.99284cm" y2="4cm" />
+<rect class="portBox" x="5.24642cm" y="4.5cm" width="3.74642cm" height="1cm" />
+<text class="port right" x="8.74284cm" y="5cm" >FRAME_ERROR</text>
+<line class="connector" x1="8.99284cm" y1="5cm" x2="9.99284cm" y2="5cm" />
+<rect class="portBox" x="5.24642cm" y="5.5cm" width="3.74642cm" height="1cm" />
+<text class="port right" x="8.74284cm" y="6cm" >PARITY_ERROR</text>
+<line class="connector" x1="8.99284cm" y1="6cm" x2="9.99284cm" y2="6cm" />
+</g>
+</svg>

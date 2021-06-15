@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19.0582cm" height="14cm">
+<style type="text/css" >
+	<![CDATA[
+	/* Text styles */
+	.label {
+		font-family: Arial;
+		font-size: 10pt;
+		font-weight: normal;
+	}
+
+	.entity {
+		font-family: Arial;
+		font-size: 12pt;
+		font-weight: bold;
+	}
+
+	.port {
+		font-family: Arial;
+		font-size: 12pt;
+		font-weight: normal;
+	}
+
+	.vector {
+		font-family: Arial;
+		font-size: 10pt;
+		font-weight: normal;
+	}
+
+	.generics {
+		font-family: Arial;
+		font-size: 10pt;
+		font-weight: normal;
+	}
+
+	/* Text alignment */
+	.right {
+		dominant-baseline: central;
+		text-anchor: end;
+	}
+
+	.left {
+		dominant-baseline: central;
+		text-anchor: start;
+	}
+
+	.center {
+		dominant-baseline: central;
+		text-anchor: middle;
+	}
+
+	/* Shape styles */
+	.entityBox {
+		stroke-width: 0.05cm;
+		stroke: #000000;
+		fill: #FFFFFF;
+	}
+
+	.portBox {
+		stroke-width: 0.00cm;
+		stroke: #FFF;
+		fill: #FFFFFF;
+	}
+
+	.labelBox {
+		stroke-width: 0.00cm;
+		stroke: #000000;
+		fill: #FFFFFF;
+	}
+
+	.vectorLength {
+		stroke-width: 0.00cm;
+		fill: #FFFFFF;
+	}
+
+	.genericsBox {
+		stroke-width: 0.02cm;
+		stroke: #BFBFBF;
+		fill: #F2F2F2;
+	}
+
+	.connector {
+		stroke-width: 0.025cm;
+		stroke: #000000;
+		fill: #FFFFFF;
+	}
+
+	]]>
+</style>
+<g>
+<rect class="genericsBox" x="14.913cm" y="0.5cm" width="3.64515cm" height="1cm" />
+<text class="generics" x="15.038cm" y="0.875cm" >ADDR_WIDTH = 4</text>
+<text class="generics" x="15.038cm" y="1.375cm" >DATA_WIDTH = 8</text>
+</g>
+<g>
+<rect class="labelBox" x="3.71746cm" y="0.5cm" width="11.1956cm" height="1cm" />
+<text class="label center" x="9.31524cm" y="1cm" ></text>
+<rect class="entityBox" x="3.69246cm" y="1.475cm" width="11.2456cm" height="12.05cm" />
+<text class="entity center" x="9.31524cm" y="2cm" >regfile</text>
+<rect class="portBox" x="3.71746cm" y="2.5cm" width="5.59778cm" height="1cm" />
+<text class="port left" x="3.96746cm" y="3cm" >wr_en_i</text>
+<line class="connector" x1="3.71746cm" y1="3cm" x2="2.71746cm" y2="3cm" />
+<rect class="portBox" x="3.71746cm" y="3.5cm" width="5.59778cm" height="1cm" />
+<text class="port left" x="3.96746cm" y="4cm" >w_addr_i</text>
+<line class="connector" x1="3.71746cm" y1="4cm" x2="2.71746cm" y2="4cm" />
+<line class="connector" x1="2.96746cm" y1="4.25cm" x2="3.46746cm" y2="3.75cm" />
+<text class="vector right" x="3.31746cm" y="3.6cm" >ADDR_WIDTH</text>
+<rect class="portBox" x="3.71746cm" y="4.5cm" width="5.59778cm" height="1cm" />
+<text class="port left" x="3.96746cm" y="5cm" >r_addr_i</text>
+<line class="connector" x1="3.71746cm" y1="5cm" x2="2.71746cm" y2="5cm" />
+<line class="connector" x1="2.96746cm" y1="5.25cm" x2="3.46746cm" y2="4.75cm" />
+<text class="vector right" x="3.31746cm" y="4.6cm" >ADDR_WIDTH</text>
+<rect class="portBox" x="3.71746cm" y="5.5cm" width="5.59778cm" height="1cm" />
+<text class="port left" x="3.96746cm" y="6cm" >w_data_i</text>
+<line class="connector" x1="3.71746cm" y1="6cm" x2="2.71746cm" y2="6cm" />
+<line class="connector" x1="2.96746cm" y1="6.25cm" x2="3.46746cm" y2="5.75cm" />
+<text class="vector right" x="3.31746cm" y="5.6cm" >DATA_WIDTH</text>
+<rect class="portBox" x="9.31524cm" y="2.5cm" width="5.59778cm" height="1cm" />
+<text class="port right" x="14.663cm" y="3cm" >system_control_o</text>
+<line class="connector" x1="14.913cm" y1="3cm" x2="15.913cm" y2="3cm" />
+<line class="connector" x1="15.163cm" y1="3.25cm" x2="15.663cm" y2="2.75cm" />
+<text class="vector left" x="15.313cm" y="2.6cm" >2</text>
+<rect class="portBox" x="9.31524cm" y="3.5cm" width="5.59778cm" height="1cm" />
+<text class="port right" x="14.663cm" y="4cm" >pwm_pulse_width_o</text>
+<line class="connector" x1="14.913cm" y1="4cm" x2="15.913cm" y2="4cm" />
+<line class="connector" x1="15.163cm" y1="4.25cm" x2="15.663cm" y2="3.75cm" />
+<text class="vector left" x="15.313cm" y="3.6cm" >DATA_WIDTH</text>
+<rect class="portBox" x="9.31524cm" y="4.5cm" width="5.59778cm" height="1cm" />
+<text class="port right" x="14.663cm" y="5cm" >pwm_period_o</text>
+<line class="connector" x1="14.913cm" y1="5cm" x2="15.913cm" y2="5cm" />
+<line class="connector" x1="15.163cm" y1="5.25cm" x2="15.663cm" y2="4.75cm" />
+<text class="vector left" x="15.313cm" y="4.6cm" >DATA_WIDTH</text>
+<rect class="portBox" x="9.31524cm" y="5.5cm" width="5.59778cm" height="1cm" />
+<text class="port right" x="14.663cm" y="6cm" >pwm_control_o</text>
+<line class="connector" x1="14.913cm" y1="6cm" x2="15.913cm" y2="6cm" />
+<line class="connector" x1="15.163cm" y1="6.25cm" x2="15.663cm" y2="5.75cm" />
+<text class="vector left" x="15.313cm" y="5.6cm" >2</text>
+<rect class="portBox" x="9.31524cm" y="6.5cm" width="5.59778cm" height="1cm" />
+<text class="port right" x="14.663cm" y="7cm" >noise_length_o</text>
+<line class="connector" x1="14.913cm" y1="7cm" x2="15.913cm" y2="7cm" />
+<line class="connector" x1="15.163cm" y1="7.25cm" x2="15.663cm" y2="6.75cm" />
+<text class="vector left" x="15.313cm" y="6.6cm" >DATA_WIDTH</text>
+<rect class="portBox" x="9.31524cm" y="7.5cm" width="5.59778cm" height="1cm" />
+<text class="port right" x="14.663cm" y="8cm" >noise_period_o</text>
+<line class="connector" x1="14.913cm" y1="8cm" x2="15.913cm" y2="8cm" />
+<line class="connector" x1="15.163cm" y1="8.25cm" x2="15.663cm" y2="7.75cm" />
+<text class="vector left" x="15.313cm" y="7.6cm" >DATA_WIDTH</text>
+<rect class="portBox" x="9.31524cm" y="8.5cm" width="5.59778cm" height="1cm" />
+<text class="port right" x="14.663cm" y="9cm" >noise_control_o</text>
+<line class="connector" x1="14.913cm" y1="9cm" x2="15.913cm" y2="9cm" />
+<line class="connector" x1="15.163cm" y1="9.25cm" x2="15.663cm" y2="8.75cm" />
+<text class="vector left" x="15.313cm" y="8.6cm" >2</text>
+<rect class="portBox" x="9.31524cm" y="9.5cm" width="5.59778cm" height="1cm" />
+<text class="port right" x="14.663cm" y="10cm" >pattern_mem_depth_o</text>
+<line class="connector" x1="14.913cm" y1="10cm" x2="15.913cm" y2="10cm" />
+<line class="connector" x1="15.163cm" y1="10.25cm" x2="15.663cm" y2="9.75cm" />
+<text class="vector left" x="15.313cm" y="9.6cm" >DATA_WIDTH</text>
+<rect class="portBox" x="9.31524cm" y="10.5cm" width="5.59778cm" height="1cm" />
+<text class="port right" x="14.663cm" y="11cm" >pattern_period_o</text>
+<line class="connector" x1="14.913cm" y1="11cm" x2="15.913cm" y2="11cm" />
+<line class="connector" x1="15.163cm" y1="11.25cm" x2="15.663cm" y2="10.75cm" />
+<text class="vector left" x="15.313cm" y="10.6cm" >DATA_WIDTH</text>
+<rect class="portBox" x="9.31524cm" y="11.5cm" width="5.59778cm" height="1cm" />
+<text class="port right" x="14.663cm" y="12cm" >pattern_control_o</text>
+<line class="connector" x1="14.913cm" y1="12cm" x2="15.913cm" y2="12cm" />
+<line class="connector" x1="15.163cm" y1="12.25cm" x2="15.663cm" y2="11.75cm" />
+<text class="vector left" x="15.313cm" y="11.6cm" >3</text>
+<rect class="portBox" x="9.31524cm" y="12.5cm" width="5.59778cm" height="1cm" />
+<text class="port right" x="14.663cm" y="13cm" >r_data_o</text>
+<line class="connector" x1="14.913cm" y1="13cm" x2="15.913cm" y2="13cm" />
+<line class="connector" x1="15.163cm" y1="13.25cm" x2="15.663cm" y2="12.75cm" />
+<text class="vector left" x="15.313cm" y="12.6cm" >DATA_WIDTH</text>
+<rect class="portBox" x="3.71746cm" y="12.5cm" width="5.59778cm" height="1cm" />
+<text class="port left" x="3.96746cm" y="13cm" >clk_i</text>
+<line class="connector" x1="2.71746cm" y1="13cm" x2="3.71746cm" y2="13cm" />
+<line class="connector" x1="3.71746cm" y1="12.85cm" x2="3.91746cm" y2="13cm" />
+<line class="connector" x1="3.71746cm" y1="13.15cm" x2="3.91746cm" y2="13cm" />
+</g>
+</svg>

@@ -3,32 +3,23 @@
 Introduction
 ============
 
-Digital test signal generators(TSG) is a type of  avalabe external mesurement equipment that is avalable from a number of diffrent venders. These pieces of equipment produce a range of stimulant elctrical signals that can be used to check the operation of other electrical devices. The goal of this  module is to produce an on-chip version of this system with the following essential features incuded in the archetecture and desgin:
-• Single pulse with variable duty cycle and frequency
-• Digital noise based on pseudo random binary sequences of diferent length
-• Arbitrary data bus sequences at selectable speed
-• Internal/External Trigger
-• External Time Base
-Each of these fetures is nessary for the TSG to produce a set of data that can be used to give an enginer a informated veiwpoint on their desgin so that they can modify it so that it lands within specification. 
+Digital test signal generators (TSG) are a type of external measurement equipment that are available from several different vendors. These pieces of equipment produce a range of electrical stimuli signals that can be used to check the operation of other electrical devices. The goal of this module is to produce an on-chip version of this system with the following essential features included in the architecture and design:
+• Single pulse with variable duty cycle and frequency.
+• Digital noise based on pseudo random binary sequences of different length.
+• Arbitrary data bus sequences at selectable speed.
+• Internal/External Trigger.
+• External Time Base.
+Each of these features are necessary for the TSG to produce a dataset that can be used to give an engineer an informative viewpoint on their design so that they can modify it so that it lands within specification.
 
 
 Features
 ========
-
-Normal rhythm produces four entities – a P wave, a QRS complex, a T wave, and a U wave – that each
-have a fairly unique pattern. [[1]](https://en.wikipedia.org/wiki/Electrocardiography)
-
-For simplicity the existing heartbeat modules generates the QRS complex and T wave only. 
-
-  * Models QRS-Complex and T-Wave
-  * Average time values based on 72 bpm
-  * Enable input for external prescaler
-
-
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis condimentum sem consectetur ultrices. Cras malesuada porttitor nisl euismod imperdiet. Pellentesque risus sem, iaculis eu aliquet sit amet, porta ut augue. Etiam libero tortor, suscipit vel suscipit ut, accumsan id lorem. Proin vel leo a dolor facilisis viverra vitae vel tellus. Pellentesque vestibulum, nunc vel gravida condimentum, erat quam eleifend quam, quis volutpat ex erat sit amet ante. Nulla porta ligula at tortor varius fringilla. Mauris sed sceler
 General Description
 ===================
 
 - description of tsg and split up view of tsg, register file configuration
+
 
 ![Heartbeat Generator - Schematic Symbol](images/heartbeat_gen_symbol.pdf){width=40%}
 
@@ -50,10 +41,15 @@ Functional Description
 - describe what pwm, lfsr and uart is
 
 ## UART serial communication
+A universal asynchronous receiver/transmitter (UART) is a block of circuitry responsible for implementing 
+serial communication. Essentially, the UART acts as an intermediary between parallel and 
+serial interfaces. Communication between devices in this project is executed using UART.
 
 ## Pattern generator
 
 ## Pulse-width modulation
+Pulse width modulators are a vital and commonly found tool found in industry for control. 
+It is significant due to the fact it allows a digital signal to control analog devices.
 
 ## Pseudo-random number generator (LFSR)
 
@@ -75,11 +71,83 @@ Design Description
 
 ## Register file
 
+![Implemented Register File - Schematic](images/regfile.png){width=80%}
+
+| **Name**            | **Type**                      | **Direction** | **Polarity** | **Description** |
+|---------------------|-------------------------------|:-------------:|:------------:|-----------------|
+| clk_i               | std_ulogic                    | IN            | HIGH         |                 |
+| wr_en_i             | std_ulogic                    | IN            | HIGH         |                 |
+| w_addr_i            | std_ulogic_vector[ADDR_WIDTH] | IN            | HIGH         |                 |
+| r_addr_i            | std_ulogic_vector[ADDR_WIDTH] | IN            | HIGH         |                 |
+| w_data_i            | std_ulogic_vector[DATA_WIDTH] | IN            | HIGH         |                 |
+| system_control_o    | std_ulogic_vector[2]          | OUT           | HIGH         |                 |
+| pwm_pulse_width_o   | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| pwm_period_o        | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| pwm_control_o       | std_ulogic_vector[2]          | OUT           | HIGH         |                 |
+| noise_length_o      | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| noise_period_o      | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| noise_control_o     | std_ulogic_vector[2]          | OUT           | HIGH         |                 |
+| pattern_mem_depth_o | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| pattern_period_o    | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| pattern_control_o   | std_ulogic_vector[3]          | OUT           | HIGH         |                 |
+| r_data_o            | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+
+
+| **Name**   | **Type** | **Default value** |
+|------------|----------|-------------------|
+| ADDR_WIDTH | integer  | 4                 |
+| DATA_WIDTH | integer  | 8                 |
+
+
+
 ## UART serial receiver
+
+![Implemented Serial Reciever File - Schematic](images/serial_rx.png){width=80%}
+
+| **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
+|--------------|----------------------|:-------------:|:------------:|-----------------|
+| CLK          | std_ulogic           | IN            | HIGH         |                 |
+| RST          | std_ulogic           | IN            | HIGH         |                 |
+| UART_CLK_EN  | std_ulogic           | IN            | HIGH         |                 |
+| UART_RXD     | std_ulogic           | IN            | HIGH         |                 |
+| DOUT         | std_ulogic_vector[8] | OUT           | HIGH         |                 |
+| DOUT_VLD     | std_ulogic           | OUT           | HIGH         |                 |
+| FRAME_ERROR  | std_ulogic           | OUT           | HIGH         |                 |
+| PARITY_ERROR |                      | OUT           | HIGH         |                 |
+
+
+| **Name**    | **Type** | **Default value** |
+|-------------|----------|-------------------|
+| CLK_DIV_VAL | integer  | 16                |
+| PARITY_BIT  | string   | "none"            |
+
 
 ## Pattern generator
 
+![Implemented Pattern Generator File - Schematic](images/pattern_generator.png){width=80%}
+
+| **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
+|--------------|----------------------|:-------------:|:------------:|-----------------|
+| en_write_pm  | std_ulogic           | IN            | HIGH         |                 |
+| clk_i        | std_ulogic           | IN            | HIGH         |                 |
+| pm_control_i | std_ulogic_vector[2] | IN            | HIGH         |                 |
+| addr_cnt_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
+| rxd_data_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
+| pattern_o    | std_ulogic_vector[8] | OUT           | HIGH         |                 |
+
+
 ## Pulse-width modulation
+
+![Implemented PWM File - Schematic](images/pwm_generator.png){width=80%}
+
+| **Name**    | **Type**             | **Direction** | **Polarity** | **Description** |
+|-------------|----------------------|:-------------:|:------------:|-----------------|
+| en_pi       | std_ulogic           | IN            | HIGH         |                 |
+| rst_ni      | std_ulogic           | IN            | LOW          |                 |
+| pwm_width_i | std_ulogic_vector[8] | IN            | HIGH         |                 |
+| clk_i       | std_ulogic           | IN            | HIGH         |                 |
+| pwm_o       | std_ulogic           | OUT           | HIGH         |                 |
+
 
 ## Pseudo-random number generator (LFSR)
 
