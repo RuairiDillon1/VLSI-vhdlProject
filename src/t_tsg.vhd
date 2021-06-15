@@ -146,7 +146,7 @@ BEGIN  -- ARCHITECTURE tbench
     -- -------------------------------------------------------------------------
   --  Serial Transmitter
   -- -------------------------------------------------------------------------
-  serial_transmitter : ENTITY work.UART_TX
+  serial_transmitter : ENTITY work.UART_TX 
     GENERIC MAP (
       CLK_DIV_VAL => 16,
       PARITY_BIT  => "none")
@@ -264,8 +264,18 @@ BEGIN
   -- WAIT FOR 2*period;
   -- WAIT FOR 40*period;
 
+  
+  -- ext_trig_i <= '1';
+  -- WAIT FOR period;
+  -- ext_trig_i <= '0';
+  -- WAIT FOR 10*period;
+  -- ext_trig_i <= '1';
+  -- WAIT FOR period;
+  -- ext_trig_i <= '0';
+  -- WAIT FOR 10*period;
+
   -- pattern
-  -- pattern period 
+ -- pattern period 
   DIN     <= X"0e";
   DIN_VLD <= '1';
   WAIT FOR period;
@@ -273,7 +283,7 @@ BEGIN
   WAIT UNTIL rising_edge(DIN_RDY);
   WAIT UNTIL falling_edge(rxd_rdy_o);
   WAIT FOR 2*period;
-  DIN     <= X"01";
+  DIN     <= X"06";
   DIN_VLD <= '1';
   WAIT FOR period;
   DIN_VLD <= '0';
@@ -345,6 +355,7 @@ BEGIN
   WAIT UNTIL falling_edge(rxd_rdy_o);
   WAIT FOR 2*period;
 
+  
   ext_trig_i <= '1';
   WAIT FOR period;
   ext_trig_i <= '0';
@@ -355,7 +366,7 @@ BEGIN
   WAIT FOR 10*period;
 
   -- -- pwm
-  -- -- pwm period
+  -- pwm period
   -- DIN     <= X"05";
   -- DIN_VLD <= '1';
   -- WAIT FOR period;
@@ -395,7 +406,7 @@ BEGIN
   -- WAIT UNTIL rising_edge(DIN_RDY);
   -- WAIT UNTIL falling_edge(rxd_rdy_o);
   -- WAIT FOR 2*period;
-  -- DIN     <= X"01";
+  -- DIN     <= X"03";
   -- DIN_VLD <= '1';
   -- WAIT FOR period;
   -- DIN_VLD <= '0';
@@ -403,8 +414,21 @@ BEGIN
   -- WAIT UNTIL falling_edge(rxd_rdy_o);
   -- WAIT FOR 2*period;
 
-  -- WAIT UNTIL rising_edge(pwm_o);
+--  WAIT UNTIL rising_edge(pwm_o);
+--  WAIT FOR 10*period;
+
+
+  -- ext_trig_i <= '1';
+  -- WAIT FOR period;
+  -- ext_trig_i <= '0';
   -- WAIT FOR 10*period;
+  -- ext_trig_i <= '1';
+  -- WAIT FOR period;
+  -- ext_trig_i <= '0';
+  -- WAIT FOR 10*period;
+
+
+  
   
   clken_p <= false;                   -- switch clock generator off
   
