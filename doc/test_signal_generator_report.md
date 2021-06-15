@@ -28,6 +28,8 @@ For simplicity the existing heartbeat modules generates the QRS complex and T wa
 General Description
 ===================
 
+- description of tsg and split up view of tsg, register file configuration
+
 ![Heartbeat Generator - Schematic Symbol](images/heartbeat_gen_symbol.pdf){width=40%}
 
 | **Name**       | **Type**          | **Direction** | **Polarity** | **Description**     |
@@ -45,6 +47,16 @@ General Description
 Functional Description
 ======================
 
+- describe what pwm, lfsr and uart is
+
+## UART serial communication
+
+## Pattern generator
+
+## Pulse-width modulation
+
+## Pseudo-random number generator (LFSR)
+
 The shape of an [electrogardiogramm](https://en.wikipedia.org/wiki/Electrocardiography) as a voltage graph over time
 
 
@@ -58,6 +70,20 @@ The important QRS complex and T wave are modelled as digital pulses.
 
 Design Description
 ==================
+
+- component implementations
+
+## Register file
+
+## UART serial receiver
+
+## Pattern generator
+
+## Pulse-width modulation
+
+## Pseudo-random number generator (LFSR)
+
+## Enable and external triggering
 
 A conceptional RTL diagram is shown below.
 
@@ -138,6 +164,8 @@ The following table shows the utilisation of both modules heartbeat_gen and cntd
 
 Application Note
 ================
+
+- de1 tsg description
 
 The following test environment on a DE1 prototype board uses a system clock frequency of 50 MHz.
 A prescaler is parameterised to generate an output signal with a period of 1 ms.
