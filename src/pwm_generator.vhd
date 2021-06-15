@@ -17,7 +17,9 @@ END pwm_generator;
 
 ARCHITECTURE rtl OF pwm_generator IS
 
-SIGNAL next_state, current_state : unsigned(7 DOWNTO 0);  -- states
+  SIGNAL next_state, current_state : unsigned(7 DOWNTO 0);  -- states
+
+  SIGNAL pwm_temp : std_ulogic;
 
 BEGIN 
 
@@ -28,7 +30,10 @@ BEGIN
                                     next_state WHEN rising_edge(clk_i) AND (en_pi = '1');
 
 
-  counter_output : pwm_o <= '1' WHEN current_state < unsigned(pwm_width_i) ELSE
-                            '0';
+  counter_output : pwm_temp <= '1' WHEN current_state < unsigned(pwm_width_i) ELSE
+                               '0';
+
+  output_register : pwm_o <= '0' WHEN rst_ni = '0' ELSE
+                             pwm_temp WHEN rising_edge(clk_i);
 
 END rtl;

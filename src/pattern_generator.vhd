@@ -31,6 +31,7 @@ ARCHITECTURE structure OF pattern_generator IS
   CONSTANT data_width : natural := 8;
 
   SIGNAL pm_out             : std_ulogic_vector(data_width - 1 DOWNTO 0);
+  SIGNAL pattern_temp : std_ulogic_vector(data_width - 1 DOWNTO 0);
 
 BEGIN
 
@@ -46,10 +47,12 @@ BEGIN
       q_o    => pm_out);
 
   WITH pm_control_i SELECT
-    pattern_o <= (OTHERS => '0') WHEN "00",  -- stop
+    pattern_temp <= (OTHERS => '0') WHEN "00",  -- stop
     pm_out                       WHEN "01",  -- single burst
     pm_out                       WHEN "10",  -- continous burst
     (OTHERS              => '0') WHEN "11",  -- load
     (OTHERS              => '0') WHEN OTHERS;
+
+  output_register : pattern_o <= pattern_temp WHEN rising_edge(clk_i);
   
 END ARCHITECTURE structure;

@@ -3,8 +3,9 @@
 #----------------------------------------------------------------------
 # Pin Assignments
 set_location_assignment PIN_L1 -to CLOCK_50
-set_location_assignment PIN_R22 -to KEY[0]
-set_location_assignment PIN_R21 -to KEY[1]
+set_location_assignment PIN_R22 -to KEY0
+#set_location_assignment PIN_R21 -to KEY[1]
+set_location_assignment PIN_T22 -to KEY2
 set_location_assignment PIN_L22 -to SW0
 set_location_assignment PIN_R20 -to LEDR[0]
 set_location_assignment PIN_R19 -to LEDR[1]

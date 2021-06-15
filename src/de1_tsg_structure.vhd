@@ -6,8 +6,9 @@ ENTITY de1_tsg IS
   PORT (
     CLOCK_50 : IN std_ulogic;           -- 50 MHz Clock
 
-    KEY : IN std_ulogic_vector(1 DOWNTO 0);  -- KEY[0] = rst_ni
-                                             -- KEY[1] = ext_trig
+    KEY0 : IN std_ulogic;  -- KEY[0] = rst_ni
+                                             
+    KEY2 : IN std_ulogic;  -- KEY[2] = ext_trig
     SW0 : IN std_ulogic;                     -- SW0=0 pattern_o LEDR[7:0]
     -- SW0=1 prbs_o LEDR[7:0]
 
@@ -169,7 +170,7 @@ BEGIN
     PORT MAP (
       clk_i  => clk_i,
       rst_ni => rst_ni,
-      x_i    => KEY(1),
+      x_i    => KEY2,
       fall_o => ext_trig_i);
 
   seq_detector : sequence_detector
@@ -207,8 +208,8 @@ BEGIN
       segments_o => HEX3);
 
   clk_i            <= CLOCK_50;
-  rst_ni           <= KEY(0);
-  LEDG(1 DOWNTO 0) <= KEY(1 DOWNTO 0);
+  rst_ni           <= KEY0;
+  LEDG(1 DOWNTO 0) <= KEY2 & KEY0;
 
   counter : count_value <= to_unsigned(0, 4) WHEN rst_ni = '0'  -- sequence counter
                            ELSE count_value + 1 WHEN rising_edge(clk_i) AND en_seq_cnt = '1';

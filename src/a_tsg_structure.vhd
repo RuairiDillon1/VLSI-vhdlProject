@@ -368,10 +368,12 @@ BEGIN
   serial_data <= serial_data_i;
 
   -- pwm connections
-  en_pwm_gen <= (pwm_freq_div AND en_main AND pwm_control_o(0)) WHEN pwm_control_o(1) = '0' ELSE ext_trigger;
+  en_pwm_gen <= (pwm_freq_div AND en_main AND pwm_control_o(0)) WHEN pwm_control_o(1) = '0'
+                ELSE (ext_trigger AND system_control_o(0) AND pwm_control_o(0));
 
   -- noise connections
-  en_noise_gen <= (noise_freq_div AND en_main AND noise_control_o(0)) WHEN noise_control_o(1) = '0' ELSE ext_trigger;
+  en_noise_gen <= (noise_freq_div AND en_main AND noise_control_o(0)) WHEN noise_control_o(1) = '0'
+                  ELSE (ext_trigger AND system_control_o(0) AND noise_control_o(0));
 
   -- pattern connections
   WITH pattern_control_o(1 DOWNTO 0) SELECT 
@@ -380,12 +382,13 @@ BEGIN
     '0' WHEN OTHERS;
   
   en_continous_cntup_addr <= (en_main AND en_pm_cnt AND pattern_freq_div) WHEN pattern_control_o(2) = '0'
-                             ELSE ext_trigger;
+                             ELSE (ext_trigger AND system_control_o(0));
   
   WITH pattern_control_o(1 DOWNTO 0) SELECT
-    en_cntup_addr <= en_pm_cnt WHEN "00" | "11",  -- stop or load, speed of clock 
+    en_cntup_addr <= en_pm_cnt WHEN "11",  -- load, speed of clock 
     en_continous_cntup_addr      WHEN "01" | "10",  -- burst or continous burst;
-                                                     -- speed of enable
+                                                    -- speed of enable
+    '0' WHEN "00", -- stop
     '0'                          WHEN OTHERS;
 
 END structure;

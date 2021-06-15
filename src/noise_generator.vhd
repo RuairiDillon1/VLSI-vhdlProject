@@ -183,8 +183,11 @@ BEGIN
   clk     <= clk_i;
   rst     <= rst_ni;
   en      <= en_pi;
-  prbs_o  <= std_ulogic_vector(prbs_us);
-  noise_o <= noise;
-  eoc_o   <= eoc;
+  prbs_o  <= (OTHERS => '0') WHEN rst = '0' ELSE
+             std_ulogic_vector(prbs_us) WHEN rising_edge(clk);
+  noise_o <= '0' WHEN rst = '0' ELSE
+             noise WHEN rising_edge(clk);
+  eoc_o   <= '0' WHEN rst = '0' ELSE
+             eoc WHEN rising_edge(clk);
 
 END ARCHITECTURE structure;
