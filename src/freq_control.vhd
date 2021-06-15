@@ -4,7 +4,8 @@
 -- Author     : Leo Hillinger, Ruairí Dillon & David Cunningham
 -- Company    : University of Applied Sciences Augsburg
 -------------------------------------------------------------------------------
--- Description: VERY MUCH INCOMPLETE NEEDS REVISED
+-- Description: This module is to act like the frequency controller for the
+-- three generators in the project.
 -------------------------------------------------------------------------------
 -- Revisions  : see end of file
 -------------------------------------------------------------------------------
@@ -26,9 +27,17 @@ END freq_control;
 
 ARCHITECTURE rtl OF freq_control IS
 
+
+
   SIGNAL next_state, current_state : unsigned(7 DOWNTO 0);
 
   CONSTANT zero : unsigned(current_state'length-1 DOWNTO 0) := (OTHERS => '0');  -- means vector with only zeros
+
+-- "The constant is like a variable object type, the value of which cannot
+-- be changed. A signal object can be of different types; we saw before, for
+--example, that a signal object can be of type std logic or of other types
+--like integer, custom types, etc. The same applies for variable objects."
+  
 
 BEGIN
 
