@@ -238,7 +238,7 @@ BEGIN
   -- WAIT UNTIL rising_edge(DIN_RDY);
   -- WAIT UNTIL falling_edge(rxd_rdy_o);
   -- WAIT FOR 2*period;
-  -- DIN     <= X"01"; 01 intern trig 03 ext trig
+  -- DIN     <= X"01"; -- 01 intern trig 03 ext trig
   -- DIN_VLD <= '1';
   -- WAIT FOR period;
   -- DIN_VLD <= '0';
@@ -299,7 +299,7 @@ BEGIN
   WAIT UNTIL rising_edge(DIN_RDY);
   WAIT UNTIL falling_edge(rxd_rdy_o);
   WAIT FOR 2*period;
-  DIN     <= X"02";
+  DIN     <= X"03";
   DIN_VLD <= '1';
   WAIT FOR period;
   DIN_VLD <= '0';
@@ -338,6 +338,13 @@ BEGIN
   WAIT UNTIL rising_edge(DIN_RDY);
   WAIT UNTIL falling_edge(rxd_rdy_o);
   WAIT FOR 2*period;
+  DIN     <= X"04";
+  DIN_VLD <= '1';
+  WAIT FOR period;
+  DIN_VLD <= '0';
+  WAIT UNTIL rising_edge(DIN_RDY);
+  WAIT UNTIL falling_edge(rxd_rdy_o);
+  WAIT FOR 2*period;
 
   -- pattern continous run
   DIN     <= X"0f";
@@ -347,7 +354,8 @@ BEGIN
   WAIT UNTIL rising_edge(DIN_RDY);
   WAIT UNTIL falling_edge(rxd_rdy_o);
   WAIT FOR 2*period;
-  DIN     <= X"06";
+  DIN     <= X"06"; -- 06 continous run with ext trigger, 02 contionus run, 01
+                    -- single run, 05 single run ext trigger
   DIN_VLD <= '1';
   WAIT FOR period;
   DIN_VLD <= '0';
@@ -355,6 +363,7 @@ BEGIN
   WAIT UNTIL falling_edge(rxd_rdy_o);
   WAIT FOR 2*period;
 
+  WAIT FOR 30*period;
   
   ext_trig_i <= '1';
   WAIT FOR period;
@@ -406,7 +415,7 @@ BEGIN
   -- WAIT UNTIL rising_edge(DIN_RDY);
   -- WAIT UNTIL falling_edge(rxd_rdy_o);
   -- WAIT FOR 2*period;
-  -- DIN     <= X"03";
+  -- DIN     <= X"03"; -- 3 ext trigger and enable, 1 only enable
   -- DIN_VLD <= '1';
   -- WAIT FOR period;
   -- DIN_VLD <= '0';
@@ -414,9 +423,7 @@ BEGIN
   -- WAIT UNTIL falling_edge(rxd_rdy_o);
   -- WAIT FOR 2*period;
 
---  WAIT UNTIL rising_edge(pwm_o);
---  WAIT FOR 10*period;
-
+  --  WAIT FOR 10*period;
 
   -- ext_trig_i <= '1';
   -- WAIT FOR period;
