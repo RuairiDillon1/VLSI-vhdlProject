@@ -105,6 +105,7 @@ ARCHITECTURE structure OF tsg IS
       clk_i                : IN  std_ulogic;
       rst_ni               : IN  std_ulogic;
       en_pi                : IN  std_ulogic;
+      en_noise_generator_i : IN  std_ulogic;
       noise_prbsg_length_i : IN  std_ulogic_vector(7 DOWNTO 0);
       prbs_o               : OUT std_ulogic_vector(22 DOWNTO 0);
       noise_o              : OUT std_ulogic;
@@ -303,6 +304,7 @@ BEGIN
       clk_i                => clock,
       rst_ni               => reset,
       en_pi                => en_noise_gen,
+      en_noise_generator_i => noise_control_o(0),
       noise_prbsg_length_i => noise_length_o,
       prbs_o               => prbs_o,
       noise_o              => noise_o,

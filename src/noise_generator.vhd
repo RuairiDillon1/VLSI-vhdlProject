@@ -7,6 +7,7 @@ ENTITY noise_generator IS
     clk_i                : IN  std_ulogic;
     rst_ni               : IN  std_ulogic;
     en_pi                : IN  std_ulogic;
+    en_noise_generator_i : IN  std_ulogic;
     noise_prbsg_length_i : IN  std_ulogic_vector(7 DOWNTO 0);
     prbs_o               : OUT std_ulogic_vector(22 DOWNTO 0);
     noise_o              : OUT std_ulogic;
@@ -49,12 +50,15 @@ ARCHITECTURE structure OF noise_generator IS
   SIGNAL prbs20_o : std_ulogic_vector(19 DOWNTO 0);
   SIGNAL prbs23_o : std_ulogic_vector(22 DOWNTO 0);
   SIGNAL prbs_us  : unsigned(22 DOWNTO 0);  -- for resize to work temporary signal
+  SIGNAL prbs_us_switch : unsigned(22 DOWNTO 0);
 
   SIGNAL noises : std_ulogic_vector (5 DOWNTO 0);
   SIGNAL noise  : std_ulogic;
+  SIGNAL noise_switch : std_ulogic;
 
   SIGNAL eocs : std_ulogic_vector(5 DOWNTO 0);
   SIGNAL eoc  : std_ulogic;
+  SIGNAL eoc_switch : std_ulogic;
 
 BEGIN
 
@@ -180,14 +184,19 @@ BEGIN
     END CASE;
   END PROCESS switch;
 
-  clk     <= clk_i;
-  rst     <= rst_ni;
-  en      <= en_pi;
-  prbs_o  <= (OTHERS => '0') WHEN rst = '0' ELSE
-             std_ulogic_vector(prbs_us) WHEN rising_edge(clk);
+  clk    <= clk_i;
+  rst    <= rst_ni;
+  en     <= en_pi;
+
+  prbs_us_switch <= prbs_us WHEN en_noise_generator_i = '1' ELSE (OTHERS => '0');
+  noise_switch <= noise WHEN  en_noise_generator_i = '1' ELSE '0';
+  eoc_switch <= eoc WHEN en_noise_generator_i = '1' ELSE '0';
+  
+  prbs_o <= (OTHERS => '0') WHEN rst = '0' ELSE
+            std_ulogic_vector(prbs_us_switch) WHEN rising_edge(clk);
   noise_o <= '0' WHEN rst = '0' ELSE
-             noise WHEN rising_edge(clk);
-  eoc_o   <= '0' WHEN rst = '0' ELSE
-             eoc WHEN rising_edge(clk);
+             noise_switch WHEN rising_edge(clk);
+  eoc_o <= '0' WHEN rst = '0' ELSE
+           eoc_switch WHEN rising_edge(clk);
 
 END ARCHITECTURE structure;

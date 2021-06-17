@@ -28,6 +28,7 @@ ARCHITECTURE tbench OF t_noise_generator IS
       clk_i                : IN  std_ulogic;
       rst_ni               : IN  std_ulogic;
       en_pi                : IN  std_ulogic;
+      en_noise_generator_i : IN  std_ulogic;
       noise_prbsg_length_i : IN  std_ulogic_vector(7 DOWNTO 0);
       prbs_o               : OUT std_ulogic_vector(22 DOWNTO 0);
       noise_o              : OUT std_ulogic;
@@ -42,6 +43,7 @@ ARCHITECTURE tbench OF t_noise_generator IS
   SIGNAL prbs_o               : std_ulogic_vector(22 DOWNTO 0);
   SIGNAL noise_o              : std_ulogic;
   SIGNAL eoc_o                : std_ulogic;
+  SIGNAL en_noise_generator_i : std_ulogic;
 
 
   -- definition of a clock period
@@ -57,6 +59,7 @@ BEGIN  -- ARCHITECTURE tbench
       clk_i                => clk_i,
       rst_ni               => rst_ni,
       en_pi                => en_pi,
+      en_noise_generator_i => en_noise_generator_i,
       noise_prbsg_length_i => noise_prbsg_length_i,
       prbs_o               => prbs_o,
       noise_o              => noise_o,
@@ -80,7 +83,7 @@ stimuli_p : PROCESS
   
   
 BEGIN
-  
+  en_noise_generator_i <= '1';
   noise_prbsg_length_i <= (OTHERS => '0'); 
   en_pi <= '1';
   WAIT UNTIL rst_ni = '1';            -- wait until asynchronous reset ...
