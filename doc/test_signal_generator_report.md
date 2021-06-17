@@ -73,7 +73,7 @@ Design Description
 
 ## Register file
 
-
+$ x = y $
 
 ![Implemented Register File - Schematic](images/regfile.png){width=80%}
 

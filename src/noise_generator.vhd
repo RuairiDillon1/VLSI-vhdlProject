@@ -18,9 +18,9 @@ ARCHITECTURE structure OF noise_generator IS
 
   COMPONENT config_noise_generator IS
     GENERIC (
-      num_of_bits : natural;
-      tap_high    : natural;
-      tap_low     : natural);
+      num_of_bits : positive;
+      tap_high    : positive;
+      tap_low     : positive);
     PORT (
       en_pi   : IN  std_ulogic;
       clk_i   : IN  std_ulogic;

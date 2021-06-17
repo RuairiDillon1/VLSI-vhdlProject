@@ -28,13 +28,11 @@ ARCHITECTURE rtl OF pwm_generator IS
   SIGNAL pwm_temp : std_ulogic; -- temporary place holder for state logic below
 
 BEGIN
-
+ -- "just a down counter"
   -- next state is "11111111" current state is equal zero. this is then used to
   -- be compared to the requested width from freq_control
-
-  next_state_logic : next_state <= to_unsigned(255, 8) WHEN current_state = 0 ELSE
-                                   current_state - 1;
-
+  -- the width is the size of the whole signal (high and
+  -- low). It then outputs a signal which forms the pwm of the set size.
   --current state will be equal to "00000000" when the reset is pressed, or
   --else it will be equal to the next_state value when enabled.
 
@@ -42,7 +40,7 @@ BEGIN
                                     next_state WHEN rising_edge(clk_i) AND (en_pi = '1');
 
 -- sets the output value to pwm temp when current state is lesser than the
--- width, thus making the desired  pulse width proportional to the 255 bits.
+-- width, thus making the desired  pulse width proportional to the 8 bits (255).
   counter_output : pwm_temp <= '1' WHEN current_state < unsigned(pwm_width_i) ELSE
                                '0';
 
