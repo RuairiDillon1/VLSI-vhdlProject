@@ -134,7 +134,8 @@ ARCHITECTURE structure OF tsg IS
       en_pm              : OUT std_ulogic;
       en_pm_cnt          : OUT std_ulogic;
       clr_pm_cnt         : OUT std_ulogic;
-      pm_checked         : OUT std_ulogic);
+      pm_checked         : OUT std_ulogic;
+      pattern_valid      : OUT std_ulogic);
   END COMPONENT pattern_generator_fsm;
 
   COMPONENT cntup_addr IS
@@ -147,22 +148,22 @@ ARCHITECTURE structure OF tsg IS
       q_o    : OUT std_ulogic_vector(7 DOWNTO 0);
       tc_o   : OUT std_ulogic);
   END COMPONENT cntup_addr;
-  
-    -- serial components instantiation
+
+  -- serial components instantiation
   CONSTANT CLK_DIV_VAL        : integer := 16;
   CONSTANT PARITY_BIT         : string  := "none";
   CONSTANT regfile_addr_width : integer := 4;
   CONSTANT regfile_data_width : integer := 8;
 
   -- basic signals
-  SIGNAL clock      : std_ulogic;
-  SIGNAL reset     : std_ulogic;
-  SIGNAL en_main    : std_ulogic;       -- en_tsg and en_system
+  SIGNAL clock       : std_ulogic;
+  SIGNAL reset       : std_ulogic;
+  SIGNAL en_main     : std_ulogic;      -- en_tsg and en_system
   SIGNAL ext_trigger : std_ulogic;
 
   -- serial signals
-  SIGNAL en_serial         : std_ulogic;
-  SIGNAL serial_data       : std_ulogic;
+  SIGNAL en_serial           : std_ulogic;
+  SIGNAL serial_data         : std_ulogic;
   SIGNAL serial_data_o       : std_ulogic_vector(7 DOWNTO 0);
   SIGNAL serial_data_valid_o : std_ulogic;
 
@@ -201,12 +202,13 @@ ARCHITECTURE structure OF tsg IS
   SIGNAL pattern_freq_div        : std_ulogic;
   SIGNAL en_write_pm             : std_ulogic;
   SIGNAL en_cntup_addr           : std_ulogic;
-  SIGNAL en_pattern_freq_div : std_ulogic;
-  signal en_pm_cnt : std_ulogic;
+  SIGNAL en_pattern_freq_div     : std_ulogic;
+  SIGNAL en_pm_cnt               : std_ulogic;
   SIGNAL en_continous_cntup_addr : std_ulogic;
   SIGNAL clr_cntup_addr          : std_ulogic;
   SIGNAL cntup_addr_o            : std_ulogic_vector(7 DOWNTO 0);
   SIGNAL cntup_addr_tc           : std_ulogic;
+  SIGNAL pattern_valid           : std_ulogic;
 
 BEGIN
 
@@ -337,7 +339,8 @@ BEGIN
       en_pm              => en_write_pm,
       en_pm_cnt          => en_pm_cnt,
       clr_pm_cnt         => clr_cntup_addr,
-      pm_checked         => pm_checked);
+      pm_checked         => pm_checked,
+      pattern_valid => pattern_valid);
 
   cntup_address : cntup_addr
     PORT MAP (
@@ -350,15 +353,15 @@ BEGIN
       tc_o   => cntup_addr_tc);
 
   -- basic signals connections
-  clock      <= clk_i;
-  reset     <= rst_ni;
+  clock       <= clk_i;
+  reset       <= rst_ni;
   ext_trigger <= ext_trig_i;
-  en_main    <= en_tsg_pi AND system_control_o(0);
+  en_main     <= en_tsg_pi AND system_control_o(0);
 
   -- output signals
   rxd_rdy_o       <= serial_data_valid_o;
   tc_pm_count_o   <= cntup_addr_tc;
-  pattern_valid_o <= '0';               -- dont know meaning
+  pattern_valid_o <= pattern_valid;
   regfile_o       <= regfile_data_o;    -- write data
   addr_reg_o      <= std_ulogic_vector(resize(unsigned(regfile_addr_o), 8));
   data_reg_o      <= regfile_data_o;
@@ -376,20 +379,20 @@ BEGIN
                   ELSE (ext_trigger AND system_control_o(0) AND noise_control_o(0));
 
   -- pattern connections
-  WITH pattern_control_o(1 DOWNTO 0) SELECT 
-    en_pattern_freq_div <= en_main WHEN "01" | "10", -- burst or continous burst
-    '0' WHEN "00" | "11", -- stop or load
-    '0' WHEN OTHERS;
-  
-  en_continous_cntup_addr <= (en_main AND en_pm_cnt AND pattern_freq_div) WHEN pattern_control_o(2) = '0'
-                             ELSE (ext_trigger AND system_control_o(0));
-  
   WITH pattern_control_o(1 DOWNTO 0) SELECT
-    en_cntup_addr <= en_pm_cnt WHEN "11",  -- load, speed of clock 
-    en_continous_cntup_addr      WHEN "01" | "10",  -- burst or continous burst;
-                                                    -- speed of enable
-    '0' WHEN "00", -- stop
-    '0'                          WHEN OTHERS;
+    en_pattern_freq_div <= en_main WHEN "01" | "10",  -- burst or continous burst
+    '0'                            WHEN "00" | "11",  -- stop or load
+    '0'                            WHEN OTHERS;
+
+  en_continous_cntup_addr <= (en_main AND en_pm_cnt AND pattern_freq_div) WHEN pattern_control_o(2) = '0'
+                             ELSE (ext_trigger AND system_control_o(0) AND pattern_valid);
+
+  WITH pattern_control_o(1 DOWNTO 0) SELECT
+    en_cntup_addr <= en_pm_cnt WHEN "11",         -- load, speed of clock 
+    en_continous_cntup_addr    WHEN "01" | "10",  -- burst or continous burst;
+                                                  -- speed of enable
+    '0'                        WHEN "00",         -- stop
+    '0'                        WHEN OTHERS;
 
 END structure;
 

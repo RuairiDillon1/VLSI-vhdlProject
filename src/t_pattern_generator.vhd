@@ -35,7 +35,8 @@ ARCHITECTURE tbench OF t_pattern_generator IS
       en_pm              : OUT std_ulogic;
       en_pm_cnt          : OUT std_ulogic;
       clr_pm_cnt         : OUT std_ulogic;
-      pm_checked         : OUT std_ulogic);
+      pm_checked         : OUT std_ulogic;
+      pattern_valid : OUT std_ulogic);
   END COMPONENT pattern_generator_fsm;
 
   COMPONENT pattern_generator IS
@@ -87,6 +88,7 @@ ARCHITECTURE tbench OF t_pattern_generator IS
   SIGNAL clr_addr_cnt_o       : std_ulogic;
   SIGNAL pattern_o            : std_ulogic_vector(7 DOWNTO 0);
   SIGNAL freq_div_10mhz : std_ulogic;
+  SIGNAL pattern_valid : std_ulogic;
 
 
   -- definition of a clock period
@@ -128,7 +130,8 @@ BEGIN  -- ARCHITECTURE tbench
       en_pm              => en_pm_i,
       en_pm_cnt          => en_addr_cnt_o,
       clr_pm_cnt         => clr_addr_cnt_o,
-      pm_checked         => pm_checked_o);
+      pm_checked         => pm_checked_o,
+      pattern_valid => pattern_valid);
 
   freq_10mhz: cntdnmodm
     GENERIC MAP (
