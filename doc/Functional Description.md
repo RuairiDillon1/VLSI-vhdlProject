@@ -20,19 +20,17 @@ The number of digital channels defines the maximum width of any pattern generate
 
 
 ## Pulse-width modulation
-Pulse-width modulation (PWM), or alternately known as pulse-duration modulation (PDM), is a method of reducing the average power delivered by an electrical signal, by effectively chopping it up into discrete parts. The average value of voltage (and current) fed to the load is controlled by turning the switch between supply and load on and off at a fast rate. The longer the switch is on compared to the off periods, the higher the total power supplied to the load. Pulse width modulators are a vital and commonly found tool found in industry for control.  It is significant due to the fact it allows a digital signal to control analog devices.
+Pulse-width modulation (PWM), or alternately known as pulse-duration modulation (PDM), is a method of reducing the average power delivered by an electrical signal, by effectively chopping it up into discrete parts. The average value of voltage (and current) fed to the load is controlled by turning the switch between supply and load on and off at a fast rate. The longer the switch is on compared to the off periods, the higher the total power supplied to the load. Pulse width modulators are a vital and commonly found tool found in industry for control as Pulse width modulation is considered to be a great method of controlling the amount of power delivered to a load without dissipating any wasted power. It is significant due to the fact it allows a digital signal to control analog devices. This is important so as to allow for a comprehensive testing suite. 
 
 
 
 ## Pseudo-random number generator (LFSR)
+A linear-feedback shift register (LFSR) is a shift register whose input bit is a linear function of its previous state. The most commonly used linear function of single bits is exclusive-or (XOR). Thus, an LFSR is most often a shift register whose input bit is driven by the XOR of some bits of the overall shift register value. The initial value of the LFSR is called the seed, and because the operation of the register is deterministic, the stream of values produced by the register is completely determined by its current (or previous) state. Likewise, because the register has a finite number of possible states, it must eventually enter a repeating cycle.
 
-The shape of an [electrogardiogramm](https://en.wikipedia.org/wiki/Electrocardiography) as a voltage graph over time
+However, an LFSR with a well-chosen feedback function can produce a sequence of bits that appears random and has a very long cycle. The mathematics of a cyclic redundancy check, a form of error-detecting code commonly used in digital networks and storage devices to detect accidental changes to raw data. Blocks of data entering these systems get a short check value attached, are closely related to those of an LFSR. In general, the arithmetics behind LFSRs makes them very elegant as an object to study and implement. One can produce relatively complex logics with simple building blocks. However, other methods, that are less elegant but perform better, should be considered as well.
 
+### Shift Registers
+A shift register is a type of digital circuit using a cascade of flip flops, or latch is a circuit that has two stable states and can be used to store state information, where the output of one flip-flop is connected to the input of the next. They share a single clock signal, which causes the data stored in the system to shift from one location to the next. By connecting the last flip-flop back to the first, the data can cycle within the shifters for extended periods, and in this form they were used as a form of computer memory in the late 1960s and early 1970s to replace that form older forms of memory In most cases, several parallel shift registers would be used to build a larger memory pool known as a "bit array". Data was stored into the array and read back out in parallel, often as a computer word, while each bit was stored serially in the shift registers. There is an inherent trade-off in the design of bit arrays; putting more flip-flops in a row allows a single shifter to store more bits, but requires more clock cycles to push the data through all of the shifters before the data can be read back out again.
 
-
-![Electrocardiogram](images/ECG-SinusRhythmLabel.png){width=20%}
-
-The important QRS complex and T wave are modelled as digital pulses.
-
-![QRS Complex and T Wave Pulses](images/qrs-complex-t-wave-pulses.pdf){width=80%}
-
+### Application of LFSRs
+Applications of LFSRs include generating pseudo-random numbers, pseudo-noise sequences, fast digital counters, and whitening sequences. Both hardware and software implementations of LFSRs are common. We are interested in an LFSR’s ability to serve as a pseudo random number generator. As complete LFSR are commonly used as pattern generators for exhaustive testing, since they cover all possible inputs for an n-input circuit. Maximal-length LFSRs and weighted LFSRs are widely used as pseudo-random test-pattern generators for pseudo-random test applications due to this feature.

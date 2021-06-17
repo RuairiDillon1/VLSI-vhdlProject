@@ -1,3 +1,5 @@
+-- Description: Allows for switching between a number of different bits for the lfsr. Choose the bitwidth and where the feedbacks are for the xor.
+
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 USE IEEE.numeric_std.ALL;
@@ -5,15 +7,15 @@ USE IEEE.numeric_std.ALL;
 -- https://www.itu.int/rec/T-REC-O.150-199605-I/en
 ENTITY config_noise_generator IS
   GENERIC (
-    num_of_bits : natural := 4;
-    tap_high    : natural := 4;         -- xor connection 1
-    tap_low     : natural := 3          -- xor connection 2
+    num_of_bits : positive := 4;         -- just a default value
+    tap_high    : positive := 4;         -- xor connection 1
+    tap_low     : positive := 3          -- xor connection 2
     );
   PORT (
     en_pi   : IN  std_ulogic;
     clk_i   : IN  std_ulogic;
     rst_ni  : IN  std_ulogic;
-    prbs_o  : OUT std_ulogic_vector(num_of_bits - 1 DOWNTO 0);
+    prbs_o  : OUT std_ulogic_vector(num_of_bits - 1 DOWNTO 0); -- 
     noise_o : OUT std_ulogic;
     eoc_o   : OUT std_ulogic
     );
