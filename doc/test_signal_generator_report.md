@@ -40,30 +40,111 @@ Functional Description
 
 - describe what pwm, lfsr and uart is
 
-## UART serial communication
-A universal asynchronous receiver/transmitter (UART) is a block of circuitry responsible for implementing 
-serial communication. Essentially, the UART acts as an intermediary between parallel and 
-serial interfaces. Communication between devices in this project is executed using UART.
+## Register file
+The register file is the component responsible for for making the data and address inputs parameterisable. The register file is centric to the TSG. While it has five different inputs, it recieves information from the outputs of the serial reciever, and disperses the information appropriately from there. 
+(it would be a good idea to reference the drawing that Leo done with the overall tsg module)
+
+![Implemented Register File - Schematic](images/regfile.png){width=80%}
+
+| **Name**            | **Type**                      | **Direction** | **Polarity** | **Description** |
+|---------------------|-------------------------------|:-------------:|:------------:|-----------------|
+| clk_i               | std_ulogic                    | IN            | HIGH         |                 |
+| wr_en_i             | std_ulogic                    | IN            | HIGH         |                 |
+| w_addr_i            | std_ulogic_vector[ADDR_WIDTH] | IN            | HIGH         |                 |
+| r_addr_i            | std_ulogic_vector[ADDR_WIDTH] | IN            | HIGH         |                 |
+| w_data_i            | std_ulogic_vector[DATA_WIDTH] | IN            | HIGH         |                 |
+| system_control_o    | std_ulogic_vector[2]          | OUT           | HIGH         |                 |
+| pwm_pulse_width_o   | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| pwm_period_o        | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| pwm_control_o       | std_ulogic_vector[2]          | OUT           | HIGH         |                 |
+| noise_length_o      | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| noise_period_o      | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| noise_control_o     | std_ulogic_vector[2]          | OUT           | HIGH         |                 |
+| pattern_mem_depth_o | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| pattern_period_o    | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
+| pattern_control_o   | std_ulogic_vector[3]          | OUT           | HIGH         |                 |
+| r_data_o            | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
 
 
+| **Name**   | **Type** | **Default value** |
+|------------|----------|-------------------|
+| ADDR_WIDTH | integer  | 4                 |
+| DATA_WIDTH | integer  | 8                 |
+
+In the module there is an array that is instantiated for the purpose of writing the data to the correct address/output.
+
+The register file recieves the both the address and the data directly from the serial reciever. From here the data and the address information gets 
+
+
+## UART serial receiver
+The serial reciever module is based on a design made using a Moore state machine.
+The purpose of the module is to allow for the correct sequencing and addressing of the data. 
+The change in states are dependant
+
+![UART Example- Schematic](images/uart_sample.png){width=80%}
+
+![Implemented Serial Reciever File - Schematic](images/serial_rx.png){width=80%}
+
+| **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
+|--------------|----------------------|:-------------:|:------------:|-----------------|
+| CLK          | std_ulogic           | IN            | HIGH         |                 |
+| RST          | std_ulogic           | IN            | HIGH         |                 |
+| UART_CLK_EN  | std_ulogic           | IN            | HIGH         |                 |
+| UART_RXD     | std_ulogic           | IN            | HIGH         |                 |
+| DOUT         | std_ulogic_vector[8] | OUT           | HIGH         |                 |
+| DOUT_VLD     | std_ulogic           | OUT           | HIGH         |                 |
+| FRAME_ERROR  | std_ulogic           | OUT           | HIGH         |                 |
+| PARITY_ERROR |                      | OUT           | HIGH         |                 |
+
+
+| **Name**    | **Type** | **Default value** |
+|-------------|----------|-------------------|
+| CLK_DIV_VAL | integer  | 16                |
+| PARITY_BIT  | string   | "none"            |
+
+![UART Serial Reciever State Machine File - Schematic](images/serial_receiver_fsm.png){width=80%}
 
 ## Pattern generator
 
+![Implemented Pattern Generator File - Schematic](images/pattern_generator.png){width=80%}
+
+| **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
+|--------------|----------------------|:-------------:|:------------:|-----------------|
+| en_write_pm  | std_ulogic           | IN            | HIGH         |                 |
+| clk_i        | std_ulogic           | IN            | HIGH         |                 |
+| pm_control_i | std_ulogic_vector[2] | IN            | HIGH         |                 |
+| addr_cnt_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
+| rxd_data_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
+| pattern_o    | std_ulogic_vector[8] | OUT           | HIGH         |                 |
+
+
+
+![Pattern Generator State Machine File - Schematic](images/pattern_generator_fsm.png){width=80%}
+
+
 ## Pulse-width modulation
-Pulse width modulators are a vital and commonly found tool found in industry for control. 
-It is significant due to the fact it allows a digital signal to control analog devices.
+The PWM generator module is connected to one of the instantiations of the freq_control module. The output from the Frequency Control module is input to the generator to assign the total width (and thus the frequency) of the PWM. 
+
+![PWM Example - Schematic](images/PWM_explained.png){width=80%}
+It functions by
+![Implemented PWM File - Schematic](images/pwm_generator.png){width=80%}
+
+| **Name**    | **Type**             | **Direction** | **Polarity** | **Description** |
+|-------------|----------------------|:-------------:|:------------:|-----------------|
+| en_pi       | std_ulogic           | IN            | HIGH         |                 |
+| rst_ni      | std_ulogic           | IN            | LOW          |                 |
+| pwm_width_i | std_ulogic_vector[8] | IN            | HIGH         |                 |
+| clk_i       | std_ulogic           | IN            | HIGH         |                 |
+| pwm_o       | std_ulogic           | OUT           | HIGH         |                 |
+
+
 
 ## Pseudo-random number generator (LFSR)
 
+![LFSR Exampled - Schematic](images/4bit_lfsr_xor.png){width=80%}
 The shape of an [electrogardiogramm](https://en.wikipedia.org/wiki/Electrocardiography) as a voltage graph over time
 
 
-
-![Electrocardiogram](images/ECG-SinusRhythmLabel.png){width=20%}
-
-The important QRS complex and T wave are modelled as digital pulses.
-
-![QRS Complex and T Wave Pulses](images/qrs-complex-t-wave-pulses.pdf){width=80%}
 
 
 Design Description
@@ -363,6 +444,9 @@ ARCHITECTURE rtl OF heartbeat_gen IS
   CONSTANT heartbeat_period : unsigned(n-1 DOWNTO 0) := to_unsigned(833, n);
   CONSTANT qrs_width        : unsigned(n-1 DOWNTO 0) := to_unsigned(100, n);
   CONSTANT st_width
+The important QRS complex and T wave are modelled as digital pulses.
+
+![QRS Complex and T Wave Pulses](images/qrs-complex-t-wave-pulses.pdf){width=80%}
   CONSTANT t_width
   CONSTANT qt_width
 
