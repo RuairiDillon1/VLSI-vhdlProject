@@ -1,3 +1,9 @@
+-- Description: Functions by taking in data from the register file, to then output the data in
+-- a serial binary form. 
+-- the pattern memory is stored in ssram.
+-- takes data in to switch between stop, single burst of the data, continuos stream/repition
+-- or to load new data into the pattern generator.
+
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 -- use IEEE.numeric_std.all;
@@ -17,7 +23,7 @@ ARCHITECTURE structure OF pattern_generator IS
 
   COMPONENT sp_ssram IS
     GENERIC (
-      addr_width : positive;
+      addr_width : positive; -- a number > 0
       data_width : positive);
     PORT (
       clk_i  : IN  std_ulogic;
@@ -30,7 +36,7 @@ ARCHITECTURE structure OF pattern_generator IS
   CONSTANT addr_width : natural := 8;
   CONSTANT data_width : natural := 8;
 
-  SIGNAL pm_out             : std_ulogic_vector(data_width - 1 DOWNTO 0);
+  SIGNAL pm_out       : std_ulogic_vector(data_width - 1 DOWNTO 0);
   SIGNAL pattern_temp : std_ulogic_vector(data_width - 1 DOWNTO 0);
 
 BEGIN
