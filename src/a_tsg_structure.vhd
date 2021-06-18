@@ -304,7 +304,7 @@ BEGIN
       clk_i                => clock,
       rst_ni               => reset,
       en_pi                => en_noise_gen,
-      en_noise_generator_i => noise_control_o(0),
+      en_noise_generator_i => system_control_o(0) AND noise_control_o(0),
       noise_prbsg_length_i => noise_length_o,
       prbs_o               => prbs_o,
       noise_o              => noise_o,

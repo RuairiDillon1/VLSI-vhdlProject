@@ -9,7 +9,7 @@ serial_vars = {
     "pwm_pulse_width_1" : bytearray.fromhex("04 01"),
     
     "pwm_period_max" : bytearray.fromhex("05 ff"),
-    "pwm_period_min" : bytearray.fromhex("05 00"),
+    "pwm_period_min" : bytearray.fromhex("05 01"),
     
     "pwm_control_off" : bytearray.fromhex("06 00"),
     "pwm_control_on_intern_trig" : bytearray.fromhex("06 01"),
@@ -35,7 +35,7 @@ serial_vars = {
     "pattern_period_max" : bytearray.fromhex("0e ff"),
     "pattern_period_20" : bytearray.fromhex("0e 14"),
     "pattern_period_50" : bytearray.fromhex("0e 32"),
-    "pattern_example_sequence_4" : bytearray.fromhex("08 04 02 01"), # sequence only
+    "pattern_example_sequence_4" : bytearray.fromhex("08 02 04 01"), # sequence only
 
     "pattern_control_stop" : bytearray.fromhex("0f 00"),
     "pattern_control_load" : bytearray.fromhex("0f 03"),

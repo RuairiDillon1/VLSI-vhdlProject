@@ -6,8 +6,8 @@ ENTITY noise_generator IS
   PORT (
     clk_i                : IN  std_ulogic;
     rst_ni               : IN  std_ulogic;
-    en_pi                : IN  std_ulogic;
-    en_noise_generator_i : IN  std_ulogic;
+    en_pi                : IN  std_ulogic; -- enable for frequency controlled output of noise (pulsed enable)
+    en_noise_generator_i : IN  std_ulogic; -- enable noise generator outputs else zero (continous enable)
     noise_prbsg_length_i : IN  std_ulogic_vector(7 DOWNTO 0);
     prbs_o               : OUT std_ulogic_vector(22 DOWNTO 0);
     noise_o              : OUT std_ulogic;
