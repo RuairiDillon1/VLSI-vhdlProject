@@ -1,39 +1,172 @@
-[comment] : <> (this is a direct adoptation from lab 7 vlsi heartbeat gen) RD
-
 Introduction
 ============
-
 Digital test signal generators (TSG) are a type of external measurement equipment that are available from several different vendors. These pieces of equipment produce a range of electrical stimuli signals that can be used to check the operation of other electrical devices. The goal of this module is to produce an on-chip version of this system with the following essential features included in the architecture and design:
-• Single pulse with variable duty cycle and frequency.
-• Digital noise based on pseudo random binary sequences of different length.
-• Arbitrary data bus sequences at selectable speed.
-• Internal/External Trigger.
-• External Time Base.
-Each of these features are necessary for the TSG to produce a dataset that can be used to give an engineer an informative viewpoint on their design so that they can modify it so that it lands within specification.
+- Single pulse with variable duty cycle and frequency.
+- Digital noise based on pseudo random binary sequences of different length.
+- Arbitrary data bus sequences at selectable speed.
+- Internal/External Trigger.
+- External Time Base.
+Each of these features are necessary for the TSG to produce a data-set that can be used to give an engineer an informative viewpoint on their design so that they can modify it so that it lands within specification.
 
 
 Features
 ========
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis condimentum sem consectetur ultrices. Cras malesuada porttitor nisl euismod imperdiet. Pellentesque risus sem, iaculis eu aliquet sit amet, porta ut augue. Etiam libero tortor, suscipit vel suscipit ut, accumsan id lorem. Proin vel leo a dolor facilisis viverra vitae vel tellus. Pellentesque vestibulum, nunc vel gravida condimentum, erat quam eleifend quam, quis volutpat ex erat sit amet ante. Nulla porta ligula at tortor varius fringilla. Mauris sed sceler
+These features are key to the TSG as they are utilised in many commercially available TSGs as such they are included in this TSG. 
+
+### Serial Transmission
+Utilizing UART serial transmission allows for a large range of data to be transferred between the TSG and the subject system. It allows for the TSG to be given Parallel inputs and then communicate using serial transmission  which can then be returned to a parallel data type for the target system to utilise.
+
+
+### Single pulse with variable duty cycle and frequency.
+Utilising Pulse width modulation a series of digitally controlled electrical signals can be sent allowing for a spectrum of both peak voltage and high frequency testing within a single module.
+
+### Digital noise based on pseudo random binary sequences of different length.
+Ustilsing LFSRs to generate a string of pseudo random binary that is then sent along the UART transmission lines to the subject board. It allows for the subject system's ability to handle junk data as well as other highly variable data types.   
+
+### Arbitrary data bus sequences at selectable speed.
+Utilising digital pattern generators to create arbitrary data busses that can then be sent using UART to a subject board. As the output of this system is arbitrary it allows for the clarity of transmissions that are sent to the subject board. 
+
+### Internal/External Trigger.
+Internal and external triggers allow for the TSG to be triggered by internally set rules or received data from the test subject system allowing for specific internal rules to be set up. External triggers allow for specific targeted stimulus to be produced by the TSG meaning that any of the above test types can be used with a high level of precision.  
+
+### External Time Base
+An external time base allows for the entire TSG to be configured based on the system to be tested by the TSG system. As well as allowing for the TSG to be run at a different clock rate to the tested system.
+
 General Description
 ===================
 
-- description of tsg and split up view of tsg, register file configuration
+# General Description
 
+![Test Signal Generator Schematic Symbol](images/tsg.png){width=40%}
 
-![Heartbeat Generator - Schematic Symbol](images/heartbeat_gen_symbol.pdf){width=40%}
-
-| **Name**       | **Type**          | **Direction** | **Polarity** | **Description**     |
-|----------------|-------------------|:-------------:|:------------:|---------------------|
-| clk_i          | std_ulogic        | IN            | HIGH         | clock               |
-| rx_i           | std_ulogic        | IN            | HIGH         | serial data recieve |
-| en_tsg_pi      | std_ulogic        | IN            | HIGH         | enable              |
-| test_signals_o | std_ulogic_vector | OUT           | HIGH         | test signal output  |
-|                |                   |               |              |                     |
-
+| **Name**        | **Type**              | **Direction** | **Polarity** | **Description** |
+|-----------------|-----------------------|:-------------:|:------------:|-----------------|
+| clk_i           | std_ulogic            | IN            | HIGH         | clock                |
+| rst_ni          | std_ulogic            | IN            | LOW          | asynchronous reset                |
+| en_tsg_pi       | std_ulogic            | IN            | HIGH         | tsg enable, used with external time base                |
+| en_serial_i     | std_ulogic            | IN            | HIGH         | enable for serial data: oversample of 16 with expected baudrate 9600                |
+| serial_data_i   | std_ulogic            | IN            | HIGH         | serial data with baudrate 9600                |
+| rxd_rdy_o       | std_ulogic            | OUT           | HIGH         | debugging signal, output of serial_rx if serial data is ready to be read                |
+| ext_trig_i      | std_ulogic            | IN            | HIGH         | external trigger for triggering test equipment                |
+| pwm_o           | std_ulogic            | OUT           | HIGH         | pulse width modulated signal                |
+| noise_o         | std_ulogic            | OUT           | HIGH         | 1 bit pseudo random noise                |
+| prbs_o          | std_ulogic_vector[23] | OUT           | HIGH         | pseudo random noise up to 23 bit                |
+| eoc_o           | std_ulogic            | OUT           | HIGH         | end of cycle when pseudo random noise repeats                |
+| pattern_o       | std_ulogic_vector[8]  | OUT           | HIGH         | configurable changing pattern output                |
+| pattern_valid_o | std_ulogic            | OUT           | HIGH         | pattern valid, not currently implemented! (see improvements)                |
+| tc_pm_count_o   | std_ulogic            | OUT           | HIGH         | debugging signal, end of cycle for pattern memory upcounter                |
+| regfile_o       | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, data input of register file                |
+| addr_reg_o      | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, address output of serial_receiver registers                |
+| data_reg_o      | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, data output of serial_receiver registers                |
 
 : Test Signal Generator - Description of I/O Signals
 
+The test signal generator with its multiple I/Os can be broken down into 4 distinctive parts:
+- serial data handling
+- pulse width modulation generator
+- pattern generator
+- random noise generator
+
+![Test Signal Generator Breakup Drawing](images/breakup_tsg.png){width=100%}
+In the picture above you can recognize that the register file is the central part of the design. 
+The register file receives data from the serial communication and writes them into its memory. Depending on the values in the 
+memory the output components are controlled. 
+
+The register file has the following memory view.
+```
+		  					 Bit7  ..         0
+------------------------------------------------
+Address  	Name 				7 6 5 4 3 2 1 0
+------------------------------------------------
+0x00 
+0x01  		system control 					x x
+0x02
+0x03
+0x04     	pwm pulse width 	x x x x x x x x
+0x05 		pwm period 			x x x x x x x x
+0x06 		pwm control 					x x
+0x07
+0x08 		noise prbsg length 	x x x x x x x x
+0x09 		noise period 		x x x x x x x x
+0x0A
+0x0B 		noise control 					x x
+0x0C 		pattern length 		x x x x x x x x
+0x0D 
+0x0E 		pattern period 		x x x x x x x x
+0x0F 		pattern control 			  x x x
+```
+
+The meaning of the control parts of the registers is explained in the following.
+```
+system control
+---------------------------
+Bit 0 Meaning
+------------------------
+	0 system disable
+	1 system enable
+---------------------------
+Bit 1 Meaning
+---------------------------
+	1 system clear [synchronous clear](not currently implemented see improvements!)
+
+
+pwm control
+---------------------------
+Bit 0 Meaning
+--------------------------
+	0 pwm off
+	1 pwm on
+---------------------------
+Bit 1 Meaning
+---------------------------
+	0 internal trigger
+	1 external trigger
+
+
+noise prbsg length
+-----------------------------------------
+Bit 7 6 5 4 3 2 1 0 Meaning
+-----------------------------------------
+			  0 0 0 4-bit
+			  0 0 1 7-bit 8B/10B-encoded pattern
+			  0 1 0 15-bit ITU-T O.150
+			  0 1 1 17-bit OIF-CEI-P-02.0
+			  1 0 0 20-bit ITU-T O.150
+			  1 0 1 23-bit ITU-T O.150
+
+noise control
+---------------------------
+Bit 0 Meaning
+---------------------------
+	0 noise off
+	1 noise on
+---------------------------
+Bit 1 Meaning
+---------------------------
+	0 internal trigger
+	1 external trigger
+
+pattern control
+---------------------------
+Bit 1 0 Meaning
+---------------------------
+	0 0 stop
+	0 1 single burst
+	1 0 continous run
+	1 1 load data
+---------------------------
+Bit 2 Meaning
+---------------------------
+	0 internal trigger
+	1 external trigger
+```
+Now the control part of the register will be explained in further detail. 
+The system has an general enable "system control" which must be switched on 
+to switch on all individual components (noise, pattern, pwm). All components 
+allow for external triggering where you can change the state manually by pressing 
+a button. When not specified the components run with the speed of the external time 
+base which is further divided by the individual period settings. This will be discussed 
+in further detail in the Design Description.
 
 Functional Description
 ======================
@@ -41,7 +174,7 @@ Functional Description
 - describe what pwm, lfsr and uart is
 
 ## Register file
-The register file is the component responsible for for making the data and address inputs parameterisable. The register file is centric to the TSG. While it has five different inputs, it recieves information from the outputs of the serial reciever, and disperses the information appropriately from there. 
+The register file is the component responsible for for making the data and address inputs parameterisable. The register file is centric to the TSG. While it has five different inputs, it receives information from the outputs of the serial receiver, and disperses the information appropriately from there. 
 (it would be a good idea to reference the drawing that Leo done with the overall tsg module)
 
 ![Implemented Register File - Schematic](images/regfile.png){width=80%}
@@ -73,13 +206,13 @@ The register file is the component responsible for for making the data and addre
 
 In the module there is an array that is instantiated for the purpose of writing the data to the correct address/output.
 
-The register file recieves the both the address and the data directly from the serial reciever. From here the data and the address information gets 
+The register file receives the both the address and the data directly from the serial receiver. From here the data and the address information gets 
 
 
 ## UART serial receiver
-The serial reciever module is based on a design made using a Moore state machine.
+The serial receiver module is based on a design made using a Moore state machine.
 The purpose of the module is to allow for the correct sequencing and addressing of the data. 
-The change in states are dependant
+The change in states are dependent
 
 ![UART Example- Schematic](images/uart_sample.png){width=80%}
 
@@ -126,7 +259,8 @@ The change in states are dependant
 The PWM generator module is connected to one of the instantiations of the freq_control module. The output from the Frequency Control module is input to the generator to assign the total width (and thus the frequency) of the PWM. 
 
 ![PWM Example - Schematic](images/PWM_explained.png){width=80%}
-It functions by
+
+
 ![Implemented PWM File - Schematic](images/pwm_generator.png){width=80%}
 
 | **Name**    | **Type**             | **Direction** | **Polarity** | **Description** |
@@ -142,8 +276,6 @@ It functions by
 ## Pseudo-random number generator (LFSR)
 
 ![LFSR Exampled - Schematic](images/4bit_lfsr_xor.png){width=80%}
-The shape of an [electrogardiogramm](https://en.wikipedia.org/wiki/Electrocardiography) as a voltage graph over time
-
 
 
 
@@ -154,7 +286,7 @@ Design Description
 
 ## Register file
 
-$ x = y $
+
 
 ![Implemented Register File - Schematic](images/regfile.png){width=80%}
 
@@ -182,6 +314,68 @@ $ x = y $
 |------------|----------|-------------------|
 | ADDR_WIDTH | integer  | 4                 |
 | DATA_WIDTH | integer  | 8                 |
+
+## UART serial receiver
+
+![Implemented Serial Reciever File - Schematic](images/serial_rx.png){width=80%} 
+
+
+| **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
+|--------------|----------------------|:-------------:|:------------:|-----------------|
+| CLK          | std_ulogic           | IN            | HIGH         |                 |
+| RST          | std_ulogic           | IN            | HIGH         |                 |
+| UART_CLK_EN  | std_ulogic           | IN            | HIGH         |                 |
+| UART_RXD     | std_ulogic           | IN            | HIGH         |                 |
+| DOUT         | std_ulogic_vector[8] | OUT           | HIGH         |                 |
+| DOUT_VLD     | std_ulogic           | OUT           | HIGH         |                 |
+| FRAME_ERROR  | std_ulogic           | OUT           | HIGH         |                 |
+| PARITY_ERROR |                      | OUT           | HIGH         |                 |
+
+
+| **Name**    | **Type** | **Default value** |
+|-------------|----------|-------------------|
+| CLK_DIV_VAL | integer  | 16                |
+| PARITY_BIT  | string   | "none"            |
+
+
+## Pattern generator
+
+![Implemented Pattern Generator File - Schematic](images/pattern_generator.png){width=80%}
+
+| **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
+|--------------|----------------------|:-------------:|:------------:|-----------------|
+| en_write_pm  | std_ulogic           | IN            | HIGH         |                 |
+| clk_i        | std_ulogic           | IN            | HIGH         |                 |
+| pm_control_i | std_ulogic_vector[2] | IN            | HIGH         |                 |
+| addr_cnt_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
+| rxd_data_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
+| pattern_o    | std_ulogic_vector[8] | OUT           | HIGH         |                 |
+
+
+## Pulse-width modulation
+
+![Implemented PWM File - Schematic](images/pwm_generator.png){width=80%}
+
+| **Name**    | **Type**             | **Direction** | **Polarity** | **Description** |
+|-------------|----------------------|:-------------:|:------------:|-----------------|
+| en_pi       | std_ulogic           | IN            | HIGH         |                 |
+| rst_ni      | std_ulogic           | IN            | LOW          |                 |
+| pwm_width_i | std_ulogic_vector[8] | IN            | HIGH         |                 |
+| clk_i       | std_ulogic           | IN            | HIGH         |                 |
+| pwm_o       | std_ulogic           | OUT           | HIGH         |                 |
+
+
+## Pseudo-random number generator (LFSR)
+
+## Enable and external triggering
+
+A conceptional RTL diagram is shown below.
+
+Device Utilization and Performance
+==================================
+## Test Results
+### Noise Generator
+Sending serial signals to select the address and the data bit respectively.
 
 ```vhdl
 LIBRARY ieee;
@@ -246,145 +440,14 @@ BEGIN
 END rtl;vhdl
 ```
 
-## UART serial receiver
 
-![Implemented Serial Reciever File - Schematic](images/serial_rx.png){width=80%}
+![Oscilloscope readings of the Noise Generator with a period and width of one.](images/noise_4bits_period_1.png){width=80%}
 
-| **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
-|--------------|----------------------|:-------------:|:------------:|-----------------|
-| CLK          | std_ulogic           | IN            | HIGH         |                 |
-| RST          | std_ulogic           | IN            | HIGH         |                 |
-| UART_CLK_EN  | std_ulogic           | IN            | HIGH         |                 |
-| UART_RXD     | std_ulogic           | IN            | HIGH         |                 |
-| DOUT         | std_ulogic_vector[8] | OUT           | HIGH         |                 |
-| DOUT_VLD     | std_ulogic           | OUT           | HIGH         |                 |
-| FRAME_ERROR  | std_ulogic           | OUT           | HIGH         |                 |
-| PARITY_ERROR |                      | OUT           | HIGH         |                 |
-
-
-| **Name**    | **Type** | **Default value** |
-|-------------|----------|-------------------|
-| CLK_DIV_VAL | integer  | 16                |
-| PARITY_BIT  | string   | "none"            |
-
-
-## Pattern generator
-
-![Implemented Pattern Generator File - Schematic](images/pattern_generator.png){width=80%}
-
-| **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
-|--------------|----------------------|:-------------:|:------------:|-----------------|
-| en_write_pm  | std_ulogic           | IN            | HIGH         |                 |
-| clk_i        | std_ulogic           | IN            | HIGH         |                 |
-| pm_control_i | std_ulogic_vector[2] | IN            | HIGH         |                 |
-| addr_cnt_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
-| rxd_data_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
-| pattern_o    | std_ulogic_vector[8] | OUT           | HIGH         |                 |
-
-
-## Pulse-width modulation
-
-![Implemented PWM File - Schematic](images/pwm_generator.png){width=80%}
-
-| **Name**    | **Type**             | **Direction** | **Polarity** | **Description** |
-|-------------|----------------------|:-------------:|:------------:|-----------------|
-| en_pi       | std_ulogic           | IN            | HIGH         |                 |
-| rst_ni      | std_ulogic           | IN            | LOW          |                 |
-| pwm_width_i | std_ulogic_vector[8] | IN            | HIGH         |                 |
-| clk_i       | std_ulogic           | IN            | HIGH         |                 |
-| pwm_o       | std_ulogic           | OUT           | HIGH         |                 |
-
-
-## Pseudo-random number generator (LFSR)
-
-## Enable and external triggering
-
-A conceptional RTL diagram is shown below.
-
-![Heartbeat Generator - Conceptional RTL](images/heartbeat_gen_conceptional_rtl.pdf){width=60%}
-
-The simulation result shows two full periods based on a clock period of 1 ms
-
-![Two Periods - Simulation Result](images/heartbeat_gen_two_periods_simwave.png){width=80%}
-
-In more detail using cursors to display correct parameters of the QRS complex and T wave.
-
-![QRS-Complex and T-Wave - Simulation Result](images/qrs-complex-t-wave_simwave.png){width=80%}
-
-
-
-Device Utilization and Performance
-==================================
-
-The following table shows the utilisation of both modules heartbeat_gen and cntdnmodm.
-
-```pure
-+--------------------------------------------------------------------------------------+
-; Fitter Summary                                                                       ;
-+------------------------------------+-------------------------------------------------+
-; Fitter Status                      ; Successful - Wed Mar 31 11:50:15 2021           ;
-; Quartus II 32-bit Version          ; 13.0.1 Build 232 06/12/2013 SP 1 SJ Web Edition ;
-; Revision Name                      ; de1_heartbeat_gen                               ;
-; Top-level Entity Name              ; de1_heartbeat_gen                               ;
-; Family                             ; Cyclone II                                      ;
-; Device                             ; EP2C20F484C7                                    ;
-; Timing Models                      ; Final                                           ;
-; Total logic elements               ; 50 / 18,752 ( < 1 % )                           ;
-;     Total combinational functions  ; 50 / 18,752 ( < 1 % )                           ;
-;     Dedicated logic registers      ; 26 / 18,752 ( < 1 % )                           ;
-; Total registers                    ; 26                                              ;
-; Total pins                         ; 15 / 315 ( 5 % )                                ;
-; Total virtual pins                 ; 0                                               ;
-; Total memory bits                  ; 0 / 239,616 ( 0 % )                             ;
-; Embedded Multiplier 9-bit elements ; 0 / 52 ( 0 % )                                  ;
-; Total PLLs                         ; 0 / 4 ( 0 % )                                   ;
-+------------------------------------+-------------------------------------------------+
-```
-
-```pure
-
-+----------------------------------------------------------------------------------------+
-; TimeQuest Timing Analyzer Summary                                                      ;
-+--------------------+-------------------------------------------------------------------+
-; Quartus II Version ; Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Web Edition ;
-; Revision Name      ; de1_heartbeat_gen                                                 ;
-; Device Family      ; Cyclone II                                                        ;
-; Device Name        ; EP2C20F484C7                                                      ;
-; Timing Models      ; Final                                                             ;
-; Delay Model        ; Combined                                                          ;
-; Rise/Fall Delays   ; Unavailable                                                       ;
-+--------------------+-------------------------------------------------------------------+
-
------------------------------------------+
-; Clocks                                 ; 
-+------------+------+--------+-----------+
-; Clock Name ; Type ; Period ; Frequency ;
-+------------+------+--------+-----------+
-; CLOCK_50	 ; Base ; 20.000 ; 50.0 MHz	 ;
-+------------+------+--------+-----------+
-
-
-+-----------------------------------------------------------------------------+
-; Multicorner Timing Analysis Summary                                         ;
-+------------------+-------+-------+----------+---------+---------------------+
-; Clock            ; Setup ; Hold  ; Recovery ; Removal ; Minimum Pulse Width ;
-+------------------+-------+-------+----------+---------+---------------------+
-; Worst-case Slack ; 3.390 ; 0.241 ; 13.381   ; 3.796   ; 8.889               ;
-;  CLOCK_50        ; 3.390 ; 0.241 ; 13.381   ; 3.796   ; 8.889               ;
-; Design-wide TNS  ; 0.0   ; 0.0   ; 0.0      ; 0.0     ; 0.0                 ;
-;  CLOCK_50        ; 0.000 ; 0.000 ; 0.000    ; 0.000   ; 0.000               ;
-+------------------+-------+-------+----------+---------+---------------------+
-```
+![Oscilloscope readings of the Noise Generator with a period and width of one.](images/noise_4bits_period_1_bit_width.png){width=80%}
 
 Application Note
 ================
 
-- de1 tsg description
-
-The following test environment on a DE1 prototype board uses a system clock frequency of 50 MHz.
-A prescaler is parameterised to generate an output signal with a period of 1 ms.
-
-![Test Environment on DE1 Prototype Board](images/de1_heartbeat_gen_schematic.pdf){width=70%}
 
 
 
@@ -394,89 +457,19 @@ Appendix
 References
 ----------
 
-* [Wiki: Electrocardiography](https://en.wikipedia.org/wiki/Electrocardiography)
+
 
 Project Hierarchy
 -----------------
 
+Code
+----------------------
+
 ### Module Hierarchy for Verification
 
-```pure
-t_heartbeat_gen(tbench)
-  heartbeat_gen(rtl)
-```
 
 ### Prototype Environment
 
-```pure
-de1_heartbeat_gen(structure)
-  heartbeat_gen(rtl)
-  cntdnmodm(rtl)
-```
-
-VHDL Sources
-------------
-
-```vhdl
-LIBRARY IEEE;
-USE IEEE.std_logic_1164.ALL;
-
-ENTITY heartbeat_gen IS
-  PORT (clk_i   : IN  std_ulogic;
-        rst_ni  : IN  std_ulogic;
-        en_pi   : IN  std_ulogic;
-        count_o : OUT std_ulogic_vector;
-        heartbeat_o : OUT std_ulogic
-        );
-END heartbeat_gen;
-```
-
-```vhdl
-LIBRARY IEEE;
-USE IEEE.std_logic_1164.ALL;
-USE IEEE.numeric_std.ALL;
-
-ARCHITECTURE rtl OF heartbeat_gen IS
-
-  CONSTANT n    : natural                := 10;
-  CONSTANT zero : unsigned(n-1 DOWNTO 0) := (OTHERS => '0');
-
-  CONSTANT heartbeat_period : unsigned(n-1 DOWNTO 0) := to_unsigned(833, n);
-  CONSTANT qrs_width        : unsigned(n-1 DOWNTO 0) := to_unsigned(100, n);
-  CONSTANT st_width
-The important QRS complex and T wave are modelled as digital pulses.
-
-![QRS Complex and T Wave Pulses](images/qrs-complex-t-wave-pulses.pdf){width=80%}
-  CONSTANT t_width
-  CONSTANT qt_width
-
-  SIGNAL next_state, current_state : unsigned(n-1 DOWNTO 0);
-
-  SIGNAL tc_qrs                    : std_ulogic;  -- qrs interval
-  SIGNAL tc_t                      : std_ulogic;  -- T wave
-
-BEGIN
-
-  next_state_logic : 
-                     
-
-
-  state_register : 
-                   
-
-  -- output_logic
-  t_wave : tc_t <= 
-                   
-                   
-                   
-  qrs_complex : tc_qrs <= 
-                          
-
-  output_value : heartbeat_o <= 
-
-
-END rtl;
-```
 
 Revision History
 ----------------
@@ -485,4 +478,3 @@ Revision History
 |:----------|:-------------|:--------------------|
 | May 2020  | 0.1  | Initial Release  |
 | April 2021  | 0.2  | Added parameterisation  |
-
