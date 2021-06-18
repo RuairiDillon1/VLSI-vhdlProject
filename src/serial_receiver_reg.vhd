@@ -1,3 +1,8 @@
+-- Description: takes information on the address and the data externally (serial reciever),
+-- to then store to registers.
+-- In the scope of the project, this then gets sent to the register file to be
+-- processed from there.
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
@@ -19,7 +24,7 @@ architecture rtl of serial_receiver_reg is
 begin
 
   addr_register : regfile_addr_o <= (others => '0') WHEN rst_ni = '0' ELSE
-    std_ulogic_vector(resize(unsigned(rxd_data_i), 4)) WHEN rising_edge(clk_i) AND (en_addr_reg_i = '1');
+    std_ulogic_vector(resize(unsigned(rxd_data_i), 4)) WHEN rising_edge(clk_i) AND (en_addr_reg_i = '1'); -- slices the four most significant bits off of the address
 
 
  data_register : regfile_data_o <= (others => '0') WHEN rst_ni = '0' ELSE
