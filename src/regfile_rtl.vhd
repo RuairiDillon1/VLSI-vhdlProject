@@ -26,7 +26,7 @@ ENTITY regfile IS
     w_addr_i            : IN  std_ulogic_vector (ADDR_WIDTH-1 DOWNTO 0);
     r_addr_i            : IN  std_ulogic_vector (ADDR_WIDTH-1 DOWNTO 0);
     w_data_i            : IN  std_ulogic_vector (DATA_WIDTH-1 DOWNTO 0);
-    -- system_status_reg_i  : IN  std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
+	 
     system_control_o    : OUT std_ulogic_vector(1 DOWNTO 0);
     pwm_pulse_width_o   : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
     pwm_period_o        : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
@@ -34,10 +34,10 @@ ENTITY regfile IS
     noise_length_o      : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
     noise_period_o      : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
     noise_control_o     : OUT std_ulogic_vector(1 DOWNTO 0);
-    pattern_mem_depth_o 
-
-    : OUT std_ulogic_vector(2 DOWNTO 0);
-    r_data_o            : OUT std_ulogic_vector (DATA_WIDTH-1 DOWNTO 0)
+    pattern_mem_depth_o : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
+	 pattern_period_o    : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0);
+	 pattern_control_o   : OUT std_ulogic_vector(2 DOWNTO 0);
+    r_data_o            : OUT std_ulogic_vector(DATA_WIDTH-1 DOWNTO 0)
     );
 END regfile;
 

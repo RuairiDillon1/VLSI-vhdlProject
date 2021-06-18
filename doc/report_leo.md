@@ -127,6 +127,41 @@ Now the control part of the register will be explained in further detail.
 The system has an general enable "system control" which must be switched on 
 to switch on all individual components (noise, pattern, pwm). All components 
 allow for external triggering where you can change the state manually by pressing 
-a button. When not specified the compents run with the speed of the external time 
+a button. When not specified the components run with the speed of the external time 
 base which is further divided by the individual period settings. This will be discussed 
 in further detail in the Design Description.
+
+## External time base and external triggering design
+![Noise/PWM enable and external trigger design](images/noise_pwm_en.png){width=100%}
+To get the external time base and external triggering to work correctly multiple AND gates and multiplexer are needed.
+For the pwm and the noise generator we have the same design. If the noise generator is enabled, depends on 
+the following conditions:
+- the whole system is enabled
+- pwm/noise generator is enabled
+- external time base on
+- frequency divider enabled
+When the external triggering of the noise/pwm generator is enabled it should only be controlled by external triggering
+if the system is on and the pwm/noise generator is enabled.
+
+![Pattern enable and external trigger design](images/pattern_en.png){width=100%}
+For the pattern generator a more sophisticated system is needed. We need to differentiate between the four modes of our 
+pattern generator:
+- 00 stop
+- 01 single burst
+- 10 continous run
+- 11 load
+
+In stop and load mode we do not care about the external triggering and the external time base. When loading the pattern generator the
+address upcounter only counts up when the pattern generator state machine gives an signal. The external trigger, external time base 
+and frequency divider matters when we are in the two run modes. For the external triggering we need the additional signal pattern valid.
+This signal is provided by the pattern generator state machine and is true when the state machine is in a counting state. This is needed 
+for the single burst mode to stop counting after one counting cycle.
+
+# Application Note
+![Wiring on DE1 Altera Board](images/de1_tsg.png){width=100%}
+The wiring of the DE1 Board can be seen in the picture above. The test signal generator runs with an 50 MHz clock and a time base of 
+10 MHz on the enable. An synchroniser is added before the serial input to avoid metavalues because of asynchronous serial communication from the pc.
+The outputs of the test signal generator were connected to test components ALU and a 101 sequence detector. On the HEX3 display the
+number of 101 sequences detected is shown. Additionally some outputs are connected to the GPIOs
+for measurements. For the connections see ```de1_tsg_structure.vhd```.
+![Connected components on DE1 Altera Board](images/de1_tsg_wiring.png){width=100%}
