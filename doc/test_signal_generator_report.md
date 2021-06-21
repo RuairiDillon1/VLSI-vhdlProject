@@ -82,7 +82,7 @@ The register file receives data from the serial communication and writes them in
 memory the output components are controlled. 
 
 The register file has the following memory view.
-```
+```pure
 		  					 Bit7  ..         0
 ------------------------------------------------
 Address  	Name 				7 6 5 4 3 2 1 0
@@ -106,7 +106,7 @@ Address  	Name 				7 6 5 4 3 2 1 0
 ```
 
 The meaning of the control parts of the registers is explained in the following.
-```
+```pure
 system control
 ---------------------------
 Bit 0 Meaning
@@ -197,7 +197,7 @@ The change in states are dependent
 | DOUT_VLD     | std_ulogic           | OUT           | HIGH         |                 |
 | FRAME_ERROR  | std_ulogic           | OUT           | HIGH         |                 |
 | PARITY_ERROR |                      | OUT           | HIGH         |                 |
-
+: blabla
 
 | **Name**    | **Type** | **Default value** |
 |-------------|----------|-------------------|
@@ -242,108 +242,14 @@ The PWM generator module is connected to one of the instantiations of the freq_c
 
 ## Pseudo-random number generator (LFSR)
 
-
-
-## Register file
-
-The register file is centric to the operation of the TSG. This acts as the link between all the different grouping of modules shown in FIGURE OF LEOS DIAGRAM.
-
-The Register file operates by intaking
-
-![Implemented Register File - Schematic](images/regfile.png){width=80%}
-
-| **Name**            | **Type**                      | **Direction** | **Polarity** | **Description** |
-|---------------------|-------------------------------|:-------------:|:------------:|-----------------|
-| clk_i               | std_ulogic                    | IN            | HIGH         |                 |
-| wr_en_i             | std_ulogic                    | IN            | HIGH         |                 |
-| w_addr_i            | std_ulogic_vector[ADDR_WIDTH] | IN            | HIGH         |                 |
-| r_addr_i            | std_ulogic_vector[ADDR_WIDTH] | IN            | HIGH         |                 |
-| w_data_i            | std_ulogic_vector[DATA_WIDTH] | IN            | HIGH         |                 |
-| system_control_o    | std_ulogic_vector[2]          | OUT           | HIGH         |                 |
-| pwm_pulse_width_o   | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
-| pwm_period_o        | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
-| pwm_control_o       | std_ulogic_vector[2]          | OUT           | HIGH         |                 |
-| noise_length_o      | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
-| noise_period_o      | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
-| noise_control_o     | std_ulogic_vector[2]          | OUT           | HIGH         |                 |
-| pattern_mem_depth_o | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
-| pattern_period_o    | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
-| pattern_control_o   | std_ulogic_vector[3]          | OUT           | HIGH         |                 |
-| r_data_o            | std_ulogic_vector[DATA_WIDTH] | OUT           | HIGH         |                 |
-
-
-| **Name**   | **Type** | **Default value** |
-|------------|----------|-------------------|
-| ADDR_WIDTH | integer  | 4                 |
-| DATA_WIDTH | integer  | 8                 |
-
-## UART serial receiver
-
-![Implemented Serial Reciever File - Schematic](images/serial_rx.png){width=80%} 
-
-
-| **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
-|--------------|----------------------|:-------------:|:------------:|-----------------|
-| CLK          | std_ulogic           | IN            | HIGH         |                 |
-| RST          | std_ulogic           | IN            | HIGH         |                 |
-| UART_CLK_EN  | std_ulogic           | IN            | HIGH         |                 |
-| UART_RXD     | std_ulogic           | IN            | HIGH         |                 |
-| DOUT         | std_ulogic_vector[8] | OUT           | HIGH         |                 |
-| DOUT_VLD     | std_ulogic           | OUT           | HIGH         |                 |
-| FRAME_ERROR  | std_ulogic           | OUT           | HIGH         |                 |
-| PARITY_ERROR |                      | OUT           | HIGH         |                 |
-
-
-| **Name**    | **Type** | **Default value** |
-|-------------|----------|-------------------|
-| CLK_DIV_VAL | integer  | 16                |
-| PARITY_BIT  | string   | "none"            |
-
-
-## Pattern generator
-
-![Implemented Pattern Generator File - Schematic](images/pattern_generator.png){width=80%}
-
-| **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
-|--------------|----------------------|:-------------:|:------------:|-----------------|
-| en_write_pm  | std_ulogic           | IN            | HIGH         |                 |
-| clk_i        | std_ulogic           | IN            | HIGH         |                 |
-| pm_control_i | std_ulogic_vector[2] | IN            | HIGH         |                 |
-| addr_cnt_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
-| rxd_data_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |80
-| pattern_o    | std_ulogic_vector[8] | OUT           | HIGH         |                 |
-
-
-## Pulse-width modulation
-
-![Implemented PWM File - Schematic](images/pwm_generator.png){width=80%}
-
-| **Name**    | **Type**             | **Direction** | **Polarity** | **Description** |
-|-------------|----------------------|:-------------:|:------------:|-----------------|
-| en_pi       | std_ulogic           | IN            | HIGH         |                 |
-| rst_ni      | std_ulogic           | IN            | LOW          |                 |
-| pwm_width_i | std_ulogic_vector[8] | IN            | HIGH         |                 |
-| clk_i       | std_ulogic           | IN            | HIGH         |                 |
-| pwm_o       | std_ulogic           | OUT           | HIGH         |                 |
-
-
-## Pseudo-random number generator (LFSR)
-
 ## Enable and external triggering
 
-A conceptional RTL diagram is shown below.
 
-Device Utilization and Performance
-==================================
-## Test Results
+Test Results
+============
 
-
-
-### Noise Generator
+## Noise Generator
 Sending serial signals to select the address and the data bit respectively.
-
-
-
 
 ![Oscilloscope readings of the Noise Generator with a period and width of one.](images/noise_4bits_period_1.png){width=80%}
 
@@ -362,18 +268,21 @@ Application Note
 Further Improvements
 ====================
 
+References
+==========
 
 Appendix
 ========
 
-References
-----------
 
 
+
+Device Utilization and Performance
+----------------------------------
 
 Project Hierarchy
 -----------------
-```
+```pure
 .
 --- doc
 |   +-- datasheet.yaml
@@ -464,7 +373,7 @@ Project Hierarchy
 Module Hierarchy
 ----------------
 tsg testbench:
-```
+```pure
 t_tsg(tbench)
   e_tsg.vhd 
   a_tsg_structure.vhd 
@@ -487,7 +396,7 @@ t_tsg(tbench)
 
 ```
 de1_tsg:
-```
+```pure
 de1_tsg(structure)
   binto7segment_truthtable.vhd 
   cntdnmodm_rtl.vhd 
@@ -564,7 +473,7 @@ BEGIN
 
 -- read port
   r_data_o <= array_reg(to_integer(unsigned(r_addr_i)));
-END rtl;vhdl
+END rtl;
 ```
 
 ALU Test Device
@@ -600,7 +509,7 @@ BEGIN
   y_o <= std_ulogic_vector(y_out); -- converting the output to std_ulogic_vect
                                    -- to output
 
-END rtl;vhdl
+END rtl;
 ```
 
 Noise Generator Configuration
@@ -650,7 +559,6 @@ BEGIN
                         d WHEN rising_edge(clk_i) AND en_pi = '1';
 
 END ARCHITECTURE rtl;
-vhdl
 ```
 
 Frequency Controller
@@ -717,8 +625,6 @@ END rtl;
 -- ----------
 -- $Id:$
 -------------------------------------------------------------------------------
-
-vhdl
 ```
 
 Pattern Generator
@@ -782,7 +688,6 @@ BEGIN
   output_register : pattern_o <= pattern_temp WHEN rising_edge(clk_i);
   
 END ARCHITECTURE structure;
-vhdl
 ```
 
 PWM Generator
@@ -840,7 +745,6 @@ BEGIN
                     pwm_temp WHEN rising_edge(clk_i);
 
 END rtl;
-vhdl
 ```
 
 Register File
@@ -917,7 +821,6 @@ BEGIN
 -- read port
   r_data_o <= array_reg(to_integer(unsigned(r_addr_i)));
 END rtl;
-vhdl
 ```
 
 Serial Receiver Register File
@@ -957,7 +860,6 @@ begin
 
     
 end architecture rtl;
-vhdl
 ```
 
 
@@ -1012,5 +914,4 @@ BEGIN
     sync_o <= ff2_o; -- then the overall system's output
 
 end architecture rtl;
-vhdl
 ```
