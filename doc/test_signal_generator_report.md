@@ -45,22 +45,39 @@ Functional Description
 - describe the theory of the components
 
 ## UART serial communication
+UART communication is a common form of data communication between electriconic devices. It communicated the data serially in the form of digital signals.
 ![UART Example- Schematic](images/uart_sample.png){width=80%}
+UART communication has some characteristics that need to be considered for implementation.
+The signal begins with start bit (in the form of a high signal), the next in the sequence comes the data bits, the number of data bits is configurable and is dependant on the parameterisation of the serial modules.
+After the data sequence is complete, UART protocol then instructs you to send a stop bit, which is again a high signal.
 
 
 ## Digital pattern generator
 
+Digital Pattern Generators are a common way of creating signal for testing.
+Theoretically the Pattern Generator should allow the user to output a configurable pattern.
+The pattern can take various shapes, including standard pulses or outputting larger bit patterns depending on the system configuration.
 
 ## Pulse-width modulation
+Pulse Width Moduation (PWM) is a type of digital signal that has many uses for real world applications. It is a way in which you can digitally control some analog devices.
 ![PWM Example - Schematic](images/PWM_Explained.png){width=80%}
+PWM funtions by switching between low and high signals to the requested amounts by the user. For each cycle, the signal will be high for the requested percentage. This is known as the Duty Cycle.
+
+$Period=\frac{1}{f}$
+$Period=T_{on}+T_{off}$
+$DutyCycle=\frac{T_{on}}{T_{on}+T_{off}}\times100$
 
 ## Pseudo-random number generator (LFSR)
+Linear Feedback Shift Registers is a configuration of registers used in conjunction with an XOR gate to create a function dependant on it's previous state.
+
 ![LFSR Exampled - Schematic](images/4bit_lfsr_xor.png){width=80%}
+
+By continually shifting to the right and going through the XOR gate, it generates a series of random numbers.
+
 The number of cycles until the pseudo random number generator repeats himself is:
   $number~of~cycles = 2^{n} -1$
 
 With $n$ as number of bits.
-
 General Description
 ===================
 
@@ -181,9 +198,10 @@ Design Description
 ==================
 
 ## UART serial receiver
-The serial receiver module is based on a design made using a Moore state machine.
+The serial receiver module is based on a design made using a Moore state machine and it was provided to the design team by the design manager.
 The purpose of the module is to allow for the correct sequencing and addressing of the data. 
-The change in states are dependent
+The module functions by using a synchronous high active reset.
+This state machine directly communicates with the other state machine present on the project directly via the data valid signal, signalling that the data has arrived.
 
 ![Implemented Serial Receiver File - Schematic](images/serial_rx.png){width=80%}
 
@@ -206,6 +224,27 @@ The change in states are dependent
 
 ![UART Serial Reciever State Machine File - Schematic](images/serial_receiver_fsm.png){width=80%}
 
+| rxd_rec | addr | pm_checked | Description |  
+|---------|------|------------|-------------|
+| 0       | xxxx | x          |             | 
+| 1       | xxxx | x          |             |
+| 1       | xxxx | x          |             |
+|         | xxxx | x          |             | 
+|         |      |            |             |
+
+| end_addr_reg | en_data_reg | en_regfile_wr | pm_control_changed | Description |
+|--------------|-------------|---------------|--------------------|-------------|
+| 0            | 0           | 0             | 0                  |             |
+|             |         |             |                    |             |
+|              |            |               |                    |             |
+|              |             |               |                    |             |
+|              |             |               |                    |             |
+|              |             |               |                    |             |
+|              |             |               |                    |             |
+|              |             |               |                    |             |
+
+This is then directly wired to the ```serial_reciever_reg.vhd``` module. The purpose is this is for the project to work, the register file (```regfile.vhd```) needs to know both the address and the data values similtaneously - meaning that the information must be stored somewhere. This file takes the values in and stores them to registers temporarily and resets every cycle.
+
 ## Pattern generator
 
 ![Implemented Pattern Generator File - Schematic](images/pattern_generator.png){width=40%}
@@ -222,6 +261,28 @@ The change in states are dependent
 
 
 ![Pattern Generator State Machine File - Schematic](images/pattern_generator_fsm.png){width=80%}
+
+| en_pm | en_pm_cnt | clr_pm_cnt | pm_cclr_hecked | pattern_valid | Description |
+|-------|-----------|------------|----------------|---------------|-------------|
+| 0     | 0         | 0          | 0              |               |             |
+|       |     |  |                |               |             |
+|       |        |         |                |               |             |
+|       |           |            |                |               |             |
+|       |           |            |                |               |             |
+|       |           |            |                |               |             |
+|       |           |            |                |               |             |
+|       |           |            |                |               |             |
+
+| rxd_rec | tc_pm | pm_control | addr_cnt_enabled | Description |   |
+|---------|-------|------------|------------------|-------------|---|
+| x       | x     | xx         | x                |             |   |
+|         |       |            |                  |             |   |
+|         |       |            |                  |             |   |
+|         |       |            |                  |             |   |
+|         |       |            |                  |             |   |
+|         |       |            |                  |             |   |
+|         |       |            |                  |             |   |
+
 
 
 ## Pulse-width modulation
