@@ -6,15 +6,15 @@
     <inputnames>rxd_rec,tc_pm,pm_control_changed,pm_control[1..0],addr_cnt_enabled</inputnames>
     <outputnames></outputnames>
     <itransition ypos="301" endx="684" xpos="624" endy="301"/>
-    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="00000" ypos="301" code="0" xpos="724" linewidth="1">wait_for_pm_change</state>
-    <state pencolor="0" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 0 &#xa;clr pm cnt = 1&#xa;pm checked =  0" finalstate="0" entry_actions="" moore_outputs="00100" ypos="159" code="1" xpos="767" linewidth="1">clr_wait_addr_cnt</state>
-    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="00000" ypos="442" code="2" xpos="604" linewidth="1">wait_for_pm_data</state>
-    <state pencolor="0" exit_actions="" radius="40" description="en pm = 1&#xa;en pm cnt =0 &#xa;clr pm cnt = 0&#xa;pm checked =0 " finalstate="0" entry_actions="" moore_outputs="10000" ypos="602" code="3" xpos="605" linewidth="1">fetch_pm_data</state>
-    <state pencolor="0" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 1&#xa;clr pm cnt = 0 &#xa;pm checked =0 " finalstate="0" entry_actions="" moore_outputs="01000" ypos="705" code="4" xpos="734" linewidth="1">cnt_addr_up_serialmode</state>
-    <state pencolor="0" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 0&#xa;clr pm cnt = 0&#xa;pm checked = 0" finalstate="0" entry_actions="" moore_outputs="00000" ypos="706" code="5" xpos="898" linewidth="1">check_addr_end</state>
-    <state pencolor="0" exit_actions="" radius="40" description="en pm = 0&#xa;en pm cnt = 0 &#xa;clr pm cnt = 0&#xa;pm checked = 1" finalstate="0" entry_actions="" moore_outputs="00010" ypos="710" code="6" xpos="1089" linewidth="1">pm_is_checked</state>
-    <state pencolor="0" exit_actions="" radius="40" description="en pm = 0&#xa;en pm cnt = 1&#xa;clr pm cnt = 0&#xa;pm checked = 0&#xa;pattern_valid = 1" finalstate="0" entry_actions="" moore_outputs="01001" ypos="502" code="7" xpos="1134" linewidth="1">cnt_addr_up_cntmode</state>
-    <state pencolor="0" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 1&#xa;clr pm cnt = 0&#xa;pm checked = 0&#xa;pattern_valid = 1" finalstate="0" entry_actions="" moore_outputs="01001" ypos="334" code="8" xpos="1047" linewidth="1">cnt_addr_free</state>
+    <state pencolor="21760" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="00000" ypos="301" code="0" xpos="724" linewidth="4">wait_for_pm_change</state>
+    <state pencolor="21760" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 0 &#xa;clr pm cnt = 1&#xa;pm checked =  0" finalstate="0" entry_actions="" moore_outputs="00100" ypos="159" code="1" xpos="767" linewidth="4">clr_wait_addr_cnt</state>
+    <state pencolor="255" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="00000" ypos="442" code="2" xpos="604" linewidth="3">wait_for_pm_data</state>
+    <state pencolor="255" exit_actions="" radius="40" description="en pm = 1&#xa;en pm cnt =0 &#xa;clr pm cnt = 0&#xa;pm checked =0 " finalstate="0" entry_actions="" moore_outputs="10000" ypos="602" code="3" xpos="605" linewidth="4">fetch_pm_data</state>
+    <state pencolor="255" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 1&#xa;clr pm cnt = 0 &#xa;pm checked =0 " finalstate="0" entry_actions="" moore_outputs="01000" ypos="705" code="4" xpos="734" linewidth="4">cnt_addr_up_serialmode</state>
+    <state pencolor="255" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 0&#xa;clr pm cnt = 0&#xa;pm checked = 0" finalstate="0" entry_actions="" moore_outputs="00000" ypos="706" code="5" xpos="898" linewidth="4">check_addr_end</state>
+    <state pencolor="16711680" exit_actions="" radius="40" description="en pm = 0&#xa;en pm cnt = 0 &#xa;clr pm cnt = 0&#xa;pm checked = 1" finalstate="0" entry_actions="" moore_outputs="00010" ypos="710" code="6" xpos="1089" linewidth="3">pm_is_checked</state>
+    <state pencolor="16711680" exit_actions="" radius="40" description="en pm = 0&#xa;en pm cnt = 1&#xa;clr pm cnt = 0&#xa;pm checked = 0&#xa;pattern_valid = 1" finalstate="0" entry_actions="" moore_outputs="01001" ypos="502" code="7" xpos="1134" linewidth="4">cnt_addr_up_cntmode</state>
+    <state pencolor="16711680" exit_actions="" radius="40" description="en pm =0&#xa;en pm cnt = 1&#xa;clr pm cnt = 0&#xa;pm checked = 0&#xa;pattern_valid = 1" finalstate="0" entry_actions="" moore_outputs="01001" ypos="334" code="8" xpos="1047" linewidth="4">cnt_addr_free</state>
     <transition c1x="612.4531432076636" c2y="181.0488024002441" c1y="256.7586309010446" description="" straight="1" type="0" ypos="277.1318893462176" endx="714.7532531112056" xpos="691.9015063621547" endy="262.0834524658909" c2x="727.4220161285875">
       <from>0</from>
       <to>0</to>
@@ -111,7 +111,7 @@
       <inputs default="1" any="0" invert="0">000000</inputs>
       <outputs></outputs>
     </transition>
-    <transition c1x="978.3265305011713" c2y="284.7881188548492" c1y="421.2108997376131" description="pm_control_changed = 1" straight="0" type="0" ypos="478.4731320929984" endx="792.4752578798517" xpos="1101.650556627872" endy="189.8384700650836" c2x="896.5756158765753">
+    <transition c1x="978.3265305011713" c2y="284.7881188548492" c1y="421.2108997376131" description="pm_control_changed = 1" straight="0" type="0" ypos="478.4731320929985" endx="792.4752578798517" xpos="1101.650556627872" endy="189.8384700650836" c2x="896.5756158765753">
       <from>7</from>
       <to>1</to>
       <inputs default="0" any="0" invert="0">xx1xxx</inputs>
