@@ -15,24 +15,51 @@ Features
 ========
 These features are key to the TSG as they are utilised in many commercially available TSGs as such they are included in this TSG. 
 
-### Serial Transmission
+- Serial Transmission
+
 Utilizing UART serial transmission allows for a large range of data to be transferred between the TSG and the subject system. It allows for the TSG to be given Parallel inputs and then communicate using serial transmission  which can then be returned to a parallel data type for the target system to utilise.
 
 
-### Single pulse with variable duty cycle and frequency.
+- Single pulse with variable duty cycle and frequency
+
 Utilising Pulse width modulation a series of digitally controlled electrical signals can be sent allowing for a spectrum of both peak voltage and high frequency testing within a single module.
 
-### Digital noise based on pseudo random binary sequences of different length.
+- Digital noise based on pseudo random binary sequences of different length
+
 Ustilsing LFSRs to generate a string of pseudo random binary that is then sent along the UART transmission lines to the subject board. It allows for the subject system's ability to handle junk data as well as other highly variable data types.   
 
-### Arbitrary data bus sequences at selectable speed.
+- Arbitrary data bus sequences at selectable speed
+
 Utilising digital pattern generators to create arbitrary data busses that can then be sent using UART to a subject board. As the output of this system is arbitrary it allows for the clarity of transmissions that are sent to the subject board. 
 
-### Internal/External Trigger.
+- Internal/External Trigger
+
 Internal and external triggers allow for the TSG to be triggered by internally set rules or received data from the test subject system allowing for specific internal rules to be set up. External triggers allow for specific targeted stimulus to be produced by the TSG meaning that any of the above test types can be used with a high level of precision.  
 
-### External Time Base
+- External Time Base
+
 An external time base allows for the entire TSG to be configured based on the system to be tested by the TSG system. As well as allowing for the TSG to be run at a different clock rate to the tested system.
+
+Functional Description
+======================
+- describe the theory of the components
+
+## UART serial communication
+![UART Example- Schematic](images/uart_sample.png){width=80%}
+
+
+## Digital pattern generator
+
+
+## Pulse-width modulation
+![PWM Example - Schematic](images/PWM_Explained.png){width=80%}
+
+## Pseudo-random number generator (LFSR)
+![LFSR Exampled - Schematic](images/4bit_lfsr_xor.png){width=80%}
+The number of cycles until the pseudo random number generator repeats himself is:
+  $number~of~cycles = 2^{n} -1$
+
+With $n$ as number of bits.
 
 General Description
 ===================
@@ -150,15 +177,15 @@ a button. When not specified the compents run with the speed of the external tim
 base which is further divided by the individual period settings. This will be discussed 
 in further detail in the Design Description.
 
+Design Description
+==================
 
 ## UART serial receiver
 The serial receiver module is based on a design made using a Moore state machine.
 The purpose of the module is to allow for the correct sequencing and addressing of the data. 
 The change in states are dependent
 
-![UART Example- Schematic](images/uart_sample.png){width=80%}
-
-![Implemented Serial Reciever File - Schematic](images/serial_rx.png){width=80%}
+![Implemented Serial Receiver File - Schematic](images/serial_rx.png){width=80%}
 
 | **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
 |--------------|----------------------|:-------------:|:------------:|-----------------|
@@ -200,8 +227,6 @@ The change in states are dependent
 ## Pulse-width modulation
 The PWM generator module is connected to one of the instantiations of the freq_control module. The output from the Frequency Control module is input to the generator to assign the total width (and thus the frequency) of the PWM. 
 
-![PWM Example - Schematic](images/PWM_Explained.png){width=80%}
-
 
 ![Implemented PWM File - Schematic](images/pwm_generator.png){width=80%}
 
@@ -217,14 +242,7 @@ The PWM generator module is connected to one of the instantiations of the freq_c
 
 ## Pseudo-random number generator (LFSR)
 
-![LFSR Exampled - Schematic](images/4bit_lfsr_xor.png){width=80%}
 
-
-
-Design Description
-==================
-
-- component implementations
 
 ## Register file
 
@@ -334,20 +352,15 @@ Sending serial signals to select the address and the data bit respectively.
 Expected results are found by:
 
 Noise Period:
-$$  
-\begin{equation}
 
-	period = 4^(number of bits) -1 \\
+	$period = 4^(number of bits) -1$ 
 
-\end{equation}
-$$
-
-`$z=x + y$`
 
 Application Note
 ================
 
-
+Further Improvements
+====================
 
 
 Appendix
@@ -360,6 +373,132 @@ References
 
 Project Hierarchy
 -----------------
+```
+.
+--- doc
+|   +-- datasheet.yaml
+|   +-- images
+|   +-- makefile
+|   +-- presentation.yaml
+|   +-- report.yaml
+|   +-- tables
+|   +-- test_signal_generator_datasheet.md
+|   +-- test_signal_generator_presentation.md
+|   +-- test_signal_generator_report.md
+|   +-- test_signal_generator_report.pdf
+|   +-- uasa_meng_vlsi_template.tex
+|   +-- vec.conf
++-- pnr
+|   +-- de1_binto7segment
+|   +-- de1_cntdnmodm
+|   +-- de1_serial_rx
+|   +-- de1_tsg
+|   +-- makefile
++-- README.md
++-- scripts
+|   +-- create_quartus_project_settings.tcl
+|   +-- de1_pin_assignments_minimumio.tcl
+|   +-- modelsim.ini
+|   +-- quartus_project_flow.tcl
+|   +-- test_variables.py
+|   +-- write_to_ttyUSBx.py
++-- sim
+|   +-- binto7segment
+|   +-- cntdnmodm
+|   +-- cntup_addr
+|   +-- de1_tsg
+|   +-- makefile
+|   +-- noise_generator
+|   +-- pattern_generator
+|   +-- pwm_generator
+|   +-- serial_rx
+|   +-- tsg
++-- src
+    +-- 101SequenceQfsm.fsm
+    +-- a_falling_edge_detector_rtl.vhd
+    +-- alu.vhd
+    +-- alu.vhd.bak
+    +-- a_tsg_structure.vhd
+    +-- a_tsg_structure.vhd.bak
+    +-- binto7segment_truthtable.vhd
+    +-- cntdnmodm_rtl.vhd
+    +-- cntup_addr.vhd
+    +-- cntup_addr.vhd.bak
+    +-- config_noise_generator.vhd
+    +-- config_noise_generator.vhd.bak
+    +-- de1_serial_rx_structure.vhd
+    +-- de1_tsg_structure.vhd
+    +-- de1_tsg_structure.vhd.bak
+    +-- e_falling_edge_detector.vhd
+    +-- e_tsg.vhd
+    +-- freq_control.vhd
+    +-- noise_generator.vhd
+    +-- noise_generator.vhd.bak
+    +-- pattern_generator_fsm.vhd
+    +-- pattern_generator_qfsm.fsm
+    +-- pattern_generator.vhd
+    +-- pwm_generator.vhd
+    +-- regfile_rtl.vhd
+    +-- regfile_rtl.vhd.bak
+    +-- sequence_detector.vhd
+    +-- serial_receiver_fsm.vhd
+    +-- serial_receiver_qfsm.fsm
+    +-- serial_receiver_reg.vhd
+    +-- serial_receiver_reg.vhd.bak
+    +-- serial_rx.vhd
+    +-- serial_tx.vhd
+    +-- sp_ssram_rtl.vhd
+    +-- synchroniser.vhd
+    +-- synchroniser.vhd.bak
+    +-- t_cntup_addr.vhd
+    +-- t_de1_tsg.vhd
+    +-- t_noise_generator.vhd
+    +-- t_pattern_generator.vhd
+    +-- t_pwm_generator.vhd
+    +-- t_serial_receiver_fsm.vhd
+    +-- t_serial_rx.vhd
+    +-- t_tsg.vhd
+    +-- uart_clk_div.vhd
+    +-- uart_parity.vhd
+```
+Module Hierarchy
+----------------
+tsg testbench:
+```
+t_tsg(tbench)
+  e_tsg.vhd 
+  a_tsg_structure.vhd 
+  uart_clk_div.vhd 
+  uart_parity.vhd 
+  serial_rx.vhd 
+  serial_tx.vhd 
+  serial_receiver_reg.vhd 
+  serial_receiver_fsm.vhd 
+  regfile_rtl.vhd 
+  freq_control.vhd 
+  pwm_generator.vhd 
+  noise_generator.vhd 
+  config_noise_generator.vhd 
+  pattern_generator.vhd 
+  pattern_generator_fsm.vhd 
+  cntup_addr.vhd 
+  sp_ssram_rtl.vhd 
+  cntdnmodm_rtl.vhd  
+
+```
+de1_tsg:
+```
+de1_tsg(structure)
+  binto7segment_truthtable.vhd 
+  cntdnmodm_rtl.vhd 
+  synchroniser.vhd 
+  a_falling_edge_detector_rtl.vhd 
+  e_falling_edge_detector.vhd 
+  sequence_detector.vhd 
+  alu.vhd 
+  de1_tsg_structure.vhd 
+```
+All files in tsg testbench also needed in de1_tsg.
 
 Code
 ----------------------
@@ -875,22 +1014,3 @@ BEGIN
 end architecture rtl;
 vhdl
 ```
-
-
-### Module Hierarchy for Verification
-
-
-### Prototype Environment
-
-
-Revision History
-----------------
-
-| **Date**  | **Version**  | **Change Summary**  |
-|:----------|:-------------|:--------------------|
-| May 2020  | 0.1  | Initial Release  |
-| April 2021  | 0.2  | Added parameterisation  |-------------------------------------------------------------------------------
--- Revisions:
--- ----------
--- $Id:$
--------------------------------------------------------------------------------
