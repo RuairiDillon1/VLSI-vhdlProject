@@ -42,11 +42,12 @@ An external time base allows for the entire TSG to be configured based on the sy
 
 Functional Description
 ======================
-- describe the theory of the components
 
 ## UART serial communication
 UART communication is a common form of data communication between electriconic devices. It communicated the data serially in the form of digital signals.
+
 ![UART Example- Schematic](images/uart_sample.png){width=80%}
+
 UART communication has some characteristics that need to be considered for implementation.
 The signal begins with start bit (in the form of a high signal), the next in the sequence comes the data bits, the number of data bits is configurable and is dependant on the parameterisation of the serial modules.
 After the data sequence is complete, UART protocol then instructs you to send a stop bit, which is again a high signal.
@@ -54,6 +55,7 @@ After the data sequence is complete, UART protocol then instructs you to send a 
 
 ## Digital pattern generator
 
+![Expected output of the pattern generator](images/pattern_output_wavedrom.png){width=100%}
 
 Digital Pattern Generators are a common way of creating signal for testing.
 Theoretically the Pattern Generator should allow the user to output a configurable pattern.
@@ -65,7 +67,9 @@ Pulse Width Moduation (PWM) is a type of digital signal that has many uses for r
 PWM funtions by switching between low and high signals to the requested amounts by the user. For each cycle, the signal will be high for the requested percentage. This is known as the Duty Cycle.
 
 $Period=\frac{1}{f}$
+
 $Period=T_{on}+T_{off}$
+
 $DutyCycle=\frac{T_{on}}{T_{on}+T_{off}}\times100$
 
 ## Pseudo-random number generator (LFSR)
@@ -79,6 +83,7 @@ The number of cycles until the pseudo random number generator repeats himself is
   $number~of~cycles = 2^{n} -1$
 
 With $n$ as number of bits.
+
 # General Description
 
 ![Test Signal Generator Schematic Symbol](images/tsg.png){width=40%}
@@ -90,7 +95,7 @@ With $n$ as number of bits.
 | en_tsg_pi       | std_ulogic            | IN            | HIGH         | external time base                |
 | en_serial_i     | std_ulogic            | IN            | HIGH         | oversample of 16, baudrate 9600                |
 | serial_data_i   | std_ulogic            | IN            | HIGH         | serial data, baudrate 9600                |
-| rxd_rdy_o       | std_ulogic            | OUT           | HIGH         | debugging signal, serial data ready to read                |
+| rxd_rdy_o       | std_ulogic            | OUT           | HIGH         | serial data ready to read                |
 | ext_trig_i      | std_ulogic            | IN            | HIGH         | external trigger                |
 | pwm_o           | std_ulogic            | OUT           | HIGH         | pwm signal                |
 | noise_o         | std_ulogic            | OUT           | HIGH         | 1 bit pseudo random noise                |
@@ -98,10 +103,10 @@ With $n$ as number of bits.
 | eoc_o           | std_ulogic            | OUT           | HIGH         | end of cycle of pseudo random noise               |
 | pattern_o       | std_ulogic_vector[8]  | OUT           | HIGH         | pattern output                |
 | pattern_valid_o | std_ulogic            | OUT           | HIGH         | pattern valid |
-| tc_pm_count_o   | std_ulogic            | OUT           | HIGH         | debugging signal, end of cycle pm upcounter                |
-| regfile_o       | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, data input register file                |
-| addr_reg_o      | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, address output serial register
-| data_reg_o      | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, data output of serial registers                |
+| tc_pm_count_o   | std_ulogic            | OUT           | HIGH         | end of cycle pm upcounter                |
+| regfile_o       | std_ulogic_vector[8]  | OUT           | HIGH         | data input register file                |
+| addr_reg_o      | std_ulogic_vector[8]  | OUT           | HIGH         | address output serial register
+| data_reg_o      | std_ulogic_vector[8]  | OUT           | HIGH         | data output of serial registers                |
 
 : Test Signal Generator - Description of I/O Signals
 
@@ -213,6 +218,41 @@ base which is further divided by the individual period settings. All three compo
 have the same frequency divider component. The divided frequency can be calculated by the following formula:
 
 $divided~frequency=\frac{frequency~of~external~time~base}{period~register~value+1}$
+
+## Pwm component
+
+![Pwm implementation](images/pwm_implementation.png){width=30%}
+
+With the implemented pwm component a duty cycle of 0%-99,6% percent is possible. It
+can be computed by $duty~cycle=\frac{pwm~pulse~width}{256}$. One counting cycle is performed 
+with the frequency of the divided frequency. This results in a frequency of $\frac{divided~frequency}{256}$.
+
+## Noise component
+
+The noise component has an noise prbsg length and a period setting. The prbsg setting decides how many bits the 
+lfsr has. That means it decides over the length of the pseudo random sequence until it repeats itself. They are designed 
+after the given standards of pseudo random number generators and have different use cases. For more information about it 
+see the standard documentations. One full cycle 
+has the frequency of $\frac{divided~frequency}{2^{n}-1}$ with $n$ as the number of bits of the lfsr.
+
+## Pattern component
+
+The pattern generator has four possible control states:
+- stop
+  - the pattern generator is switched off
+- load
+  - the pattern generator is ready to receive the data sequence into its memory
+  - before sending the number sequence the number of values must be specified in the pattern length register!
+    - e.g. pattern length 4 -> pattern load -> pattern sequence 4 5 7 2 -> single burst/continous run
+- single burst
+  - a single burst puts out the sequence only once
+- continous run
+  - puts out the sequence forever
+  - stops when the pattern control bits change 
+One value of a sequence is available for the time of $\frac{1}{divided~frequency}$. A full cycle that includes 
+all values has the frequency of $\frac{divided~frequency}{pattern~length}$.
+
+
 Design Description
 ==================
 
@@ -243,32 +283,42 @@ This state machine directly communicates with the other state machine present on
 
 ![UART Serial Reciever State Machine File - Schematic](images/serial_receiver_fsm.png){width=80%}
 
-| rxd_rec | addr | pm_checked | Description |  
-|---------|------|------------|-------------|
-| 0       | xxxx | x          |             | 
-| 1       | xxxx | x          |             |
-| 1       | xxxx | x          |             |
-|         | xxxx | x          |             | 
-|         |      |            |             |
+Colours on the state machine represent:
 
-| end_addr_reg | en_data_reg | en_regfile_wr | pm_control_changed | Description |
-|--------------|-------------|---------------|--------------------|-------------|
-| 0            | 0           | 0             | 0                  |             |
-|             |         |             |                    |             |
-|              |            |               |                    |             |
-|              |             |               |                    |             |
-|              |             |               |                    |             |
-|              |             |               |                    |             |
-|              |             |               |                    |             |
-|              |             |               |                    |             |
+- Blue: This is a workaround to handle the ```rxd_rdy``` signal causing errors in the operation. More information below.
+- Red: This aspect of the state machine manages the reciept of the address and data information.
+- Green: These states are to check if there is a change in the signal from pattern control. If there is a change, it then goes to the pink state.
+- Pink: This single state is responsible for the communication with the Pattern State Machine.
+
+```pure
+ Inputs:   rxd_rec   addr[3..0]      pm_checked
+
+ State/Output                    en_addr_reg en_data_reg en_regfile_wr pm_control_changed
+ wait_for_addr_s                 0           0           0             0                  
+ fetch_addr_s                    1           0           0             0                  
+ wait_for_data_s                 0           0           0             0                  
+ fetch_data_s                    0           1           0             0                  
+ write_regfile_s                 0           0           1             0                  
+ check_written_addr_s            0           0           0             0                  
+ pattern_control_changed_s       0           0           0             1                  
+ wait_cycle_s                    0           0           0             0                  
+ wait_for_sync_reset_serialrx_s  0           0           0             0                  
+ wait_for_sync_reset_serialrx2_s 0           0           0             0                  
+```
 
 This is then directly wired to the ```serial_reciever_reg.vhd``` module. The purpose is this is for the project to work, the register file (```regfile.vhd```) needs to know both the address and the data values similtaneously - meaning that the information must be stored somewhere. This file takes the values in and stores them to registers temporarily and resets every cycle.
 
+### Data received after reset
+
+![Data out valid after reset](images/rxd_rdy_after_reset.png){width=50%}
+The two states at the beginning of the serial receiver state machine are required to work around a problem that the serial rx component 
+creates. After a reset the serial rx component puts out a data valid signal for one cycle. This seems to be a design problem (see tsg testbench at the beginning: DIN_VLD). 
+Without these states we have the issue that after an reset we would immediately transition to the state were we are waiting for the 
+data. We are skipping the address states. For that reason the first two states are added.
+
 ## Pattern generator
 
-![Expected output of the pattern generator](images/pattern_generator.png){width=40%}
 
-![Implemented Pattern Generator File - Schematic](images/pattern_output_wavedrom.png){width=40%}
 
 | **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
 |--------------|----------------------|:-------------:|:------------:|-----------------|
@@ -283,28 +333,29 @@ This is then directly wired to the ```serial_reciever_reg.vhd``` module. The pur
 
 ![Pattern Generator State Machine File - Schematic](images/pattern_generator_fsm.png){width=80%}
 
-| en_pm | en_pm_cnt | clr_pm_cnt | pm_cclr_hecked | pattern_valid | Description |
-|-------|-----------|------------|----------------|---------------|-------------|
-| 0     | 0         | 0          | 0              |               |             |
-|       |     |  |                |               |             |
-|       |        |         |                |               |             |
-|       |           |            |                |               |             |
-|       |           |            |                |               |             |
-|       |           |            |                |               |             |
-|       |           |            |                |               |             |
-|       |           |            |                |               |             |
 
-| rxd_rec | tc_pm | pm_control | addr_cnt_enabled | Description |   |
-|---------|-------|------------|------------------|-------------|---|
-| x       | x     | xx         | x                |             |   |
-|         |       |            |                  |             |   |
-|         |       |            |                  |             |   |
-|         |       |            |                  |             |   |
-|         |       |            |                  |             |   |
-|         |       |            |                  |             |   |
-|         |       |            |                  |             |   |
+Colours on the state machine represent:
+
+- Blue: These states deal with the loading of the data and address information.
+- Red: This aspect of the state machine manages a workaround related to the ```tc_pm```. 
+- Green: These states are to manage the initialisation and the reset of the state machine.
+- Pink: This single state is responsible for the communication with the Serial Communication State Machine.
 
 
+```pure
+-- Inputs:   rxd_rec   tc_pm   pm_control_changed   pm_control[1..0]    addr_cnt_enabled
+
+-- State/Output           en_pm en_pm_cnt clr_pm_cnt pm_checked pattern_valid
+-- wait_for_pm_change     0     0         0          0          0             
+-- clr_wait_addr_cnt      0     0         1          0          0             
+-- wait_for_pm_data       0     0         0          0          0             
+-- fetch_pm_data          1     0         0          0          0             
+-- cnt_addr_up_serialmode 0     1         0          0          0             
+-- check_addr_end         0     0         0          0          0             
+-- pm_is_checked          0     0         0          1          0             
+-- cnt_addr_up_cntmode    0     1         0          0          1             
+-- cnt_addr_free          0     1         0          0          1             
+```
 
 ## Pulse-width modulation
 The PWM generator module is connected to one of the instantiations of the freq_control module. The output from the Frequency Control module is input to the generator to assign the total width (and thus the frequency) of the PWM. 
@@ -324,11 +375,38 @@ The PWM generator module is connected to one of the instantiations of the freq_c
 
 ## Pseudo-random number generator (LFSR)
 
-## Enable and external triggering
+
+## External time base and external triggering design
+![Noise/PWM enable and external trigger design](images/noise_pwm_en.png){width=100%}
+To get the external time base and external triggering to work correctly multiple AND gates and multiplexer are needed.
+For the pwm and the noise generator we have the same design. If the noise generator is enabled depends on 
+the following conditions:
+- the whole system is enabled
+- pwm/noise generator is enabled
+- external time base on
+- frequency divider enabled
+When the external triggering of the noise/pwm generator is enabled it should only be controlled by external triggering
+if the system is on and the pwm/noise generator is enabled.
+
+![Pattern enable and external trigger design](images/pattern_en.png){width=100%}
+For the pattern generator a more sophisticated system is needed. We need to differentiate between the four modes of our 
+pattern generator:
+- 00 stop
+- 01 single burst
+- 10 continous run
+- 11 load
+
+In stop and load mode we do not care about the external triggering and the external time base. When loading the pattern generator the
+address upcounter only counts up when the pattern generator state machine gives an signal. Note that the address upcounter decides over the frequency of the pattern output, not the pattern generator (pattern memory) itself. The external trigger, external time base 
+and frequency divider matters when we are in the two run modes. For the external triggering we need the additional signal pattern valid.
+This signal is provided by the pattern generator state machine and is true when the state machine is in a counting state. This is needed 
+for the single burst mode to stop counting after one counting cycle.
 
 
 Test Results
 ============
+
+All of the results were calculated using the formulae mentioned above. 
 
 ## Noise Generator
 Sending serial signals to select the address and the data bit respectively.
@@ -347,8 +425,26 @@ Noise Period:
 Application Note
 ================
 
+![Wiring on DE1 Altera Board](images/de1_tsg.png){width=100%}
+The wiring of the DE1 Board can be seen in the picture above. The test signal generator runs with an 50 MHz clock and a time base of 
+10 MHz on the enable. An synchroniser is added before the serial input to avoid metavalues because of asynchronous serial communication from the pc.
+The outputs of the test signal generator were connected to test components ALU and a 101 sequence detector. On the HEX3 display the
+number of 101 sequences detected is shown. Additionally some outputs are connected to the GPIOs
+for measurements. For the connections see ```de1_tsg_structure.vhd```.
+![Connected components on DE1 Altera Board](images/de1_tsg_wiring.png){width=100%}
+
+
 Further Improvements
 ====================
+
+In the system control register is a bit included to do an synchronous clear over serial communication. It adds another possibility to 
+reset the states of the synchronous components. At the moment only the asynchronous reset is available. To add this functionality 
+an synchronous reset needs to be added to every component except the memory components (register file, pattern generator) and the address upcounter (has already one).
+
+When the pwm module is switched off either by the system control or the pwm control the counters in the frequency control and pwm 
+generator are kept in their current counting state. This could result in an constant output of a one. To solve this problem it is 
+recommended to put in a switch in the pwm generator that puts out zero when the system control AND pwm control is zero. This approach 
+is already implemented for the noise generator and can be implemented in the same way (see input en_noise_generator_i).
 
 References
 ==========
