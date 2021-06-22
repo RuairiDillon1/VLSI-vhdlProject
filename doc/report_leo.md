@@ -20,7 +20,7 @@
 | tc_pm_count_o   | std_ulogic            | OUT           | HIGH         | debugging signal, end of cycle pm upcounter                |
 | regfile_o       | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, data input register file                |
 | addr_reg_o      | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, address output serial register
-| data_reg_o      | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, data output of serial registers                |
+| data_reg_o      | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, data output serial registers                |
 
 : Test Signal Generator - Description of I/O Signals
 
@@ -36,7 +36,7 @@ The register file receives data from the serial communication and writes them in
 memory the output components are controlled. 
 
 The register file has the following memory view.
-```
+```pure
 		  					 Bit7  ..         0
 ------------------------------------------------
 Address  	Name 				7 6 5 4 3 2 1 0
@@ -60,7 +60,7 @@ Address  	Name 				7 6 5 4 3 2 1 0
 ```
 
 The meaning of the control parts of the registers is explained in the following.
-```
+```pure
 system control
 ---------------------------
 Bit 0 Meaning
@@ -186,14 +186,32 @@ This signal is provided by the pattern generator state machine and is true when 
 for the single burst mode to stop counting after one counting cycle.
 
 # Further improvements
+
+## System control register
+
 In the system control register is a bit included to do an synchronous clear over serial communication. It adds another possibility to 
 reset the states of the synchronous components. At the moment only the asynchronous reset is available. To add this functionality 
 an synchronous reset needs to be added to every component except the memory components (register file, pattern generator) and the address upcounter (has already one).
+
+## Pwm switch off
 
 When the pwm module is switched off either by the system control or the pwm control the counters in the frequency control and pwm 
 generator are kept in their current counting state. This could result in an constant output of a one. To solve this problem it is 
 recommended to put in a switch in the pwm generator that puts out zero when the system control AND pwm control is zero. This approach 
 is already implemented for the noise generator and can be implemented in the same way (see input en_noise_generator_i).
+
+## Testbench tsg and de1_tsg
+
+With the fix in the serial receiver state machine (states at beginning) that solve the issue of data valid signal after reset a 
+different problem occurred. In the real system the fix works but in the simulation this scenario does not happen. We have an 
+immediate one after the reset and not a zero and then the pulse of the data like in the real system. A possible fix is to add an 
+additional state to the state machine. 
+
+![State Machine Fix](images/state_machine_fix.png){width=50%}
+
+## More test scenarios
+
+The pattern generator was not evaluated on the oscilloscope. It was only tested manually with the external trigger, were it worked correctly (burst mode and continous run). That means it needs to be tested if the frequency in the automatic mode is correct.
 
 # Application Note
 ![Wiring on DE1 Altera Board](images/de1_tsg.png){width=100%}
