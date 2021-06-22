@@ -12,8 +12,8 @@
     <state pencolor="16711680" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0100" ypos="566" code="3" xpos="441" linewidth="4">fetch_data_s</state>
     <state pencolor="16711680" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0010" ypos="630" code="6" xpos="704" linewidth="4">write_regfile_s</state>
     <state pencolor="21760" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0000" ypos="480" code="7" xpos="803" linewidth="4">check_written_addr_s</state>
-    <state pencolor="11141375" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0001" ypos="314" code="5" xpos="824" linewidth="4">pattern_control_changed_s</state>
-    <state pencolor="11141375" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0000" ypos="170" code="4" xpos="635" linewidth="4">wait_cycle_s</state>
+    <state pencolor="16733695" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0001" ypos="314" code="5" xpos="824" linewidth="4">pattern_control_changed_s</state>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0000" ypos="170" code="4" xpos="635" linewidth="1">wait_cycle_s</state>
     <state pencolor="255" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0000" ypos="319" code="8" xpos="313" linewidth="4">wait_for_sync_reset_serialrx_s</state>
     <state pencolor="255" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="0000" ypos="165" code="9" xpos="317" linewidth="4">wait_for_sync_reset_serialrx2_s</state>
     <transition c1x="492.5583671138646" c2y="83.31940246794915" c1y="1.052769838220243" description="" straight="1" type="0" ypos="82.68694859115394" endx="522.4320047741429" xpos="500.4939154226538" endy="99.03864628986446" c2x="602.9305602971723">
@@ -46,7 +46,7 @@
       <inputs default="0" any="0" invert="0">0xxxxx</inputs>
       <outputs></outputs>
     </transition>
-    <transition c1x="439.5678070591839" c2y="500.6569159342836" c1y="475.286425219238" description="" straight="1" type="0" ypos="449.9159345041923" endx="439.5195335796048" xpos="439.5919437989735" endy="526.0274066493294" c2x="439.5436703193944">
+    <transition c1x="439.5678070591839" c2y="500.6569159342837" c1y="475.286425219238" description="" straight="1" type="0" ypos="449.9159345041923" endx="439.5195335796048" xpos="439.5919437989735" endy="526.0274066493294" c2x="439.5436703193944">
       <from>2</from>
       <to>3</to>
       <inputs default="0" any="0" invert="0">1xxxxx</inputs>
@@ -106,13 +106,13 @@
       <inputs default="0" any="0" invert="0">0xxxxx</inputs>
       <outputs></outputs>
     </transition>
-    <transition c1x="318.1538883458043" c2y="229.7718475503522" c1y="254.5568378643252" description="" straight="1" type="0" ypos="279.3418281782982" endx="318.025304031702" xpos="318.2181805028555" endy="204.9868572363793" c2x="318.0895961887531">
+    <transition c1x="318.1538883458043" c2y="229.7718475503523" c1y="254.5568378643252" description="" straight="1" type="0" ypos="279.3418281782982" endx="318.025304031702" xpos="318.2181805028555" endy="204.9868572363793" c2x="318.0895961887531">
       <from>8</from>
       <to>9</to>
       <inputs default="0" any="0" invert="0">1xxxxx</inputs>
       <outputs></outputs>
     </transition>
-    <transition c1x="199.4362736882849" c2y="46.29803491538392" c1y="140.9423555661791" description="" straight="1" type="0" ypos="147.1114561800017" endx="301.0916951453127" xpos="281.2229123600034" endy="128.2995117655046" c2x="299.3976284253912">
+    <transition c1x="199.4362736882849" c2y="46.29803491538395" c1y="140.9423555661792" description="" straight="1" type="0" ypos="147.1114561800017" endx="301.0916951453128" xpos="281.2229123600034" endy="128.2995117655046" c2x="299.3976284253913">
       <from>9</from>
       <to>9</to>
       <inputs default="0" any="0" invert="0">1xxxxx</inputs>

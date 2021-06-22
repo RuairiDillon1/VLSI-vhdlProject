@@ -54,6 +54,7 @@ After the data sequence is complete, UART protocol then instructs you to send a 
 
 ## Digital pattern generator
 
+
 Digital Pattern Generators are a common way of creating signal for testing.
 Theoretically the Pattern Generator should allow the user to output a configurable pattern.
 The pattern can take various shapes, including standard pulses or outputting larger bit patterns depending on the system configuration.
@@ -78,14 +79,31 @@ The number of cycles until the pseudo random number generator repeats himself is
   $number~of~cycles = 2^{n} -1$
 
 With $n$ as number of bits.
-General Description
-===================
+# General Description
 
 ![Test Signal Generator Schematic Symbol](images/tsg.png){width=40%}
 
-ENTER THE TABLE FOR THE TSG
+| **Name**        | **Type**              | **Direction** | **Polarity** | **Description** |
+|-----------------|-----------------------|:-------------:|:------------:|-----------------|
+| clk_i           | std_ulogic            | IN            | HIGH         | clock                |
+| rst_ni          | std_ulogic            | IN            | LOW          | asynchronous reset                |
+| en_tsg_pi       | std_ulogic            | IN            | HIGH         | external time base                |
+| en_serial_i     | std_ulogic            | IN            | HIGH         | oversample of 16, baudrate 9600                |
+| serial_data_i   | std_ulogic            | IN            | HIGH         | serial data, baudrate 9600                |
+| rxd_rdy_o       | std_ulogic            | OUT           | HIGH         | debugging signal, serial data ready to read                |
+| ext_trig_i      | std_ulogic            | IN            | HIGH         | external trigger                |
+| pwm_o           | std_ulogic            | OUT           | HIGH         | pwm signal                |
+| noise_o         | std_ulogic            | OUT           | HIGH         | 1 bit pseudo random noise                |
+| prbs_o          | std_ulogic_vector[23] | OUT           | HIGH         | pseudo random noise up to 23 bit                |
+| eoc_o           | std_ulogic            | OUT           | HIGH         | end of cycle of pseudo random noise               |
+| pattern_o       | std_ulogic_vector[8]  | OUT           | HIGH         | pattern output                |
+| pattern_valid_o | std_ulogic            | OUT           | HIGH         | pattern valid |
+| tc_pm_count_o   | std_ulogic            | OUT           | HIGH         | debugging signal, end of cycle pm upcounter                |
+| regfile_o       | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, data input register file                |
+| addr_reg_o      | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, address output serial register
+| data_reg_o      | std_ulogic_vector[8]  | OUT           | HIGH         | debugging signal, data output of serial registers                |
 
-Test Signal Generator - Description of I/O Signals
+: Test Signal Generator - Description of I/O Signals
 
 The test signal generator with its multiple I/Os can be broken down into 4 distinctive parts:
 - serial data handling
@@ -99,7 +117,7 @@ The register file receives data from the serial communication and writes them in
 memory the output components are controlled. 
 
 The register file has the following memory view.
-```pure
+```
 		  					 Bit7  ..         0
 ------------------------------------------------
 Address  	Name 				7 6 5 4 3 2 1 0
@@ -123,7 +141,7 @@ Address  	Name 				7 6 5 4 3 2 1 0
 ```
 
 The meaning of the control parts of the registers is explained in the following.
-```pure
+```
 system control
 ---------------------------
 Bit 0 Meaning
@@ -190,10 +208,11 @@ Now the control part of the register will be explained in further detail.
 The system has an general enable "system control" which must be switched on 
 to switch on all individual components (noise, pattern, pwm). All components 
 allow for external triggering where you can change the state manually by pressing 
-a button. When not specified the compents run with the speed of the external time 
-base which is further divided by the individual period settings. This will be discussed 
-in further detail in the Design Description.
+a button. When not specified the components run with the speed of the external time 
+base which is further divided by the individual period settings. All three components 
+have the same frequency divider component. The divided frequency can be calculated by the following formula:
 
+$divided~frequency=\frac{frequency~of~external~time~base}{period~register~value+1}$
 Design Description
 ==================
 
@@ -247,7 +266,9 @@ This is then directly wired to the ```serial_reciever_reg.vhd``` module. The pur
 
 ## Pattern generator
 
-![Implemented Pattern Generator File - Schematic](images/pattern_generator.png){width=40%}
+![Expected output of the pattern generator](images/pattern_generator.png){width=40%}
+
+![Implemented Pattern Generator File - Schematic](images/pattern_output_wavedrom.png){width=40%}
 
 | **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
 |--------------|----------------------|:-------------:|:------------:|-----------------|
