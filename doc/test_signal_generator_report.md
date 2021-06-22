@@ -387,6 +387,16 @@ The PWM generator module is connected to one of the instantiations of the freq_c
 
 ## Pseudo-random number generator (LFSR)
 
+The design of the LFSR was made to be as configurable as possible. It functions by moving the nodes on which the XOR gate connects to dictate the "size" of the LFSR, I.e. the amount of registers which bits must shift through. All that changes is the points where the XOR gate connects. The module outputs three different signals, ```prbs_o```, ```noise_o``` and ```eoc_o```. 
+
+- ```prbs_o``` - The noise signal that dictates the amount of bits within the noise. Connected to the LEDs
+- ```noise_o``` - This is the noise signal output, the signal that can be used by a user for testing their device.
+- ```eoc_o``` -  Sends a pulse once a all random numbers have been generated, thus completing a cycle.
+
+![Implemented LFSR](images/noise_generator.png)
+
+It contains a ```switch``` procress that contains a sensitivity list that includes some of the programs main variables - meaning there is a re-evaluation of the status each time there is a change.
+
 
 ## External time base and external triggering design
 
@@ -477,15 +487,15 @@ for measurements. For the connections see ```de1_tsg_structure.vhd```.
 Further Improvements
 ====================
 
-## System control register
+## System Control Register
 
 In the system control register is a bit included to do an synchronous clear over serial communication. It adds another possibility to 
 reset the states of the synchronous components. At the moment only the asynchronous reset is available. To add this functionality 
 an synchronous reset needs to be added to every component except the memory components (register file, pattern generator) and the address upcounter (has already one).
 
-## Pwm switch off
+## PWM Switch oOff
 
-When the pwm module is switched off either by the system control or the pwm control the counters in the frequency control and pwm 
+When the PWM module is switched off either by the system control or the pwm control the counters in the frequency control and pwm 
 generator are kept in their current counting state. This could result in an constant output of a one. To solve this problem it is 
 recommended to put in a switch in the pwm generator that puts out zero when the system control AND pwm control is zero. This approach 
 is already implemented for the noise generator and can be implemented in the same way (see input en_noise_generator_i).
@@ -499,7 +509,7 @@ additional state to the state machine.
 
 ![State Machine Fix](images/state_machine_fix.png){width=50%}
 
-## More test scenarios
+## More Test Scenarios
 
 The pattern generator was not evaluated on the oscilloscope. It was only tested manually with the external trigger, were it worked correctly (burst mode and continous run). That means it needs to be tested if the frequency in the automatic mode is correct.
 
