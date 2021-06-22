@@ -35,6 +35,9 @@ BEGIN
   -- low). It then outputs a signal which forms the pwm of the set size.
   --current state will be equal to "00000000" when the reset is pressed, or
   --else it will be equal to the next_state value when enabled.
+  next_state_logic : next_state <= to_unsigned(255, 8) WHEN current_state = 0 ELSE
+                                   current_state - 1;
+
 
   state_register : current_state <= (others => '0') WHEN rst_ni = '0' ELSE
                                     next_state WHEN rising_edge(clk_i) AND (en_pi = '1');
