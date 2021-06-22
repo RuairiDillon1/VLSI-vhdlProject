@@ -63,7 +63,9 @@ The pattern can take various shapes, including standard pulses or outputting lar
 
 ## Pulse-width modulation
 Pulse Width Moduation (PWM) is a type of digital signal that has many uses for real world applications. It is a way in which you can digitally control some analog devices.
+
 ![PWM Example - Schematic](images/PWM_Explained.png){width=80%}
+
 PWM funtions by switching between low and high signals to the requested amounts by the user. For each cycle, the signal will be high for the requested percentage. This is known as the Duty Cycle.
 
 $Period=\frac{1}{f}$
@@ -84,7 +86,7 @@ The number of cycles until the pseudo random number generator repeats himself is
 
 With $n$ as number of bits.
 
-# General Description
+# General Description\label{General Description}
 
 ![Test Signal Generator Schematic Symbol](images/tsg.png){width=40%}
 
@@ -274,7 +276,7 @@ This state machine directly communicates with the other state machine present on
 | DOUT_VLD     | std_ulogic           | OUT           | HIGH         |                 |
 | FRAME_ERROR  | std_ulogic           | OUT           | HIGH         |                 |
 | PARITY_ERROR |                      | OUT           | HIGH         |                 |
-: blabla
+: I/O Table for the Serial Reciever
 
 | **Name**    | **Type** | **Default value** |
 |-------------|----------|-------------------|
@@ -299,7 +301,7 @@ Colours on the state machine represent:
  wait_for_data_s                 0           0           0             0                  
  fetch_data_s                    0           1           0             0                  
  write_regfile_s                 0           0           1             0                  
- check_written_addr_s            0           0           0             0                  
+ check_written_addr_s             0           0           0             0                  
  pattern_control_changed_s       0           0           0             1                  
  wait_cycle_s                    0           0           0             0                  
  wait_for_sync_reset_serialrx_s  0           0           0             0                  
@@ -311,6 +313,7 @@ This is then directly wired to the ```serial_reciever_reg.vhd``` module. The pur
 ### Data received after reset
 
 ![Data out valid after reset](images/rxd_rdy_after_reset.png){width=50%}
+
 The two states at the beginning of the serial receiver state machine are required to work around a problem that the serial rx component 
 creates. After a reset the serial rx component puts out a data valid signal for one cycle. This seems to be a design problem (see tsg testbench at the beginning: DIN_VLD). 
 Without these states we have the issue that after an reset we would immediately transition to the state were we are waiting for the 
@@ -328,7 +331,7 @@ data. We are skipping the address states. For that reason the first two states a
 | addr_cnt_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
 | rxd_data_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
 | pattern_o    | std_ulogic_vector[8] | OUT           | HIGH         |                 |
-
+: I/O Table for the Pattern Generator
 
 
 ![Pattern Generator State Machine File - Schematic](images/pattern_generator_fsm.png){width=80%}
@@ -370,14 +373,16 @@ The PWM generator module is connected to one of the instantiations of the freq_c
 | pwm_width_i | std_ulogic_vector[8] | IN            | HIGH         |                 |
 | clk_i       | std_ulogic           | IN            | HIGH         |                 |
 | pwm_o       | std_ulogic           | OUT           | HIGH         |                 |
-
+: I/O Table for the PWM Generator
 
 
 ## Pseudo-random number generator (LFSR)
 
 
 ## External time base and external triggering design
+
 ![Noise/PWM enable and external trigger design](images/noise_pwm_en.png){width=100%}
+
 To get the external time base and external triggering to work correctly multiple AND gates and multiplexer are needed.
 For the pwm and the noise generator we have the same design. If the noise generator is enabled depends on 
 the following conditions:
@@ -389,6 +394,7 @@ When the external triggering of the noise/pwm generator is enabled it should onl
 if the system is on and the pwm/noise generator is enabled.
 
 ![Pattern enable and external trigger design](images/pattern_en.png){width=100%}
+
 For the pattern generator a more sophisticated system is needed. We need to differentiate between the four modes of our 
 pattern generator:
 - 00 stop
@@ -415,12 +421,34 @@ Sending serial signals to select the address and the data bit respectively.
 
 ![Oscilloscope readings of the Noise Generator with a period and width of one. Example of bitwidth](images/noise_4bits_period_1_bit_width.png){width=80%}
 
-Expected results are found by:
+Expected results are found by implementing the formulae in the \ref{General Description}.
 
-Noise Period:
+\label{Results from testing the Noise Generator}
 
-	$period = 4^(number of bits) -1$ 
+| Number of Bits | Period Data | Expected Period(µs) | Actual Period (µs) |
+|----------------|-------------|---------------------|--------------------|
+| 4              | 1           | 3                   | 3                  |
+| 4              | 2           | 4.5                 | 4.5                |
+| 7              | 1           | 25.4                | 25.4               |
+| 7              | 2           | 38.1                | 38.1               |
+: Results from testing the Noise Generator
 
+## PWM Generator
+
+
+![Oscilloscope readings of the PWM Generator with a period and width of one. Example of bitwidth](images/pwm_width_1_period_1.png){width=80%}
+
+![Oscilloscope readings of the PWM Generator with a period and width of 127. Example of bitwidth](images/pwm_width_127_period_1.png){width=80%}
+
+
+| Width Data | Period | Expected Period(µs) | Actual Period (µs) |
+|------------|--------|---------------------|--------------------|
+| 1          | 1      | 51.2                | 51.2               |
+| 1          | 4      | 128                 | 128                |
+| 127        | 1      | 51.2                | 51.2               |
+| 128        | 1      | 51.2                | 51.2               |
+| 255        | 1      | 51.2                | 51.2               |
+: Results from testing the PWM Generator
 
 Application Note
 ================
@@ -431,20 +459,38 @@ The wiring of the DE1 Board can be seen in the picture above. The test signal ge
 The outputs of the test signal generator were connected to test components ALU and a 101 sequence detector. On the HEX3 display the
 number of 101 sequences detected is shown. Additionally some outputs are connected to the GPIOs
 for measurements. For the connections see ```de1_tsg_structure.vhd```.
-![Connected components on DE1 Altera Board](images/de1_tsg_wiring.png){width=100%}
 
+![Connected components on DE1 Altera Board](images/de1_tsg_wiring.png){width=100%}
 
 Further Improvements
 ====================
+
+## System control register
 
 In the system control register is a bit included to do an synchronous clear over serial communication. It adds another possibility to 
 reset the states of the synchronous components. At the moment only the asynchronous reset is available. To add this functionality 
 an synchronous reset needs to be added to every component except the memory components (register file, pattern generator) and the address upcounter (has already one).
 
+## Pwm switch off
+
 When the pwm module is switched off either by the system control or the pwm control the counters in the frequency control and pwm 
 generator are kept in their current counting state. This could result in an constant output of a one. To solve this problem it is 
 recommended to put in a switch in the pwm generator that puts out zero when the system control AND pwm control is zero. This approach 
 is already implemented for the noise generator and can be implemented in the same way (see input en_noise_generator_i).
+
+## Testbench tsg and de1_tsg
+
+With the fix in the serial receiver state machine (states at beginning) that solve the issue of data valid signal after reset a 
+different problem occurred. In the real system the fix works but in the simulation this scenario does not happen. We have an 
+immediate one after the reset and not a zero and then the pulse of the data like in the real system. A possible fix is to add an 
+additional state to the state machine. 
+
+![State Machine Fix](images/state_machine_fix.png){width=50%}
+
+## More test scenarios
+
+The pattern generator was not evaluated on the oscilloscope. It was only tested manually with the external trigger, were it worked correctly (burst mode and continous run). That means it needs to be tested if the frequency in the automatic mode is correct.
+
 
 References
 ==========

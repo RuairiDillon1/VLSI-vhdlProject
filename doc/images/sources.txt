@@ -1,3 +1,5 @@
 https://shepherdingelectrons.blogspot.com/2020/07/uart-transceiver-for-breadboard-computer.html - UART Diagram
 
 https://en.wikipedia.org/wiki/Linear-feedback_shift_register A 16-bit Fibonacci LFSR. The feedback tap numbers shown correspond to a primitive polynomial in the table, so the register cycles through the maximum number of 65535 states excluding the all-zeroes state. The state shown, 0xACE1 (hexadecimal) will be followed by 0x5670.
+
+https://wiki.analog.com/university/courses/electronics/electronics-lab-pulse-width-modulation - PWM
