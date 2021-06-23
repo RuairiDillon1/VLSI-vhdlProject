@@ -254,6 +254,7 @@ The pattern generator has four possible control states:
   - the pattern generator is ready to receive the data sequence into its memory
   - before sending the number sequence the number of values must be specified in the pattern length register!
     - e.g. pattern length 4 -> pattern load -> pattern sequence 4 5 7 2 -> single burst/continous run
+  - supports up to 256 single eight bit values
 - single burst
   - a single burst puts out the sequence only once
 - continous run
@@ -268,38 +269,41 @@ Design Description
 ==================
 
 ## UART serial receiver
-The serial receiver module is based on a design made using a Moore state machine and it was provided to the design team by the design manager.
-The purpose of the module is to allow for the correct sequencing and addressing of the data. 
-The module functions by using a synchronous high active reset.
-This state machine directly communicates with the other state machine present on the project directly via the data valid signal, signalling that the data has arrived.
+
+The serial communication contains three main components.
+The serial_rx module is based on a design made using a Moore state machine and it was provided to the design team by the design manager.
+The purpose of the module is to allow for the correct sequencing and addressing of the data that arrives through serial communication 
+The module functions has a synchronous high active reset.
+This module directly communicates with the other state machine present on the project directly via the data valid signal, signaling that the address/data has arrived.
 
 ![Implemented Serial Receiver File - Schematic](images/serial_rx.png){width=40%}
 
 | **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
 |--------------|----------------------|:-------------:|:------------:|-----------------|
 | CLK          | std_ulogic           | IN            | HIGH         |                 |
-| RST          | std_ulogic           | IN            | HIGH         |                 |
-| UART_CLK_EN  | std_ulogic           | IN            | HIGH         |                 |
-| UART_RXD     | std_ulogic           | IN            | HIGH         |                 |
-| DOUT         | std_ulogic_vector[8] | OUT           | HIGH         |                 |
-| DOUT_VLD     | std_ulogic           | OUT           | HIGH         |                 |
+| RST          | std_ulogic           | IN            | HIGH         | synchronous, high active               |
+| UART_CLK_EN  | std_ulogic           | IN            | HIGH         | frequency=baudrate*CLK_DIV_VAL                |
+| UART_RXD     | std_ulogic           | IN            | HIGH         | serial data in                |
+| DOUT         | std_ulogic_vector[8] | OUT           | HIGH         | serial data                |
+| DOUT_VLD     | std_ulogic           | OUT           | HIGH         | serial data valid                |
 | FRAME_ERROR  | std_ulogic           | OUT           | HIGH         |                 |
 | PARITY_ERROR |                      | OUT           | HIGH         |                 |
-: I/O Table for the Serial Reciever
+: I/O Table for the Serial Receiver
 
-| **Name**    | **Type** | **Default value** |
+| **Name**    | **Type** | **Value** |
 |-------------|----------|-------------------|
 | CLK_DIV_VAL | integer  | 16                |
 | PARITY_BIT  | string   | "none"            |
 
-![UART Serial Reciever State Machine File - Schematic](images/serial_receiver_fsm.png){width=80%}
+![UART Serial Receiver State Machine File - Schematic](images/serial_receiver_fsm.png){width=80%}
 
 Colours on the state machine represent:
 
 - Blue: This is a workaround to handle the ```rxd_rdy``` signal causing errors in the operation. More information below.
 - Red: This aspect of the state machine manages the receipt of the address and data information.
 - Green: These states are to check if there is a change in the signal from pattern control. If there is a change, it then goes to the pink state.
-- Pink: This single state is responsible for the communication with the Pattern State Machine.
+- Pink: This single state is responsible for the communication with the Pattern State Machine. It sends out the pm_control_changed signal. 
+        The other state machine reacts on this signal and when it is finished it sends pm_checked for one cycle. Now this state machine can go back to the wait for address state.
 
 ```pure
  Inputs:   rxd_rec   addr[3..0]      pm_checked
@@ -317,7 +321,7 @@ Colours on the state machine represent:
  wait_for_sync_reset_serialrx2_s 0           0           0             0                  
 ```
 
-This is then directly wired to the ```serial_receiver_reg.vhd``` module. The purpose is this is for the project to work, the register file (```regfile.vhd```) needs to know both the address and the data values simultaneously - meaning that the information must be stored somewhere. This file takes the values in and stores them to registers temporarily and resets every cycle.
+This is then directly wired to the ```serial_receiver_reg.vhd``` module. It contains two registers. The purpose for this is that the register file (```regfile.vhd```) needs to know both the address and the data values simultaneously - meaning that the information must be stored somewhere temporarily before it can be written to the register file. 
 
 ### Data received after reset
 
@@ -330,16 +334,17 @@ data. We are skipping the address states. For that reason the first two states a
 
 ## Pattern generator
 
-
+The pattern generator contains a frequency control unit, state machine and an address upcounter for the additional memory that is contained 
+in the ```pattern_generator.vhd```. The output of the pattern generator is controlled by the state machine that controls the address upcounter which is responsible for the output of the memory.
 
 | **Name**     | **Type**             | **Direction** | **Polarity** | **Description** |
 |--------------|----------------------|:-------------:|:------------:|-----------------|
-| en_write_pm  | std_ulogic           | IN            | HIGH         |                 |
+| en_write_pm  | std_ulogic           | IN            | HIGH         | write memory                |
 | clk_i        | std_ulogic           | IN            | HIGH         |                 |
-| pm_control_i | std_ulogic_vector[2] | IN            | HIGH         |                 |
-| addr_cnt_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
-| rxd_data_i   | std_ulogic_vector[8] | IN            | HIGH         |                 |
-| pattern_o    | std_ulogic_vector[8] | OUT           | HIGH         |                 |
+| pm_control_i | std_ulogic_vector[2] | IN            | HIGH         | register file control                |
+| addr_cnt_i   | std_ulogic_vector[8] | IN            | HIGH         | upcounted address                |
+| rxd_data_i   | std_ulogic_vector[8] | IN            | HIGH         | data from serial_rx                |
+| pattern_o    | std_ulogic_vector[8] | OUT           | HIGH         | pattern output                |
 : I/O Table for the Pattern Generator
 
 
@@ -349,7 +354,7 @@ data. We are skipping the address states. For that reason the first two states a
 Colours on the state machine represent:
 
 - Blue: These states deal with the loading of the data and address information.
-- Red: This aspect of the state machine manages a workaround related to the ```tc_pm```. 
+- Red: This aspect of the state machine is responsible for enabling the address upcounter. The first red state is a workaround for the tc_pm signal put out by the address upcounter. It is one when the counter is at zero. Without the first red state we would immediately transition through the second red state.
 - Green: These states are to manage the initialisation and the reset of the state machine.
 - Pink: This single state is responsible for the communication with the Serial Communication State Machine.
 
@@ -370,7 +375,7 @@ cnt_addr_free          0     1         0          0          1
 ```
 
 ## Pulse-width modulation
-The PWM generator module is connected to one of the instantiations of the freq_control module. The output from the Frequency Control module is input to the generator to assign the total width (and thus the frequency) of the PWM. 
+The PWM generator module is connected to one of the instantiations of the freq_control module. The output from the Frequency Control module is input to the enable of the PWM generator to assign the total width (and thus the frequency) of the PWM. 
 
 
 ![Implemented PWM File - Schematic](images/pwm_generator.png){width=40%}
@@ -379,24 +384,22 @@ The PWM generator module is connected to one of the instantiations of the freq_c
 |-------------|----------------------|:-------------:|:------------:|-----------------|
 | en_pi       | std_ulogic           | IN            | HIGH         |                 |
 | rst_ni      | std_ulogic           | IN            | LOW          |                 |
-| pwm_width_i | std_ulogic_vector[8] | IN            | HIGH         |                 |
+| pwm_width_i | std_ulogic_vector[8] | IN            | HIGH         | on pulse width of pwm                |
 | clk_i       | std_ulogic           | IN            | HIGH         |                 |
-| pwm_o       | std_ulogic           | OUT           | HIGH         |                 |
+| pwm_o       | std_ulogic           | OUT           | HIGH         | pwm output                |
 : I/O Table for the PWM Generator
 
 
 ## Pseudo-random number generator (LFSR)
 
-The design of the LFSR was made to be as configurable as possible. It functions by moving the nodes on which the XOR gate connects to dictate the "size" of the LFSR, I.e. the amount of registers which bits must shift through. All that changes is the points where the XOR gate connects. The module outputs three different signals, ```prbs_o```, ```noise_o``` and ```eoc_o```. 
+The design of the LFSR was made to be as configurable as possible. The ```config_noise_generator.vhd``` contains a configurable 
+noise generator. You can decide the size (number of registers), and the position of the two connections of the feedback XOR. This component is instantiated multiple times in the ```noise_generator.vhd```. The module outputs three different signals, ```prbs_o```, ```noise_o``` and ```eoc_o```. 
 
-- ```prbs_o``` - The noise signal that dictates the amount of bits within the noise. Connected to the LEDs
+- ```prbs_o``` - The full noise signal. Bit size is constant but active bits depend on chosen LFSR. 
 - ```noise_o``` - This is the noise signal output, the signal that can be used by a user for testing their device.
 - ```eoc_o``` -  Sends a pulse once a all random numbers have been generated, thus completing a cycle.
 
 ![Implemented LFSR](images/noise_generator.png)
-
-It contains a ```switch``` procress that contains a sensitivity list that includes some of the programs main variables - meaning there is a re-evaluation of the status each time there is a change.
-
 
 ## External time base and external triggering design
 
