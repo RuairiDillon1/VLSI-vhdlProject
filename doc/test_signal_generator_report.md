@@ -18,6 +18,8 @@ UART communication is a common form of data communication between electronic dev
 
 ![UART Example- Schematic](images/uart_sample.png){width=80%}
 
+https://www.digi.com/resources/documentation/Digidocs/90002002/Content/Reference/r_serial_data.htm?TocPath=Operation|UART%20data%20flow|_____1
+
 UART communication has some characteristics that need to be considered for implementation.
 The signal begins with a start bit (in the form of a low signal), the next in the sequence comes the data bits, the number of data bits is configurable and is dependant on the parameterisation of the serial modules.
 After the data sequence is complete, UART protocol then instructs you to send a stop bit, which is a high signal.
@@ -42,6 +44,8 @@ Pulse Width Modulation (PWM) is a type of digital signal that has many uses for 
 
 ![PWM Example - Schematic](images/PWM_Explained.png){width=80%}
 
+https://wiki.analog.com/university/courses/electronics/electronics-lab-pulse-width-modulation
+
 PWM functions by switching between low and high signals to the requested amounts by the user. For each cycle, the signal will be high for the requested percentage. This is known as the Duty Cycle.
 
 $Period=T_{on}+T_{off}$
@@ -54,6 +58,8 @@ A typical use case for PWM is dimming of a led with change of the duty cycle.
 Linear Feedback Shift Registers is a configuration of registers used in conjunction with an XOR gate to create a function dependant on it's previous state.
 
 ![LFSR Exampled - Schematic](images/4bit_lfsr_xor.png){width=80%}
+
+https://www.researchgate.net/figure/A-4-bit-linear-feedback-shift-register-circuit_fig8_238687766
 
 By continually shifting to the right and going through the XOR gate, it generates a series of pseudo random numbers.
 
@@ -97,6 +103,7 @@ The test signal generator with its multiple I/Os can be broken down into 4 disti
 - random noise generator
 
 ![Test Signal Generator Breakup Drawing](images/breakup_tsg.png){width=100%}
+
 In the picture above you can recognize that the register file is the central part of the design. 
 The register file receives data from the serial communication and writes them into its memory. Depending on the values in the 
 memory the output components are controlled. 
