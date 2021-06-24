@@ -3,42 +3,12 @@
 Introduction
 ============
 Digital test signal generators (TSG) are a type of external measurement equipment that are available from several different vendors. These pieces of equipment produce a range of electrical stimuli signals that can be used to check the operation of other electrical devices. The goal of this module is to produce an on-chip version of this system with the following essential features included in the architecture and design:
-- Single pulse with variable duty cycle and frequency.
-- Digital noise based on pseudo random binary sequences of different length.
-- Arbitrary data bus sequences at selectable speed.
-- Internal/External Trigger.
-- External Time Base.
-Each of these features are necessary for the TSG to produce a data-set that can be used to give an engineer an informative viewpoint on their design so that they can modify it so that it lands within specification.
-
-
-Features
-========
-These features are key to the TSG as they are utilised in many commercially available TSGs as such they are included in this TSG. 
-
-- Serial Transmission
-
-Utilizing UART serial transmission allows for a large range of data to be transferred between the TSG and the subject system. It allows for the TSG to be given Parallel inputs and then communicate using serial transmission  which can then be returned to a parallel data type for the target system to utilise.
-
-
-- Single pulse with variable duty cycle and frequency
-
-Utilising Pulse width modulation a series of digitally controlled electrical signals can be sent allowing for a spectrum of both peak voltage and high frequency testing within a single module.
-
+- Serially configurable
+- Single pulse with variable duty cycle and frequency (PWM)
 - Digital noise based on pseudo random binary sequences of different length
-
-Ustilsing LFSRs to generate a string of pseudo random binary that is then sent along the UART transmission lines to the subject board. It allows for the subject system's ability to handle junk data as well as other highly variable data types.   
-
-- Arbitrary data bus sequences at selectable speed
-
-Utilising digital pattern generators to create arbitrary data busses that can then be sent using UART to a subject board. As the output of this system is arbitrary it allows for the clarity of transmissions that are sent to the subject board. 
-
-- Internal/External Trigger
-
-Internal and external triggers allow for the TSG to be triggered by internally set rules or received data from the test subject system allowing for specific internal rules to be set up. External triggers allow for specific targeted stimulus to be produced by the TSG meaning that any of the above test types can be used with a high level of precision.  
-
-- External Time Base
-
-An external time base allows for the entire TSG to be configured based on the system to be tested by the TSG system. As well as allowing for the TSG to be run at a different clock rate to the tested system.
+- Configurable data sequences at selectable speed (pattern generator)
+- Internal/External triggering of generators
+- External Time Base for selectable base frequency
 
 Functional Description
 ======================
@@ -49,8 +19,13 @@ UART communication is a common form of data communication between electronic dev
 ![UART Example- Schematic](images/uart_sample.png){width=80%}
 
 UART communication has some characteristics that need to be considered for implementation.
-The signal begins with start bit (in the form of a high signal), the next in the sequence comes the data bits, the number of data bits is configurable and is dependant on the parameterisation of the serial modules.
-After the data sequence is complete, UART protocol then instructs you to send a stop bit, which is again a high signal.
+The signal begins with a start bit (in the form of a low signal), the next in the sequence comes the data bits, the number of data bits is configurable and is dependant on the parameterisation of the serial modules.
+After the data sequence is complete, UART protocol then instructs you to send a stop bit, which is a high signal.
+
+Due to the asynchronous nature of this communication method it requires a baud rate for the transfer to be configured. It is asynchronous because the sending 
+and receiving devices work with different clock cycles. The baud rate (speed of
+communication) has to be the same on both devices. Typical baud rates are 
+9600, 14400 and 19200.
 
 
 ## Digital pattern generator
@@ -58,33 +33,35 @@ After the data sequence is complete, UART protocol then instructs you to send a 
 ![Expected output of the pattern generator](images/pattern_output_wavedrom.png){width=100%}
 
 Digital Pattern Generators are a common way of creating signal for testing.
-Theoretically the Pattern Generator should allow the user to output a configurable pattern.
+The Pattern Generator allows the user to output a configurable pattern.
 The pattern can take various shapes, including standard pulses or outputting larger bit patterns depending on the system configuration.
 
 ## Pulse-width modulation
+
 Pulse Width Modulation (PWM) is a type of digital signal that has many uses for real world applications. It is a way in which you can digitally control some analog devices.
 
 ![PWM Example - Schematic](images/PWM_Explained.png){width=80%}
 
 PWM functions by switching between low and high signals to the requested amounts by the user. For each cycle, the signal will be high for the requested percentage. This is known as the Duty Cycle.
 
-$Period=\frac{1}{f}$
-
 $Period=T_{on}+T_{off}$
 
 $DutyCycle=\frac{T_{on}}{T_{on}+T_{off}}\times100$
+
+A typical use case for PWM is dimming of a led with change of the duty cycle.
 
 ## Pseudo-random number generator (LFSR)
 Linear Feedback Shift Registers is a configuration of registers used in conjunction with an XOR gate to create a function dependant on it's previous state.
 
 ![LFSR Exampled - Schematic](images/4bit_lfsr_xor.png){width=80%}
 
-By continually shifting to the right and going through the XOR gate, it generates a series of random numbers.
+By continually shifting to the right and going through the XOR gate, it generates a series of pseudo random numbers.
 
 The number of cycles until the pseudo random number generator repeats himself is:
   $number~of~cycles = 2^{n} -1$
 
-With $n$ as number of bits.
+With $n$ as number of bits. The polynomial on which the LFSR is based on 
+decides on the number of bits and the feedback connection of the XOR gate.
 
 # General Description\label{General Description}
 
@@ -306,19 +283,19 @@ Colours on the state machine represent:
         The other state machine reacts on this signal and when it is finished it sends pm_checked for one cycle. Now this state machine can go back to the wait for address state.
 
 ```pure
- Inputs:   rxd_rec   addr[3..0]      pm_checked
+Inputs:   rxd_rec   addr[3..0]      pm_checked
 
- State/Output                    en_addr_reg en_data_reg en_regfile_wr pm_control_changed
- wait_for_addr_s                 0           0           0             0                  
- fetch_addr_s                    1           0           0             0                  
- wait_for_data_s                 0           0           0             0                  
- fetch_data_s                    0           1           0             0                  
- write_regfile_s                 0           0           1             0                  
- check_written_addr_s            0           0           0             0                  
- pattern_control_changed_s       0           0           0             1                  
- wait_cycle_s                    0           0           0             0                  
- wait_for_sync_reset_serialrx_s  0           0           0             0                  
- wait_for_sync_reset_serialrx2_s 0           0           0             0                  
+State/Output                    en_addr_reg en_data_reg en_regfile_wr pm_control_changed
+wait_for_addr_s                 0           0           0             0                  
+fetch_addr_s                    1           0           0             0                  
+wait_for_data_s                 0           0           0             0                  
+fetch_data_s                    0           1           0             0                  
+write_regfile_s                  0           0           1             0                  
+check_written_addr_s            0           0           0             0                  
+pattern_control_changed_s       0           0           0             1                  
+wait_cycle_s                    0           0           0             0                  
+wait_for_sync_reset_serialrx_s  0           0           0             0                  
+wait_for_sync_reset_serialrx2_s 0           0           0             0                  
 ```
 
 This is then directly wired to the ```serial_receiver_reg.vhd``` module. It contains two registers. The purpose for this is that the register file (```regfile.vhd```) needs to know both the address and the data values simultaneously - meaning that the information must be stored somewhere temporarily before it can be written to the register file. 
@@ -436,17 +413,13 @@ for the single burst mode to stop counting after one counting cycle.
 
 Test Results
 ============
-
-All of the results were calculated using the formulae mentioned above. 
-
 ## Noise Generator
-Sending serial signals to select the address and the data bit respectively.
 
 ![Oscilloscope readings of the Noise Generator with a period and width of one.](images/noise_4bits_period_1.png){width=80%}
 
 ![Oscilloscope readings of the Noise Generator with a period and width of one. Example of bitwidth](images/noise_4bits_period_1_bit_width.png){width=80%}
 
-Expected results are found by implementing the formulae in the \ref{General Description}.
+Expected results are found by implementing the formulae in section \ref{General Description}.
 
 \label{Results from testing the Noise Generator}
 
@@ -458,8 +431,9 @@ Expected results are found by implementing the formulae in the \ref{General Desc
 | 7              | 2           | 38.1                | 38.1               |
 : Results from testing the Noise Generator
 
-## PWM Generator
+The external triggering was tested manually for the 4 and 7 bit noise generator.
 
+## PWM Generator
 
 ![Oscilloscope readings of the PWM Generator with a period and width of one. Example of bitwidth](images/pwm_width_1_period_1.png){width=80%}
 
@@ -474,6 +448,13 @@ Expected results are found by implementing the formulae in the \ref{General Desc
 | 128        | 1      | 51.2                | 51.2               |
 | 255        | 1      | 51.2                | 51.2               |
 : Results from testing the PWM Generator
+
+The external triggering from the PWM generator was tested inside the simulator ```t_tsg.vhd``` because the counting value can be seen.
+
+## Pattern Generator
+
+The pattern generator was tested manually with the external trigger on the board. A test with the oscilloscope is necessary to confirm that 
+the variable frequency works as intended.
 
 Application Note
 ================
@@ -496,7 +477,7 @@ In the system control register is a bit included to do an synchronous clear over
 reset the states of the synchronous components. At the moment only the asynchronous reset is available. To add this functionality 
 an synchronous reset needs to be added to every component except the memory components (register file, pattern generator) and the address upcounter (has already one).
 
-## PWM Switch oOff
+## PWM Switch Off
 
 When the PWM module is switched off either by the system control or the pwm control the counters in the frequency control and pwm 
 generator are kept in their current counting state. This could result in an constant output of a one. To solve this problem it is 
