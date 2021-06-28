@@ -16,9 +16,9 @@ Functional Description
 ## UART serial communication
 UART communication is a common form of data communication between electronic devices. It communicated the data serially in the form of digital signals.
 
-![UART Example- Schematic](images/uart_sample.png){width=80%}
+![UART Example- Schematic [1]](images/uart_sample.png){width=80%}
 
-https://www.digi.com/resources/documentation/Digidocs/90002002/Content/Reference/r_serial_data.htm?TocPath=Operation|UART%20data%20flow|_____1
+
 
 UART communication has some characteristics that need to be considered for implementation.
 The signal begins with a start bit (in the form of a low signal), the next in the sequence comes the data bits, the number of data bits is configurable and is dependant on the parameterisation of the serial modules.
@@ -42,9 +42,9 @@ The pattern can take various shapes, including standard pulses or outputting lar
 
 Pulse Width Modulation (PWM) is a type of digital signal that has many uses for real world applications. It is a way in which you can digitally control some analog devices.
 
-![PWM Example - Schematic](images/PWM_Explained.png){width=80%}
+![PWM Example - Schematic [3]](images/PWM_Explained.png){width=80%}
 
-https://wiki.analog.com/university/courses/electronics/electronics-lab-pulse-width-modulation
+
 
 PWM functions by switching between low and high signals to the requested amounts by the user. For each cycle, the signal will be high for the requested percentage. This is known as the Duty Cycle.
 
@@ -57,9 +57,9 @@ A typical use case for PWM is dimming of a led with change of the duty cycle.
 ## Pseudo-random number generator (LFSR)
 Linear Feedback Shift Registers is a configuration of registers used in conjunction with an XOR gate to create a function dependant on it's previous state.
 
-![LFSR Exampled - Schematic](images/4bit_lfsr_xor.png){width=80%}
+![LFSR Exampled - Schematic [2]](images/4bit_lfsr_xor.png){width=80%}
 
-https://www.researchgate.net/figure/A-4-bit-linear-feedback-shift-register-circuit_fig8_238687766
+
 
 By continually shifting to the right and going through the XOR gate, it generates a series of pseudo random numbers.
 
@@ -507,6 +507,12 @@ The pattern generator was not evaluated on the oscilloscope. It was only tested 
 
 References
 ==========
+
+1: [www.digi.com - UART Example](https://www.digi.com/resources/documentation/Digidocs/90002002/Content/Reference/r_serial_data.htm?TocPath=Operation|UART%20data%20flow|_____1)
+
+2: [www.researchgate.net - Four Bit Linear Shift Register](https://www.researchgate.net/figure/A-4-bit-linear-feedback-shift-register-circuit_fig8_238687766)
+
+3: [www.wiki.analog.com - PWM Example](https://wiki.analog.com/university/courses/electronics/electronics-lab-pulse-width-modulation)
 
 Appendix
 ========
