@@ -46,7 +46,8 @@ BEGIN
 -- width, thus making the desired  pulse width proportional to the 8 bits (255).
   counter_output : pwm_temp <= '1' WHEN current_state < unsigned(pwm_width_i) ELSE
                                '0';
-
+-- with < a duty cyle of 0%- 255/256% is possible
+-- with <= a duty cyle of 1/256% - 100% is possible
 
 -- setting the output to a registed for integration with other modules
   output_register : pwm_o <= '0' WHEN rst_ni = '0' ELSE

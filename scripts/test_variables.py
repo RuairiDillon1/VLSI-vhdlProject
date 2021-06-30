@@ -7,6 +7,7 @@ serial_vars = {
     
     
     "pwm_pulse_width_1" : bytearray.fromhex("04 01"),
+    "pwm_pulse_width_255" : bytearray.fromhex("04 ff"),
     
     "pwm_period_max" : bytearray.fromhex("05 ff"),
     "pwm_period_min" : bytearray.fromhex("05 01"),

@@ -3,6 +3,7 @@
 Introduction
 ============
 Digital test signal generators (TSG) are a type of external measurement equipment that are available from several different vendors. These pieces of equipment produce a range of electrical stimuli signals that can be used to check the operation of other electrical devices. The goal of this module is to produce an on-chip version of this system with the following essential features included in the architecture and design:
+
 - Serially configurable
 - Single pulse with variable duty cycle and frequency (PWM)
 - Digital noise based on pseudo random binary sequences of different length

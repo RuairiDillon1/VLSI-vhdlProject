@@ -8,99 +8,141 @@ date: SS2021
 Overview
 ========
 
-* Features
-* Interface Signals
-* Block Diagram
-* Functional Description
-* Simulation Result
-* Device Utilization and Performance
-* Demonstration
-* Questions
+* General Description
+* Serial Communication
+* Test Components
+  * PWM Generator
+  * Noise Generator
+  * Pattern Generator
 
-Features
+General Description
 ========
 
-  * Models QRS-Complex and T-Wave
-  * Average time values based on 72 bpm
-  * Enable input for external prescaler
+Features
+---
 
-Interface Signals
-=================
+* Serially configurable
+* Single pulse with variable duty cycle and frequency (PWM)
+* Digital noise based on pseudo random binary sequences of different length
+* Configurable data sequences at selectable speed (pattern generator)
+* Internal/External triggering of generators
+* External Time Base for selectable base frequency
 
-![Heartbeat Generator - Schematic Symbol](images/heartbeat_gen_symbol.pdf){width=40%}
+General Description
+========
 
+Component
+---
 
-Functional Description
-======================
+![TSG Component](images/tsg.png){width=40%}
 
-Simplification to Digital Pulses
----------
+General Description
+========
 
-![Electrocardiogram](images/ECG-SinusRhythmLabel.png){width=20%}
+Component Breakup
+---
 
+![Breakup Drawing of TSG](images/breakup_tsg.png){width=80%}
 
-![QRS Complex and T Wave Pulses](images/qrs-complex-t-wave-pulses.pdf){width=80%}
+General Description
+========
 
-
-Functional Description
-======================
-
-Conceptional RTL Diagram
----------------
-
-![Heartbeat Generator - Conceptional RTL](images/heartbeat_gen_conceptional_rtl.pdf){width=60%}
-
-Simulation Result - Top Level
-=============================
-
-![Two Periods - Simulation Result](images/heartbeat_gen_two_periods_simwave.png){width=80%}
-
-Device Utilization and Performance
-==================================
-
+Register File
+---
 ```pure
-+------------------------------------------------------------------------------+
-; Fitter Summary                                                               ;
-+------------------------------------+-----------------------------------------+
-; Fitter Status                      ; Successful - Wed Mar 31 11:50:15 2021   ;
-; Quartus II 32-bit Version          ; 13.0.1 Build 232 06/12/2013 SP 1 SJ Web ;
-; Revision Name                      ; de1_heartbeat_gen                       ;
-; Top-level Entity Name              ; de1_heartbeat_gen                       ;
-; Family                             ; Cyclone II                              ;
-; Device                             ; EP2C20F484C7                            ;
-; Timing Models                      ; Final                                   ;
-; Total logic elements               ; 50 / 18,752 ( < 1 % )                   ;
-;     Total combinational functions  ; 50 / 18,752 ( < 1 % )                   ;
-;     Dedicated logic registers      ; 26 / 18,752 ( < 1 % )                   ;
-; Total registers                    ; 26                                      ;
-; Total pins                         ; 15 / 315 ( 5 % )                        ;
-; Total virtual pins                 ; 0                                       ;
-; Total memory bits                  ; 0 / 239,616 ( 0 % )                     ;
-; Embedded Multiplier 9-bit elements ; 0 / 52 ( 0 % )                          ;
-; Total PLLs                         ; 0 / 4 ( 0 % )                           ;
-+------------------------------------+-----------------------------------------+
+		  					 Bit7  ..         0
+------------------------------------------------
+Address  	Name 				7 6 5 4 3 2 1 0
+------------------------------------------------
+0x00 
+0x01  		system control 					  x
+0x02
+0x03
+0x04     	pwm pulse width 	x x x x x x x x
+0x05 		pwm period 			x x x x x x x x
+0x06 		pwm control 					x x
+0x07
+0x08 		noise prbsg length 	x x x x x x x x
+0x09 		noise period 		x x x x x x x x
+0x0A
+0x0B 		noise control 					x x
+0x0C 		pattern length 		x x x x x x x x
+0x0D 
+0x0E 		pattern period 		x x x x x x x x
+0x0F 		pattern control 			  x x x
 ```
 
-Demonstration
-=============
+Serial Communication
+=================
 
-Prototype Setup
----------------
-
-![Test Environment on DE1 Prototype Board](images/de1_heartbeat_gen_schematic.pdf){width=70%}
-
-Demonstration
-=============
-
-Test Environment
-----------------
+![UART [1]](images/uart_sample.png){width=90%}
 
 
+Test Components
+======================
+
+PWM Generator
+---------
+
+![PWM with Duty Cycle 50%](images/pwm_width_128_period_1.png){width=70%}
 
 
+Test Components
+======================
+
+Noise Generator
+---------
+
+![4bit LFSR [2]](images/4bit_lfsr_xor.png){width=60%}
+
+```pure
+noise prbsg length
+-----------------------------------------
+Bit 7 6 5 4 3 2 1 0 Meaning
+-----------------------------------------
+			  0 0 0 4-bit
+			  0 0 1 7-bit 8B/10B-encoded pattern
+			  0 1 0 15-bit ITU-T O.150
+			  0 1 1 17-bit OIF-CEI-P-02.0
+			  1 0 0 20-bit ITU-T O.150
+			  1 0 1 23-bit ITU-T O.150
+```
+
+Test Components
+======================
+
+Noise Generator
+---------
+
+![Noise Signal/EOC of 4bit LFSR](images/noise_4bits_period_1.png){width=70%}
+
+Test Components
+======================
+
+Pattern Generator
+---------
+
+![Pattern Generator Signals](images/pattern_output_wavedrom.png)
+
+```pure
+pattern control
+---------------------------
+Bit 1 0 Meaning
+---------------------------
+	0 0 stop
+	0 1 single burst
+	1 0 continous run
+	1 1 load data
+```
 
 Questions
 =========
 
 Thank you for your attention !
+
+Sources
+---
+1: [Source - UART Drawing](https://www.digi.com/resources/documentation/Digidocs/90002002/Content/Reference/r_serial_data.htm?TocPath=Operation|UART%20data%20flow|_____1)
+
+2: [Source - LFSR Drawing](https://www.researchgate.net/figure/A-4-bit-linear-feedback-shift-register-circuit_fig8_238687766)
 
